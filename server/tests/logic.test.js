@@ -4,6 +4,7 @@ const assert = require('node:assert');
 
 process.env.JWT_SECRET = 'test-secret-0123456789abcdef';
 process.env.OTP_TTL_SECONDS = '60';
+process.env.REDIS_URL = ''; // pas de connexion Redis pendant les tests (sinon le processus reste ouvert)
 
 const v = require('../src/validators/auth');
 const u = require('../src/validators/users');
