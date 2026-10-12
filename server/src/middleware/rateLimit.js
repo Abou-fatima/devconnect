@@ -1,0 +1,19 @@
+const rateLimit = require('express-rate-limit');
+
+const make = (windowMin, max, message) =>
+  rateLimit({
+    windowMs: windowMin * 60 * 1000,
+    max,
+    standardHeaders: true,
+    legacyHeaders: false,
+    message: { erreur: message }
+  });
+
+// Connexion / inscription : 20 tentatives par 15 min et par IP
+const authLimiter = make(15, 20, 'Trop de tentatives, réessayez dans quelques minutes');
+// Envoi d'OTP : 5 par 15 min et par IP (évite le spam SMS/email)
+const otpLimiter = make(15, 5, 'Trop de demandes de code, réessayez plus tard');
+// API générale
+const apiLimiter = make(1, 300, 'Trop de requêtes');
+
+module.exports = { authLimiter, otpLimiter, apiLimiter };

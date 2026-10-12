@@ -1,0 +1,99 @@
+# Guide Dev 3 — Mamadou Charif Balde
+**Rôle : Temps réel (Socket.IO + Redis), notifications, vocal, upload de fichiers**
+Prérequis communs : voir le [README](../README.md) (étapes 1 à 5).
+
+## A. Récupérer le projet
+
+```bash
+git clone <URL_DU_DEPOT>
+cd devconnect
+git checkout develop && git pull origin develop
+cd server
+cp .env.example .env
+npm install
+```
+Lancer les services :
+```bash
+docker start mongo redis      # ou mongod / redis-server
+redis-cli ping                # doit répondre PONG
+npm run dev
+```
+
+## B. Chat Socket.IO + Redis (F-18)
+
+```bash
+git checkout -b feature/dev3-chat
+npm install @socket.io/redis-adapter
+mkdir -p src/sockets src/routes
+```
+Créer :
+1. `src/config/redis.js` : clients `pub` et `sub` (ioredis, `REDIS_URL`).
+2. `src/sockets/index.js` : authentification du socket par JWT (`socket.handshake.auth.token`), adapter Redis, événements `join_canal`, `message`, `typing`, `disconnect`.
+3. Canaux : `stack:react`, `ville:conakry`, et privés `prive:<idA>_<idB>`.
+4. Messages enregistrés dans `echanges` avec `type: "message"`.
+5. `src/routes/chat.js` : `GET /api/chat/historique/:canal?page=1`.
+6. Dans `index.js`, remplacer le TODO par `require('./sockets')(io);`
+
+Test rapide (deux terminaux) :
+```bash
+npx wscat -c "ws://localhost:4000/socket.io/?EIO=4&transport=websocket"
+```
+
+```bash
+git add . && git commit -m "feat: chat temps réel Socket.IO + Redis"
+git fetch origin && git rebase origin/develop
+git push -u origin feature/dev3-chat
+```
+→ Pull Request vers `develop`. **Donner à Dev 5 la liste des événements Socket.IO** (nom + payload).
+
+## C. Notifications (F-20)
+
+```bash
+git checkout develop && git pull origin develop
+git checkout -b feature/dev3-notifications
+```
+- `src/services/notifier.js` : crée un `echanges` de `type: "notification"` et émet `io.to("user:<id>").emit("notification", ...)`.
+- `GET /api/notifications`, `PUT /api/notifications/:id/lue`.
+- Dev 2 et Dev 5 appellent `notifier.envoyer(...)` (réponse reçue, candidature, etc.).
+
+## D. Upload et compression des fichiers (F-24, F-39)
+
+```bash
+git checkout develop && git pull origin develop
+git checkout -b feature/dev3-upload
+cd server && npm install multer sharp
+mkdir -p uploads && echo "uploads/" >> ../.gitignore
+```
+- `POST /api/upload` : multer (limite 5 Mo images, 10 Mo audio), conversion en WebP avec `sharp`, enregistrement dans `depots`.
+- `app.use('/uploads', express.static('uploads'));`
+
+```bash
+git add . && git commit -m "feat: upload fichiers + compression WebP"
+git push -u origin feature/dev3-upload
+```
+
+## E. Notes vocales et transcription Whisper (F-12, F-19, F-40)
+
+```bash
+git checkout develop && git pull origin develop
+git checkout -b feature/dev3-vocal
+sudo apt-get install -y ffmpeg
+pip install faster-whisper      # ou installation de whisper.cpp
+```
+- `POST /api/audio` : reçoit un fichier audio (webm/ogg), le convertit :
+  ```bash
+  ffmpeg -i entree.webm -ac 1 -ar 16000 sortie.wav
+  ```
+- Lancer la transcription en tâche asynchrone, puis enregistrer le texte dans `echanges.transcription`.
+- Prévoir un mode dégradé : si Whisper échoue, garder l'audio sans texte.
+
+## F. Test de charge et réseau faible
+
+```bash
+npm install -g artillery
+artillery quick --count 50 --num 20 http://localhost:4000/api/health
+```
+Dans Chrome DevTools → Network → throttling « Slow 3G » pour tester le chat.
+
+## G. Fin
+Documenter les événements Socket.IO dans `docs/SOCKET_EVENTS.md` et les routes dans `server/openapi.yaml`.
