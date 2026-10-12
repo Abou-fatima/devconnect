@@ -1,10 +1,10 @@
 # Guide Dev 1 — Alpha Ousmane Bah
 **Rôle : Lead, backend core, authentification, profils, déploiement**
-Prérequis communs : voir le [README](../README.md) (étapes 1 à 5).
+Prérequis communs : voir le [README](../README.md) (sections 1 à 6).
 
 ## État du code (déjà écrit)
 
-Le code des sections C, D et E ci-dessous est déjà dans `server/` : tu n'as pas à le réécrire, seulement à l'installer, le tester et le pousser.
+Le code de l'authentification, des profils, de la recherche et de Swagger est déjà dans `server/` : tu n'as pas à le réécrire, seulement à l'installer, le tester et le pousser.
 
 | Fichier | Contenu |
 |---|---|
@@ -13,22 +13,21 @@ Le code des sections C, D et E ci-dessous est déjà dans `server/` : tu n'as pa
 | `src/middleware/auth.js`, `role.js` | `auth`, `optionalAuth`, `requireRole(...)` pour les autres devs |
 | `src/docs/openapi.js` | Swagger sur `/api/docs` |
 | `tests/logic.test.js` | `npm run test:logic` |
-| `scripts/smoke.sh` | test de bout en bout avec curl |
+| `scripts/smoke.sh` | test de bout en bout avec curl (Mac/Linux/Git Bash) |
+| `scripts/smoke.ps1` | même test pour Windows PowerShell |
 
-Vérification après `npm install` :
-```bash
-cd server
-npm run test:logic          # 8 tests de logique, sans base de données
-npm run dev                 # dans un terminal (MongoDB démarré)
-bash scripts/smoke.sh       # dans un autre terminal
+Vérification après `npm install` (serveur lancé avec `npm run dev` dans un autre terminal) :
+```powershell
+npm run test:logic
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts/smoke.ps1
 ```
 Ouvre ensuite http://localhost:4000/api/docs.
 
-GitHub OAuth : créer une OAuth App sur https://github.com/settings/developers avec le callback `http://localhost:4000/api/auth/github/callback`, puis renseigner `GITHUB_CLIENT_ID` et `GITHUB_CLIENT_SECRET` dans `.env`.
+GitHub OAuth : voir la section C ci-dessous.
 
 ## A. Initialiser le dépôt (toi seul, au tout début)
 
-```bash
+```powershell
 cd devconnect
 git init
 git add .
@@ -44,90 +43,83 @@ Sur GitHub : Settings → Branches → protéger `main` et `develop` (PR obligat
 
 ## B. Démarrer le backend
 
-```bash
-git checkout develop && git pull origin develop
+```powershell
+git checkout develop
+git pull origin develop
 cd server
-cp .env.example .env     # mettre un vrai JWT_SECRET : openssl rand -hex 32
+Copy-Item .env.example .env
+node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+```
+Copie le résultat dans `JWT_SECRET` de `server/.env`, puis :
+```powershell
 npm install
 npm run dev
-curl http://localhost:4000/api/health
 ```
+Dans un autre terminal : `curl.exe http://localhost:4000/api/health` doit répondre `{"ok":true}`.
 
-## C. Authentification (F-01, F-41)
+## C. Authentification, profils, Swagger : déjà codés et testés
 
-```bash
+Les fonctionnalités F-01 à F-07 et F-41 sont dans `server/` (voir le tableau « État du code » plus haut). Elles ont été testées : `test:logic` (8 réussis), `smoke.ps1` (`TOUT EST BON`) et la connexion GitHub réelle.
+
+### Obtenir les identifiants GitHub OAuth
+
+1. Va sur https://github.com/settings/developers, puis **OAuth Apps**, puis **New OAuth App**.
+2. Remplis le formulaire :
+   - Application name : `DevConnect (dev)`
+   - Homepage URL : `http://localhost:5173`
+   - Redirect URI : `http://localhost:4000/api/auth/github/callback` (exactement, sans espace ni `/` final)
+   - Laisse décochés : Allow wildcard matching, Enable Device Flow, Expire user access tokens.
+3. **Register application**, puis copie le **Client ID**.
+4. **Generate a new client secret** et copie-le tout de suite (il ne s'affiche qu'une fois).
+5. Mets-les dans `server/.env` :
+   ```
+   GITHUB_CLIENT_ID=ton_client_id
+   GITHUB_CLIENT_SECRET=ton_client_secret
+   ```
+6. Redémarre le serveur et ouvre http://localhost:4000/api/auth/github dans le navigateur. Après l'autorisation, tu es redirigé vers `http://localhost:5173/auth/callback#token=...`. Tant que le client React n'existe pas, la page affiche une erreur de connexion : c'est normal. Le token dans l'adresse prouve que ça marche.
+
+Ne mets jamais le secret dans le dépôt. En production, ajoute l'adresse publique dans les Redirect URIs (jusqu'à 10 possibles).
+
+## D. Livrer ta partie (première Pull Request)
+
+Vérifie d'abord, dans `server/`, serveur lancé :
+```powershell
+npm run test:logic
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts/smoke.ps1
+```
+Puis, à la racine du projet :
+```powershell
+git status
 git checkout -b feature/dev1-auth
-cd server
-npm install express-validator express-rate-limit passport passport-github2 nodemailer
-mkdir -p src/routes src/middleware src/config src/controllers
-```
-
-Fichiers à créer :
-1. `src/middleware/auth.js` : vérifie le JWT (`Authorization: Bearer ...`), remplit `req.user`.
-2. `src/middleware/role.js` : `requireRole('admin','moderateur')`.
-3. `src/routes/auth.js` : `POST /register`, `POST /login`, `POST /otp/send`, `POST /otp/verify`, `GET /github`, `GET /github/callback`, `GET /me`.
-4. Brancher dans `src/index.js` : `app.use('/api/auth', require('./routes/auth'));`
-
-Test :
-```bash
-curl -X POST http://localhost:4000/api/auth/register -H "Content-Type: application/json" \
-  -d '{"pseudo":"test","email":"t@t.com","mot_de_passe":"Azerty123"}'
-curl -X POST http://localhost:4000/api/auth/login -H "Content-Type: application/json" \
-  -d '{"email":"t@t.com","mot_de_passe":"Azerty123"}'
-```
-
-Livrer :
-```bash
-git add . && git commit -m "feat: authentification JWT, OTP, GitHub OAuth"
-git fetch origin && git rebase origin/develop
+git add .
+git commit -m "feat: authentification JWT, OTP, GitHub OAuth, profils, recherche, Swagger"
 git push -u origin feature/dev1-auth
 ```
-→ Pull Request vers `develop`. **Prévenir l'équipe dès que `/api/auth/login` marche** (tout le monde en dépend).
+Contrôle `git status` : `server/.env` ne doit **pas** apparaître. Ouvre la Pull Request vers `develop`.
 
-## D. Profils et recherche (F-02 à F-07)
+Quand elle est fusionnée, **préviens l'équipe** : ils doivent lire [INTEGRATION_DEV1.md](INTEGRATION_DEV1.md), faire `git pull origin develop` et `npm install` dans `server/`.
 
-```bash
-git checkout develop && git pull origin develop
-git checkout -b feature/dev1-profils
-```
-- `src/routes/users.js` : `GET /api/users/:id`, `PUT /api/users/me`, `GET /api/users?stack=react&pays=GN&niveau=avance`
-- Pagination (`?page=1&limit=20`) et projection pour ne jamais renvoyer `mot_de_passe_hash`.
+## E. Aider les autres (tout au long du projet)
 
-```bash
-git add . && git commit -m "feat: profils et recherche de développeurs"
-git push -u origin feature/dev1-profils
-```
+Les autres développeurs t'appellent quand l'authentification ou le modèle Utilisateur leur pose un problème. Demande-leur la commande lancée et le message d'erreur complet. Tu relis aussi leurs Pull Requests : tu es obligatoire sur toute modification de `server/src/models/`.
 
-## E. Swagger / OpenAPI
+## F. Revue et intégration
 
-```bash
-git checkout develop && git pull origin develop
-git checkout -b feature/dev1-swagger
-cd server && npm install swagger-ui-express yamljs
-```
-Créer `server/openapi.yaml`, puis dans `index.js` :
-`app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(YAML.load('./openapi.yaml')));`
-→ Documentation sur http://localhost:4000/api/docs
-
-```bash
-git add . && git commit -m "docs: Swagger OpenAPI"
-git push -u origin feature/dev1-swagger
-```
-
-## F. Revue et intégration (tout au long du projet)
-
-```bash
+```powershell
 git fetch origin
-git checkout feature/devX-sujet     # branche à relire
-npm --prefix server install && npm --prefix server run dev
+git checkout feature/devX-sujet
+cd server
+npm install
+npm run dev
 ```
-Fusionner les PR validées vers `develop`. Vers J10, J16 et J21 : fusionner `develop` dans `main`.
-
-```bash
-git checkout main && git pull origin main
+Teste la branche à relire (Swagger, `smoke.ps1`), puis fusionne les PR validées vers `develop`. Vers J10, J16 et J21, fusionne `develop` dans `main` :
+```powershell
+git checkout main
+git pull origin main
 git merge --no-ff develop
 git push origin main
-git tag v0.1.0 && git push origin v0.1.0
+git tag v0.1.0
+git push origin v0.1.0
 ```
 
 ## G. Déploiement DataCloud Systalink
