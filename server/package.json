@@ -2,14 +2,18 @@
   "name": "devconnect-server",
   "version": "0.2.0",
   "main": "src/index.js",
-  "engines": { "node": ">=20" },
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
     "dev": "node --watch src/index.js",
     "start": "node src/index.js",
     "check": "node --check src/index.js && node --check src/app.js",
-    "test:logic": "node --test tests/logic.test.js"
+    "test:logic": "node --test tests/logic.test.js",
+    "test:communication": "node --test src/communication/tests/canaux.test.js"
   },
   "dependencies": {
+    "@socket.io/redis-adapter": "^8.3.0",
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
@@ -23,5 +27,8 @@
     "socket.io": "^4.7.5",
     "swagger-ui-express": "^5.0.1",
     "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "socket.io-client": "^4.8.4"
   }
 }
