@@ -9,8 +9,9 @@
     "dev": "node --watch src/index.js",
     "start": "node src/index.js",
     "check": "node --check src/index.js && node --check src/app.js",
-    "test:logic": "node --test tests/logic.test.js",
-    "test:communication": "node --test src/communication/tests/canaux.test.js"
+    "test:logic": "node --test tests/logic.test.js tests/forum.test.js",
+    "test:communication": "node --test src/communication/tests/canaux.test.js",
+    "test": "node --test tests/logic.test.js tests/forum.test.js src/communication/tests/canaux.test.js"
   },
   "dependencies": {
     "@socket.io/redis-adapter": "^8.3.0",

@@ -9,6 +9,7 @@ const { notFound, errorHandler } = require('./middleware/error');
 const openapi = require('./docs/openapi');
 const communication = require('./communication');
 communication.extendOpenapi(openapi); // documentation Swagger du module communication (avant swagger-ui)
+require('./docs/openapi.forum')(openapi); // documentation Swagger forum, classement, admin
 
 const app = express();
 app.set('trust proxy', 1); // derrière nginx / DataCloud : IP réelle pour le rate limit
@@ -30,7 +31,10 @@ app.use('/api', apiLimiter);
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/users', require('./routes/users'));
 app.use('/api/meta', require('./routes/meta'));
-// TODO (Dev 2) : app.use('/api/echanges', require('./routes/echanges'));
+// Forum, votes, classement, administration
+app.use('/api/echanges', require('./routes/echanges'));
+app.use('/api/classement', require('./routes/classement'));
+app.use('/api/admin', require('./routes/admin'));
 communication.mountRoutes(app);
 // TODO (Dev 5) : app.use('/api/projets', require('./routes/projets'));
 
