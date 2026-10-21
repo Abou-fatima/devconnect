@@ -8,9 +8,9 @@ Stack : React + Tailwind (PWA) · Node.js / Express · MongoDB · Redis · Socke
 | Dev | Nom | Rôle | Guide à suivre |
 |---|---|---|---|
 | Dev 1 | Alpha Ousmane Bah | Lead, backend core & auth | [docs/DEV1_Alpha_Ousmane_Bah.md](docs/DEV1_Alpha_Ousmane_Bah.md) |
-| Dev 2 | Ousmane Diallo | Backend forum / Q&A | [docs/DEV2_Ousmane_Diallo.md](docs/DEV2_Ousmane_Diallo.md) |
+| Dev 2 | Ousmane Diallo (occupé, repris par Dev 1) | Backend forum / Q&A | [docs/DEV2_Ousmane_Diallo.md](docs/DEV2_Ousmane_Diallo.md) |
 | Dev 3 | Mamadou Charif Balde | Temps réel & vocal | [docs/DEV3_Mamadou_Charif_Balde.md](docs/DEV3_Mamadou_Charif_Balde.md) |
-| Dev 4 | Mamadou Dian Barry | Frontend A (core UI) | [docs/DEV4_Mamadou_Dian_Barry.md](docs/DEV4_Mamadou_Dian_Barry.md) |
+| Dev 4 | Mamadou Dian Barry (indisponible, repris par Dev 1) | Frontend A (core UI) | [docs/DEV4_Mamadou_Dian_Barry.md](docs/DEV4_Mamadou_Dian_Barry.md) |
 | Dev 5 | Ibrahima Sory Diallo | Frontend B, projets & collaboration | [docs/DEV5_Ibrahima_Sory_Diallo.md](docs/DEV5_Ibrahima_Sory_Diallo.md) |
 
 **Chacun suit son guide du début à la fin.** Ce README donne la base commune : installation, lancement, règles Git.
@@ -21,9 +21,9 @@ Tout le monde doit aussi lire [docs/INTEGRATION_DEV1.md](docs/INTEGRATION_DEV1.m
 | Partie | État |
 |---|---|
 | Dev 1 : authentification (email, OTP, GitHub), profils, recherche, Swagger | Codé et testé. Livré sur la branche `develop` |
-| Dev 2 : forum / Q&A | À faire |
-| Dev 3 : chat, notifications, upload, vocal | À faire |
-| Dev 4 : client React | À faire (les autres en dépendent pour les pages) |
+| Dev 2 : forum / Q&A, votes, réputation, classement, admin (API) | Codé par Dev 1 : tests logiques OK, test de bout en bout `smoke-forum.ps1` à lancer. Reste : pages React |
+| Dev 3 : chat, notifications, upload, vocal | Chat Socket.IO livré (F-18). Reste : notifications, upload, vocal |
+| Dev 4 : client React | Setup, layout, FR/EN, auth, profil, recherche faits. Reste : forum, classement (pages), PWA hors-ligne à auditer |
 | Dev 5 : projets, collaboration, mentorat | À faire |
 
 > Mets ce tableau à jour dans tes Pull Requests quand tu termines une partie.
@@ -109,6 +109,8 @@ powershell -NoProfile -ExecutionPolicy Bypass -File scripts/smoke.ps1
 ```
 - `test:logic` : 8 tests `✔`, aucun `fail`.
 - `smoke.ps1` : doit finir par `TOUT EST BON` en vert.
+- `smoke-forum.ps1` (même commande, autre fichier) : teste tout le forum (questions, réponses, votes, réputation, classement). Doit aussi finir par `TOUT EST BON`. Il crée des comptes de test à chaque lancement et ne peut pas être relancé plus de 3 fois en 10 minutes (limite anti-spam).
+- `npm test` lance tous les tests logiques (Dev 1, forum, chat).
 
 Ensuite ouvre http://localhost:4000/api/docs : c'est la documentation interactive (Swagger) de toute l'API. Chaque développeur y ajoute ses propres routes (voir `server/src/docs/openapi.js`).
 
