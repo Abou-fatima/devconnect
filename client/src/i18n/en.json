@@ -1,0 +1,24 @@
+{
+  "app": { "nom": "DevConnect", "slogan": "The African developer community" },
+  "nav": { "accueil": "Home", "forum": "Forum", "devs": "Developers", "classement": "Ranking", "profil": "Profile", "connexion": "Log in", "inscription": "Sign up", "deconnexion": "Log out" },
+  "commun": { "chargement": "Loading...", "enregistrer": "Save", "annuler": "Cancel", "precedent": "Previous", "suivant": "Next", "aucun": "No results", "erreur": "Something went wrong", "hors_ligne": "You are offline: the data shown may be outdated.", "page": "Page {{page}} / {{pages}}", "bientot": "Coming soon" },
+  "accueil": { "titre": "Ask questions, showcase projects, find your team.", "texte": "DevConnect brings African developers together to learn, collaborate and build.", "cta_inscription": "Join the community", "cta_devs": "Find developers" },
+  "auth": {
+    "email": "Email", "telephone": "Phone (optional, e.g. +224620000000)", "pseudo": "Username", "mdp": "Password", "mdp_aide": "At least 8 characters, with a letter and a digit",
+    "identifiant": "Email or phone", "pays": "Country (2-letter code, e.g. GN)", "ville": "City",
+    "se_connecter": "Log in", "creer_compte": "Create my account", "github": "Continue with GitHub", "ou": "or",
+    "pas_de_compte": "No account yet?", "deja_compte": "Already have an account?",
+    "titre_connexion": "Log in", "titre_inscription": "Sign up",
+    "erreur_github": "GitHub login failed. Please try again.", "callback": "Signing you in..."
+  },
+  "profil": {
+    "titre": "My profile", "modifier": "Edit my profile", "bio": "Bio", "photo": "Photo URL", "niveau": "Level", "stacks": "Technologies (comma separated)", "objectifs": "Goals",
+    "liens": "Links", "github": "GitHub", "linkedin": "LinkedIn", "site": "Website", "whatsapp": "WhatsApp (e.g. +224620000000)", "reputation": "Reputation", "badges": "Badges", "membre_depuis": "Member since {{date}}",
+    "enregistre": "Profile saved", "introuvable": "Profile not found",
+    "niveaux": { "debutant": "Beginner", "intermediaire": "Intermediate", "avance": "Advanced", "expert": "Expert" },
+    "objectifs_liste": { "apprendre": "Learn", "collaborer": "Collaborate", "mentorat": "Find a mentor", "offrir_mentorat": "Offer mentoring", "emploi": "Find a job", "projet_perso": "Side project" }
+  },
+  "recherche": { "titre": "Find developers", "q": "Search a username", "stack": "Technology", "pays": "Country (e.g. GN)", "niveau": "Level", "tous": "All", "tri": "Sort by", "tri_reputation": "Reputation", "tri_recent": "Newest", "tri_pseudo": "Username", "rechercher": "Search", "resultats": "{{count}} developer(s)" },
+  "forum": { "titre": "Forum", "bientot": "The forum is coming soon (API under development)." },
+  "classement": { "titre": "Ranking by country", "bientot": "The ranking is coming soon." }
+}
