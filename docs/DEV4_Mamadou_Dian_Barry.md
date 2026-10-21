@@ -1,20 +1,21 @@
 # Guide Dev 4 — Mamadou Dian Barry
 **Rôle : Frontend A (React + Tailwind + PWA, auth, profil, forum, classement)**
-Prérequis communs : voir le [README](../README.md) (étapes 1 à 5).
+Prérequis communs : voir le [README](../README.md) (sections 1 à 6).
 
 ## A. Récupérer le projet
 
-```bash
+```powershell
 git clone <URL_DU_DEPOT>
 cd devconnect
-git checkout develop && git pull origin develop
+git checkout develop
+git pull origin develop
 git checkout -b feature/dev4-setup
 ```
 
 ## B. Créer le client (toi seul, au début)
 
-```bash
-rm -rf client            # le dossier est vide dans le squelette
+```powershell
+Remove-Item -Recurse -Force client     # le dossier est vide dans le squelette (Mac/Linux : rm -rf client)
 npm create vite@latest client -- --template react
 cd client
 npm install
@@ -37,48 +38,53 @@ export default defineConfig({
 ```
 Dans `src/index.css` : `@import "tailwindcss";`
 
-```bash
+```powershell
 npm run dev       # http://localhost:5173
 ```
 
 Structure à créer :
-```bash
-mkdir -p src/{pages,components,services,hooks,i18n,context}
+```powershell
+mkdir src\pages, src\components, src\services, src\hooks, src\i18n, src\context
 ```
 
-```bash
+```powershell
 cd ..
-git add . && git commit -m "feat: setup React + Tailwind + PWA"
+git add .
+git commit -m "feat: setup React + Tailwind + PWA"
 git push -u origin feature/dev4-setup
 ```
 → Pull Request vers `develop` **dès que possible** : Dev 5 en a besoin.
 
 ## C. Layout mobile-first, i18n (F-44, F-46)
 
-```bash
-git checkout develop && git pull origin develop
+```powershell
+git checkout develop
+git pull origin develop
 git checkout -b feature/dev4-layout
 ```
 - `components/Navbar`, `components/BottomNav` (mobile), `components/Layout`.
 - `src/i18n/fr.json`, `src/i18n/en.json`, `src/i18n/index.js` + sélecteur de langue.
-- `src/services/api.js` : instance axios avec token JWT en en-tête.
+- `src/services/api.js` : instance axios qui ajoute `Authorization: Bearer <token>` (token lu dans `localStorage`) et qui redirige vers la connexion sur une réponse `401`.
+- Formulaires : charger les listes depuis `GET /api/meta/options` (niveaux, objectifs, stacks).
 - `src/context/AuthContext.jsx`.
 - Routes dans `App.jsx` avec `react-router-dom` (routes protégées).
 
 ## D. Pages auth et profil
 
-```bash
+```powershell
 git checkout -b feature/dev4-auth-pages
 ```
-- `pages/Inscription`, `pages/Connexion` (appellent `/api/auth/register`, `/api/auth/login`).
+- `pages/Inscription`, `pages/Connexion` (appellent `/api/auth/register`, `/api/auth/login`). Bouton « Continuer avec GitHub » : lien vers `http://localhost:4000/api/auth/github`.
+- `pages/AuthCallback` : lit le token dans `#token=` après la connexion GitHub. **Le code complet est dans [INTEGRATION_DEV1.md](INTEGRATION_DEV1.md), section 7.**
 - `pages/Profil` (`GET /api/users/:id`), édition du profil, `pages/Recherche` (filtres stack/pays/niveau).
 
-Si l'API de Dev 1 n'est pas prête, utiliser des données factices dans `src/services/mock.js`.
+L'API de Dev 1 est **déjà disponible** : lis [INTEGRATION_DEV1.md](INTEGRATION_DEV1.md) (liste des routes, format des réponses et des erreurs `{ erreur, details }`). Pour les routes des autres développeurs qui ne sont pas encore prêtes, utilise des données factices dans `src/services/mock.js`.
 
 ## E. Pages forum
 
-```bash
-git checkout develop && git pull origin develop
+```powershell
+git checkout develop
+git pull origin develop
 git checkout -b feature/dev4-forum
 ```
 - `pages/Forum` (liste + filtre par tag + pagination)
@@ -88,22 +94,26 @@ git checkout -b feature/dev4-forum
 
 ## F. PWA et hors-ligne (F-42, F-45)
 
-```bash
-cd client && npm run build && npm run preview
+```powershell
+cd client
+npm run build
+npm run preview
 ```
 Dans Chrome DevTools → Application : vérifier le manifest et le service worker, tester « Offline ». Mettre en cache la liste des questions déjà consultées.
 
 Audit :
-```bash
+```powershell
 npx lighthouse http://localhost:4173 --view
 ```
 Cible : PWA installable, performance correcte en « Slow 3G ».
 
 ## G. Livraison de chaque fonctionnalité
 
-```bash
-git add . && git commit -m "feat: <description>"
-git fetch origin && git rebase origin/develop
+```powershell
+git add .
+git commit -m "feat: <description>"
+git fetch origin
+git rebase origin/develop
 git push -u origin feature/dev4-<sujet>
 ```
 → Pull Request vers `develop`.
