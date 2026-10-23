@@ -16,4 +16,7 @@ const otpLimiter = make(15, 5, 'Trop de demandes de code, réessayez plus tard')
 // API générale
 const apiLimiter = make(1, 300, 'Trop de requêtes');
 
-module.exports = { authLimiter, otpLimiter, apiLimiter };
+// Écriture (posts, réponses, commentaires, votes) : 60 par 10 min et par IP
+const ecritureLimiter = make(10, 60, 'Trop d\'actions, ralentissez');
+
+module.exports = { authLimiter, otpLimiter, apiLimiter, ecritureLimiter };
