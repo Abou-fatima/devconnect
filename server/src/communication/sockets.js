@@ -2,6 +2,7 @@ const Utilisateur = require('../models/Utilisateur');
 const Echange = require('../models/Echange');
 const { verifyToken } = require('../utils/jwt');
 const { parseCanal } = require('./canaux');
+const { notifierMentions } = require('./notifications/notifier');
 
 const MAX_CONTENU = 2000;
 const LIMITE_MSG = { max: 20, fenetreMs: 10_000 }; // 20 messages / 10 s / socket
@@ -29,7 +30,7 @@ module.exports = (io) => {
 
   io.on('connection', (socket) => {
     const { id: userId, pseudo } = socket.data.user;
-    socket.join(`user:${userId}`); // salle personnelle : sert aux notifications (étape C)
+    socket.join(`user:${userId}`); // salle personnelle : reçoit les événements « notification »
 
     let envoyes = [];
     const tropRapide = () => {
@@ -90,6 +91,7 @@ module.exports = (io) => {
           created_at: doc.created_at
         };
         io.to(c.canal).emit('message', message);
+        notifierMentions({ contenu, acteurId: userId, pseudo, canal: c.canal, messageId: doc._id }); // F-20 : @pseudo
         reponse(ack, { ok: true, message });
       } catch (e) {
         console.error('[socket message]', e.message);
