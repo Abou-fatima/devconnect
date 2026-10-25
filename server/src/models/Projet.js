@@ -19,5 +19,9 @@ const projetSchema = new Schema({
 
 projetSchema.index({ stack: 1 });
 projetSchema.index({ 'membres.user_id': 1 });
+projetSchema.index({ created_at: -1 });
+projetSchema.index({ statut: 1, created_at: -1 });
+projetSchema.index({ porteur_id: 1, created_at: -1 });
+projetSchema.index({ nb_likes: -1 });
 
 module.exports = mongoose.model('Projet', projetSchema);

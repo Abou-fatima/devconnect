@@ -182,6 +182,22 @@ module.exports = {
         200: { description: 'Opération effectuée' },
       },
     },
+    delete: {
+      tags: ['Projets'],
+      summary: 'Retirer son like',
+      security: [{ bearerAuth: [] }],
+      parameters: [
+        {
+          in: 'path',
+          name: 'id',
+          required: true,
+          schema: { type: 'string' },
+        },
+      ],
+      responses: {
+        200: { description: 'Like retiré (ou aucun like à retirer)' },
+      },
+    },
   },
 
   '/api/projets/{id}/commentaires': {

@@ -24,7 +24,9 @@ export default function Profil() {
   if (etat === 'introuvable' || !u) return <p className="erreur">{t('profil.introuvable')}</p>;
 
   const estMoi = moi && u.id === moi.id;
-  const liens = u.profil?.liens || {};
+  // Sécurité : seuls les liens http(s) sont cliquables (jamais 'javascript:')
+  const sur = (url) => (/^https?:\/\//i.test(url || '') ? url : '');
+  const liens = Object.fromEntries(Object.entries(u.profil?.liens || {}).map(([k, v]) => [k, k === 'whatsapp' ? v : sur(v)]));
   const date = u.created_at ? new Date(u.created_at).toLocaleDateString(i18n.language) : '';
 
   return (

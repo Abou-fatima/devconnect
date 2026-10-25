@@ -9,7 +9,6 @@ const { notFound, errorHandler } = require('./middleware/error');
 
 const openapi = require('./docs/openapi.dev5');
 
-const openapi = require('./docs/openapi');
 const communication = require('./communication');
 communication.extendOpenapi(openapi); // documentation Swagger du module communication (avant swagger-ui)
 require('./docs/openapi.forum')(openapi); // documentation Swagger forum, classement, admin
@@ -36,9 +35,7 @@ app.use('/api/auth', require('./routes/auth'));
 app.use('/api/users', require('./routes/users'));
 app.use('/api/meta', require('./routes/meta'));
 
-// TODO (Dev 2) : app.use('/api/echanges', require('./routes/echanges'));
-// TODO (Dev 3) : app.use('/api/chat', ...);
-// TODO (Dev 3) : app.use('/api/chat', ...); app.use('/api/notifications', ...);
+// Dev 5 : projets et images
 app.use('/api/upload', require('./routes/upload'));
 app.use('/api/projets', require('./routes/projets'));
 
@@ -47,7 +44,6 @@ app.use('/api/echanges', require('./routes/echanges'));
 app.use('/api/classement', require('./routes/classement'));
 app.use('/api/admin', require('./routes/admin'));
 communication.mountRoutes(app);
-// TODO (Dev 5) : app.use('/api/projets', require('./routes/projets'));
 
 
 app.use(notFound);
