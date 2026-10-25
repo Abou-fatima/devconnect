@@ -3,7 +3,7 @@ const c = require('./common');
 const { NIVEAUX, OBJECTIFS } = require('../utils/constants');
 
 // Une chaîne vide efface le champ.
-const optionalUrl = z.string().trim().max(300).url('URL invalide').or(z.literal(''));
+const optionalUrl = c.urlHttp(300).or(z.literal(''));
 
 const updateProfile = z.object({
   pseudo: c.pseudo.optional(),

@@ -62,6 +62,10 @@ router.post(
   auth,
   upload.single('file'),
   asyncRoute(async (req, res) => {
+    if (!cloudinary.configured) {
+      throw new AppError(503, "Envoi d'images indisponible : variables CLOUDINARY_* absentes du .env");
+    }
+
     if (!req.file) {
       throw new AppError(400, 'Veuillez sélectionner une image.');
     }

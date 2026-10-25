@@ -12,6 +12,10 @@ const errorHandler = (err, _req, res, _next) => {
       details: err.issues.map((i) => ({ champ: i.path.join('.'), message: i.message }))
     });
   }
+  if (err && err.name === 'MulterError') {
+    const trop = err.code === 'LIMIT_FILE_SIZE';
+    return res.status(trop ? 413 : 400).json({ erreur: trop ? 'Fichier trop volumineux (5 Mo maximum)' : 'Envoi de fichier invalide' });
+  }
   if (err instanceof AppError) {
     return res.status(err.status).json({ erreur: err.message, details: err.details });
   }

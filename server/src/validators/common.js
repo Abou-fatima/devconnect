@@ -18,4 +18,8 @@ const ville = z.string().trim().min(1).max(60);
 const tags = (max) => z.array(z.string().trim().toLowerCase().min(1).max(30)).max(max)
   .transform((a) => [...new Set(a)]);
 
-module.exports = { pseudo, email, telephone, motDePasse, pays, ville, tags };
+// Les liens affichés dans les pages doivent être http(s) : 'javascript:...' est une URL valide pour zod mais dangereuse.
+const urlHttp = (max = 300) => z.string().trim().max(max).url('URL invalide')
+  .refine((u) => /^https?:\/\//i.test(u), 'L\'adresse doit commencer par http:// ou https://');
+
+module.exports = { urlHttp, pseudo, email, telephone, motDePasse, pays, ville, tags };
