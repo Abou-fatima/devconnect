@@ -10,8 +10,8 @@
     "start": "node src/index.js",
     "check": "node --check src/index.js && node --check src/app.js",
     "test:logic": "node --test tests/logic.test.js tests/forum.test.js tests/projets.test.js",
-    "test:communication": "node --test src/communication/tests/canaux.test.js",
-    "test": "node --test tests/logic.test.js tests/forum.test.js tests/projets.test.js src/communication/tests/canaux.test.js"
+    "test:communication": "node --test src/communication/tests/canaux.test.js src/communication/tests/notifier.test.js",
+    "test": "node --test tests/logic.test.js tests/forum.test.js tests/projets.test.js src/communication/tests/canaux.test.js src/communication/tests/notifier.test.js"
   },
   "dependencies": {
     "@socket.io/redis-adapter": "^8.3.0",
