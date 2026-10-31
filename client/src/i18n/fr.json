@@ -1,6 +1,6 @@
 {
   "app": { "nom": "DevConnect", "slogan": "La communauté des développeurs africains" },
-  "nav": { "accueil": "Accueil", "forum": "Forum", "devs": "Développeurs", "classement": "Classement", "profil": "Profil", "connexion": "Connexion", "inscription": "Inscription", "deconnexion": "Déconnexion" },
+  "nav": { "messages": "Messages", "accueil": "Accueil", "forum": "Forum", "devs": "Développeurs", "classement": "Classement", "profil": "Profil", "connexion": "Connexion", "inscription": "Inscription", "deconnexion": "Déconnexion" },
   "commun": { "chargement": "Chargement...", "enregistrer": "Enregistrer", "annuler": "Annuler", "precedent": "Précédent", "suivant": "Suivant", "aucun": "Aucun résultat", "erreur": "Une erreur est survenue", "hors_ligne": "Vous êtes hors ligne : les données affichées peuvent être anciennes.", "page": "Page {{page}} / {{pages}}", "bientot": "Bientôt disponible" },
   "accueil": { "titre": "Pose tes questions, montre tes projets, trouve ton équipe.", "texte": "DevConnect réunit les développeurs d'Afrique pour apprendre, collaborer et construire ensemble.", "cta_inscription": "Rejoindre la communauté", "cta_devs": "Trouver des développeurs" },
   "auth": {
@@ -20,5 +20,41 @@
   },
   "recherche": { "titre": "Trouver des développeurs", "q": "Rechercher un pseudo", "stack": "Technologie", "pays": "Pays (ex : GN)", "niveau": "Niveau", "tous": "Tous", "tri": "Trier par", "tri_reputation": "Réputation", "tri_recent": "Plus récents", "tri_pseudo": "Pseudo", "rechercher": "Rechercher", "resultats": "{{count}} développeur(s)" },
   "forum": { "titre": "Forum", "bientot": "Le forum arrive bientôt (API en cours de développement)." },
-  "classement": { "titre": "Classement par pays", "bientot": "Le classement arrive bientôt." }
+  "classement": { "titre": "Classement par pays", "bientot": "Le classement arrive bientôt." },
+  "chat": {
+    "titre": "Messages", "salons": "Salons", "pour_toi": "Pour toi", "recents": "Récents", "prives": "Conversations privées",
+    "prives_vide": "Aucune conversation pour l'instant.", "trouver_devs": "Trouver un développeur",
+    "type_salon": "Type de salon", "type_stack": "Technologie", "type_ville": "Ville", "rejoindre": "Rejoindre un salon", "rejoindre_btn": "Rejoindre",
+    "rejoindre_stack": "react, node…", "rejoindre_ville": "conakry…",
+    "salon_invalide": "Ce salon n'existe pas. Utilise des lettres, des chiffres et des tirets.",
+    "choisir_titre": "Choisis un salon", "choisir_texte": "Rejoins le salon de ta technologie ou de ta ville, ou écris à un développeur depuis son profil.",
+    "sous_stack": "Salon de la technologie, ouvert à tous", "sous_ville": "Salon de la ville, ouvert à tous", "sous_prive": "Conversation privée", "voir_profil": "Voir le profil",
+    "en_ligne": "En ligne", "connexion": "Connexion…", "retour": "Retour aux salons", "liste_messages": "Messages du salon",
+    "plus_anciens": "Voir les messages plus anciens", "reessayer": "Réessayer",
+    "vide_titre": "Aucun message pour l'instant", "vide_salon": "Lance la discussion dans {{salon}}.", "vide_prive": "Écris le premier message à {{pseudo}}.",
+    "aujourdhui": "Aujourd'hui", "toi": "Toi", "supprime": "Compte supprimé",
+    "placeholder": "Écrire dans {{salon}}", "hors_connexion": "Reconnexion en cours…", "envoyer": "Envoyer", "bloc_code": "Insérer un bloc de code",
+    "astuce": "Entrée pour envoyer, Maj+Entrée pour une nouvelle ligne. Entoure ton code de ``` pour l'afficher en bloc.",
+    "erreur_envoi": "Le message n'a pas été envoyé. Réessaie.", "erreur_delai": "Le serveur ne répond pas. Ton message n'a pas été envoyé, réessaie.",
+    "ecrit_un": "{{pseudo}} écrit…", "ecrit_deux": "{{a}} et {{b}} écrivent…", "ecrit_plusieurs": "Plusieurs personnes écrivent…",
+    "copier": "Copier", "copie": "Copié", "ecrire_a": "Écrire à {{pseudo}}"
+  },
+  "notif": {
+    "titre": "Notifications", "cloche": "Notifications", "cloche_non_lues": "Notifications, {{count}} non lue(s)", "generique": "Nouvelle notification", "non_lue": "Non lue",
+    "tout_lu": "Tout marquer comme lu", "voir_tout": "Voir toutes les notifications", "filtre": "Filtrer les notifications", "toutes": "Toutes", "non_lues": "Non lues ({{count}})",
+    "vide_titre": "Aucune notification", "vide": "Tu seras prévenu ici des réponses, mentions et candidatures.",
+    "tout_lu_titre": "Tout est lu", "tout_lu_texte": "Aucune notification en attente.",
+    "erreur": "Impossible de charger les notifications.", "plus": "Voir plus", "fermer": "Fermer",
+    "lieu_prive": "une conversation privée", "lieu_chat": "le chat",
+    "kinds": {
+      "reponse": "{{pseudo}} a répondu à ta question",
+      "reponse_acceptee": "{{pseudo}} a accepté ta réponse",
+      "vote": "{{pseudo}} a voté pour ta contribution",
+      "mention": "{{pseudo}} t'a mentionné dans {{lieu}}",
+      "candidature": "{{pseudo}} veut rejoindre ton projet",
+      "candidature_acceptee": "{{pseudo}} a accepté ta candidature",
+      "candidature_refusee": "{{pseudo}} a décliné ta candidature",
+      "mentorat": "{{pseudo}} t'a contacté pour du mentorat"
+    }
+  }
 }

@@ -1,6 +1,6 @@
 {
   "app": { "nom": "DevConnect", "slogan": "The African developer community" },
-  "nav": { "accueil": "Home", "forum": "Forum", "devs": "Developers", "classement": "Ranking", "profil": "Profile", "connexion": "Log in", "inscription": "Sign up", "deconnexion": "Log out" },
+  "nav": { "messages": "Messages", "accueil": "Home", "forum": "Forum", "devs": "Developers", "classement": "Ranking", "profil": "Profile", "connexion": "Log in", "inscription": "Sign up", "deconnexion": "Log out" },
   "commun": { "chargement": "Loading...", "enregistrer": "Save", "annuler": "Cancel", "precedent": "Previous", "suivant": "Next", "aucun": "No results", "erreur": "Something went wrong", "hors_ligne": "You are offline: the data shown may be outdated.", "page": "Page {{page}} / {{pages}}", "bientot": "Coming soon" },
   "accueil": { "titre": "Ask questions, showcase projects, find your team.", "texte": "DevConnect brings African developers together to learn, collaborate and build.", "cta_inscription": "Join the community", "cta_devs": "Find developers" },
   "auth": {
@@ -20,5 +20,41 @@
   },
   "recherche": { "titre": "Find developers", "q": "Search a username", "stack": "Technology", "pays": "Country (e.g. GN)", "niveau": "Level", "tous": "All", "tri": "Sort by", "tri_reputation": "Reputation", "tri_recent": "Newest", "tri_pseudo": "Username", "rechercher": "Search", "resultats": "{{count}} developer(s)" },
   "forum": { "titre": "Forum", "bientot": "The forum is coming soon (API under development)." },
-  "classement": { "titre": "Ranking by country", "bientot": "The ranking is coming soon." }
+  "classement": { "titre": "Ranking by country", "bientot": "The ranking is coming soon." },
+  "chat": {
+    "titre": "Messages", "salons": "Rooms", "pour_toi": "For you", "recents": "Recent", "prives": "Private conversations",
+    "prives_vide": "No conversations yet.", "trouver_devs": "Find a developer",
+    "type_salon": "Room type", "type_stack": "Technology", "type_ville": "City", "rejoindre": "Join a room", "rejoindre_btn": "Join",
+    "rejoindre_stack": "react, node…", "rejoindre_ville": "conakry…",
+    "salon_invalide": "This room doesn't exist. Use letters, numbers and hyphens.",
+    "choisir_titre": "Pick a room", "choisir_texte": "Join the room for your technology or your city, or message a developer from their profile.",
+    "sous_stack": "Technology room, open to everyone", "sous_ville": "City room, open to everyone", "sous_prive": "Private conversation", "voir_profil": "View profile",
+    "en_ligne": "Online", "connexion": "Connecting…", "retour": "Back to rooms", "liste_messages": "Room messages",
+    "plus_anciens": "Show older messages", "reessayer": "Try again",
+    "vide_titre": "No messages yet", "vide_salon": "Start the conversation in {{salon}}.", "vide_prive": "Send the first message to {{pseudo}}.",
+    "aujourdhui": "Today", "toi": "You", "supprime": "Deleted account",
+    "placeholder": "Write in {{salon}}", "hors_connexion": "Reconnecting…", "envoyer": "Send", "bloc_code": "Insert a code block",
+    "astuce": "Enter to send, Shift+Enter for a new line. Wrap your code in ``` to show it as a block.",
+    "erreur_envoi": "The message wasn't sent. Try again.", "erreur_delai": "The server isn't responding. Your message wasn't sent, try again.",
+    "ecrit_un": "{{pseudo}} is typing…", "ecrit_deux": "{{a}} and {{b}} are typing…", "ecrit_plusieurs": "Several people are typing…",
+    "copier": "Copy", "copie": "Copied", "ecrire_a": "Message {{pseudo}}"
+  },
+  "notif": {
+    "titre": "Notifications", "cloche": "Notifications", "cloche_non_lues": "Notifications, {{count}} unread", "generique": "New notification", "non_lue": "Unread",
+    "tout_lu": "Mark all as read", "voir_tout": "See all notifications", "filtre": "Filter notifications", "toutes": "All", "non_lues": "Unread ({{count}})",
+    "vide_titre": "No notifications", "vide": "You'll be notified here about replies, mentions and applications.",
+    "tout_lu_titre": "All caught up", "tout_lu_texte": "No notifications waiting.",
+    "erreur": "Couldn't load notifications.", "plus": "Show more", "fermer": "Close",
+    "lieu_prive": "a private conversation", "lieu_chat": "the chat",
+    "kinds": {
+      "reponse": "{{pseudo}} replied to your question",
+      "reponse_acceptee": "{{pseudo}} accepted your answer",
+      "vote": "{{pseudo}} upvoted your contribution",
+      "mention": "{{pseudo}} mentioned you in {{lieu}}",
+      "candidature": "{{pseudo}} wants to join your project",
+      "candidature_acceptee": "{{pseudo}} accepted your application",
+      "candidature_refusee": "{{pseudo}} declined your application",
+      "mentorat": "{{pseudo}} reached out about mentoring"
+    }
+  }
 }

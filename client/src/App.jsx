@@ -9,6 +9,8 @@ import Profil from './pages/Profil';
 import ProfilEdit from './pages/ProfilEdit';
 import Recherche from './pages/Recherche';
 import Bientot from './pages/Bientot';
+import Messages from './pages/Messages';
+import Notifications from './pages/Notifications';
 
 export default function App() {
   return (
@@ -25,6 +27,9 @@ export default function App() {
         {/* TODO Dev 2 (API) : brancher Forum, Question/:id, PoserQuestion, Classement */}
         <Route path="forum" element={<Bientot cle="forum" />} />
         <Route path="classement" element={<Bientot cle="classement" />} />
+        <Route path="messages" element={<ProtectedRoute><Messages /></ProtectedRoute>} />
+        <Route path="messages/:canal" element={<ProtectedRoute><Messages /></ProtectedRoute>} />
+        <Route path="notifications" element={<ProtectedRoute><Notifications /></ProtectedRoute>} />
         <Route path="*" element={<p className="py-10 text-center text-slate-500">404</p>} />
       </Route>
     </Routes>
