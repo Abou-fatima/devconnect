@@ -5,6 +5,9 @@ import Accueil from './pages/Accueil';
 import Connexion from './pages/Connexion';
 import Inscription from './pages/Inscription';
 import AuthCallback from './pages/AuthCallback';
+import Projets from './pages/Projets';
+import Projet from './pages/Projet';
+import ProjetForm from './pages/ProjetForm';
 import Profil from './pages/Profil';
 import ProfilEdit from './pages/ProfilEdit';
 import Recherche from './pages/Recherche';
@@ -30,6 +33,10 @@ export default function App() {
         <Route path="forum" element={<Forum />} />
         <Route path="forum/poser" element={<ProtectedRoute><PoserQuestion /></ProtectedRoute>} />
         <Route path="forum/questions/:id" element={<Question />} />
+        <Route path="projets" element={<Projets />} />
+        <Route path="projets/nouveau" element={<ProtectedRoute><ProjetForm /></ProtectedRoute>} />
+        <Route path="projets/:id" element={<Projet />} />
+        <Route path="projets/:id/modifier" element={<ProtectedRoute><ProjetForm /></ProtectedRoute>} />
         <Route path="classement" element={<Classement />} />
         <Route path="messages" element={<ProtectedRoute><Messages /></ProtectedRoute>} />
         <Route path="messages/:canal" element={<ProtectedRoute><Messages /></ProtectedRoute>} />

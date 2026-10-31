@@ -10,11 +10,13 @@ import useCompteur from '../hooks/useCompteur';
 import Avatar from '../components/Avatar';
 import Pays from '../components/Pays';
 import Reveal from '../components/Reveal';
+import ProjetCarte from '../components/ProjetCarte';
+import { idProjet } from '../lib/projets';
 
 const ETAPES = [
   { cle: 'question', icone: '💬', lien: '/forum/poser' },
-  { cle: 'projet', icone: '🚀', lien: '/developpeurs' },
-  { cle: 'equipe', icone: '🤝', lien: '/developpeurs' },
+  { cle: 'projet', icone: '🚀', lien: '/projets/nouveau' },
+  { cle: 'equipe', icone: '🤝', lien: '/projets' },
   { cle: 'reputation', icone: '⭐', lien: '/classement' }
 ];
 
@@ -163,22 +165,9 @@ export default function Accueil() {
       </div>
 
       {/* Projets récents */}
-      <Bloc titre={t('accueil.projets_titre')} lien="/developpeurs" lienTexte={t('accueil.tout_voir')}>
+      <Bloc titre={t('accueil.projets_titre')} lien="/projets" lienTexte={t('accueil.tout_voir')}>
         {chargement ? <Squelette n={2} /> : !d.projets?.data?.length ? <Vide texte={t('accueil.projets_vide')} /> : (
-          <ul className="stagger grid gap-3 md:grid-cols-3">
-            {d.projets.data.map((p) => (
-              <li key={p._id} className="lift rounded-lg border border-slate-200 p-3">
-                <div className="flex items-start justify-between gap-2">
-                  <h3 className="font-semibold leading-snug">{p.titre}</h3>
-                  <span className="shrink-0 rounded-full bg-slate-100 px-2 py-0.5 text-xs text-slate-700">{t(`accueil.projet_statut.${p.statut}`, { defaultValue: p.statut })}</span>
-                </div>
-                {p.description && <p className="mt-1 line-clamp-2 text-sm text-slate-600">{p.description}</p>}
-                <div className="mt-2 flex flex-wrap gap-1">{(p.stack || []).slice(0, 4).map((s) => <span key={s} className="rounded bg-brand/10 px-1.5 py-0.5 text-xs text-brand">{s}</span>)}</div>
-                {p.roles_recherches?.length > 0 && <p className="mt-2 text-xs text-amber-800">🔎 {t('accueil.cherche')} : {p.roles_recherches.slice(0, 3).join(', ')}</p>}
-                {p.porteur_id?._id && <p className="mt-2 text-xs text-slate-500">{t('accueil.par')} <Link to={`/developpeurs/${p.porteur_id._id}`} className="text-brand hover:underline">{p.porteur_id.pseudo}</Link></p>}
-              </li>
-            ))}
-          </ul>
+          <ul className="stagger grid gap-3 md:grid-cols-3">{d.projets.data.map((p) => <li key={idProjet(p)}><ProjetCarte p={p} /></li>)}</ul>
         )}
       </Bloc>
 

@@ -56,7 +56,7 @@ export default function Conversation({ canal, onRetour, onNom }) {
       onNom?.(canal, u.pseudo);
     }).catch(() => {});
     return () => { actif = false; };
-  }, [autreId, canal]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [autreId, canal]); 
 
   // Historique (page 1) à chaque changement de salon.
   const chargerHistorique = useCallback(() => {
@@ -76,7 +76,7 @@ export default function Conversation({ canal, onRetour, onNom }) {
     setMessages([]); setTexte(''); setErreurEnvoi(''); setErreurSalon(''); setEcrivent({});
     chargerHistorique();
     if (infos && infos.type !== 'prive') ajouterRecent(canal);
-  }, [canal]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [canal]); 
 
   // Rejoindre le salon en temps réel (et à chaque reconnexion).
   useEffect(() => {
@@ -152,7 +152,7 @@ export default function Conversation({ canal, onRetour, onNom }) {
 
   const signalerFrappe = (actif) => {
     if (!socket || !connecte) return;
-    if (actif === frappe.current.actif && actif) return; // déjà signalé
+    if (actif === frappe.current.actif && actif) return; 
     frappe.current.actif = actif;
     socket.emit('typing', { canal, actif });
   };

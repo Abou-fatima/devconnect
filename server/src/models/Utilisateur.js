@@ -4,8 +4,8 @@ const { NIVEAUX, ROLES } = require('../utils/constants');
 const utilisateurSchema = new mongoose.Schema({
   pseudo: { type: String, required: true, trim: true },
   email: { type: String, lowercase: true, trim: true },
-  telephone: { type: String, trim: true }, // format international : +224XXXXXXXXX
-  mot_de_passe_hash: { type: String, default: null }, // null si compte créé via OAuth / OTP
+  telephone: { type: String, trim: true }, 
+  mot_de_passe_hash: { type: String, default: null }, 
   github_id: String,
   role: { type: String, enum: ROLES, default: 'dev' },
   profil: {

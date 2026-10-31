@@ -20,6 +20,7 @@ export default function Layout() {
   const items = [
     { to: '/forum', label: t('nav.forum'), icon: '💬' },
     { to: '/developpeurs', label: t('nav.devs'), icon: '👥' },
+    { to: '/projets', label: t('projets.nav'), icon: '🚀' },
     { to: '/classement', label: t('nav.classement'), icon: '🏆' },
     ...(user ? [{ to: '/messages', label: t('nav.messages'), icon: '✉️' }] : []),
     user ? { to: '/profil', label: t('nav.profil'), icon: '👤' } : { to: '/connexion', label: t('nav.connexion'), icon: '🔑' }
