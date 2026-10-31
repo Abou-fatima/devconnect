@@ -3,6 +3,8 @@ import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
 import useOnline from '../hooks/useOnline';
 import LangSwitch from './LangSwitch';
+import NotificationBell from './NotificationBell';
+import NotificationToast from './NotificationToast';
 
 const lien = ({ isActive }) => `px-3 py-2 rounded-lg text-sm font-medium ${isActive ? 'bg-white/20 text-white' : 'text-white/80 hover:text-white'}`;
 
@@ -18,6 +20,7 @@ export default function Layout() {
     { to: '/forum', label: t('nav.forum'), icon: '💬' },
     { to: '/developpeurs', label: t('nav.devs'), icon: '👥' },
     { to: '/classement', label: t('nav.classement'), icon: '🏆' },
+    ...(user ? [{ to: '/messages', label: t('nav.messages'), icon: '✉️' }] : []),
     user ? { to: '/profil', label: t('nav.profil'), icon: '👤' } : { to: '/connexion', label: t('nav.connexion'), icon: '🔑' }
   ];
 
@@ -31,7 +34,10 @@ export default function Layout() {
             {user && <button onClick={sortir} className="px-3 py-2 text-sm text-white/80 hover:text-white">{t('nav.deconnexion')}</button>}
             {!user && <NavLink to="/inscription" className={lien}>{t('nav.inscription')}</NavLink>}
           </nav>
-          <LangSwitch />
+          <div className="flex items-center gap-1">
+            {user && <NotificationBell />}
+            <LangSwitch />
+          </div>
         </div>
         {!online && <div className="bg-accent px-4 py-1 text-center text-sm text-slate-900">{t('commun.hors_ligne')}</div>}
       </header>
@@ -41,13 +47,14 @@ export default function Layout() {
       </main>
 
       {/* Navigation basse, mobile uniquement (mobile-first) */}
-      <nav className="fixed inset-x-0 bottom-0 z-20 grid grid-cols-4 border-t border-slate-200 bg-white md:hidden">
+      <nav style={{ gridTemplateColumns: `repeat(${items.length}, minmax(0, 1fr))` }} className="fixed inset-x-0 bottom-0 z-20 grid border-t border-slate-200 bg-white md:hidden">
         {items.map((i) => (
           <NavLink key={i.to} to={i.to} className={({ isActive }) => `flex flex-col items-center py-2 text-xs ${isActive ? 'text-brand font-semibold' : 'text-slate-500'}`}>
             <span className="text-lg" aria-hidden>{i.icon}</span>{i.label}
           </NavLink>
         ))}
       </nav>
+      <NotificationToast />
     </div>
   );
 }

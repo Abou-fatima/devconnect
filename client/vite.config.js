@@ -24,7 +24,7 @@ export default defineConfig({
       },
       workbox: {
         navigateFallback: '/index.html',
-        navigateFallbackDenylist: [/^\/api/, /^\/socket\.io/],
+        navigateFallbackDenylist: [/^\/api/, /^\/socket\.io/, /^\/uploads/],
         runtimeCaching: [
           {
             // F-42 : lecture hors-ligne des contenus déjà consultés
@@ -40,6 +40,7 @@ export default defineConfig({
     port: 5173,
     proxy: {
       '/api': 'http://localhost:4000',
+      '/uploads': 'http://localhost:4000',
       '/socket.io': { target: 'http://localhost:4000', ws: true }
     }
   }

@@ -47,6 +47,7 @@ $rb = Call POST "/api/auth/register" @{ pseudo = "forumB$n"; email = "forumB$n@t
 Check "register A" $ra.status 201
 Check "register B" $rb.status 201
 $ta = $ra.json.token; $tb = $rb.json.token
+$idA = $ra.json.utilisateur.id
 $idB = $rb.json.utilisateur.id
 
 Write-Host "== Poser une question"
@@ -109,6 +110,24 @@ Check "reponse marquee acceptee" $r.json.reponses[0].acceptee $true
 Check "mon vote visible avec token" $r.json.reponses[0].mon_vote 1
 Check "reputation de B : +15" (Call GET "/api/users/$idB").json.utilisateur.reputation 25
 Check "filtre statut resolu" (Call GET "/api/echanges/posts?tag=hooks$n&statut=resolu").json.total 1
+
+Write-Host ""
+Write-Host "--- Notifications du forum (F-20) ---"
+# A = auteur de la question, B = auteur de la reponse
+$nA = @((Call GET "/api/notifications?limit=50" $null $ta).json.notifications)
+$nB = @((Call GET "/api/notifications?limit=50" $null $tb).json.notifications)
+Check "A prevenu : reponse recue" (@($nA | Where-Object { $_.kind -eq "reponse" }).Count) 1
+Check "A prevenu : vote recu (une seule fois malgre les revotes)" (@($nA | Where-Object { $_.kind -eq "vote" }).Count) 1
+Check "la notification pointe vers la question" ((@($nA | Where-Object { $_.kind -eq "reponse" })[0]).sujet.id) $postId
+Check "la notification nomme l auteur de l action" ((@($nA | Where-Object { $_.kind -eq "reponse" })[0]).acteur.id) $idB
+Check "B prevenu : reponse acceptee" (@($nB | Where-Object { $_.kind -eq "reponse_acceptee" }).Count) 1
+Check "B prevenu : vote sur sa reponse" (@($nB | Where-Object { $_.kind -eq "vote" }).Count) 1
+Check "personne n est prevenu de ses propres actions" (@($nA | Where-Object { $_.acteur.id -eq $idA }).Count) 0
+$avant = (Call GET "/api/notifications?limit=1" $null $ta).json.non_lues
+$premiere = @($nA | Where-Object { -not $_.lue })[0]
+Check "marquer comme lue" (Call PUT "/api/notifications/$($premiere.id)/lue" $null $ta).status 200
+Check "compteur de non lues diminue" ($avant - (Call GET "/api/notifications?limit=1" $null $ta).json.non_lues) 1
+Check "B ne peut pas lire les notifications de A" (Call PUT "/api/notifications/$($premiere.id)/lue" $null $tb).status 404
 
 Write-Host "== Tags, signalement, suivi"
 $r = Call GET "/api/echanges/tags?q=hooks$n"

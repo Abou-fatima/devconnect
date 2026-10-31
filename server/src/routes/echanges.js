@@ -9,6 +9,7 @@ const v = require('../validators/echanges');
 const reputation = require('../services/reputation');
 const { BAREME, effetVote } = require('../services/bareme');
 const { AUTEUR_FIELDS, formater, supprimerEchange } = require('../services/echanges');
+const { notifierForum } = require('../services/notifForum');
 
 const router = express.Router();
 const asyncRoute = (fn) => (req, res, next) => Promise.resolve(fn(req, res, next)).catch(next);
@@ -100,7 +101,7 @@ router.post('/posts/:id/reponses', idValide, auth, ecritureLimiter, asyncRoute(a
     $set: { 'metadata.derniere_activite': new Date() },
     $addToSet: { 'metadata.suiveurs': oid(req.userId) }
   });
-  // TODO (Dev 3) : notifier l'auteur du post et les suiveurs quand le service de notifications sera disponible.
+  await notifierForum({ kind: 'reponse', destinataireId: post.auteur_id, acteur: req.user, sujet: { type: 'post', id: post._id } });
   const doc = await Echange.findById(rep._id).populate('auteur_id', AUTEUR_FIELDS).lean();
   res.status(201).json({ reponse: formater(doc, { votes: new Map() }) });
 }));
@@ -171,6 +172,11 @@ router.post('/:id/vote', idValide, auth, ecritureLimiter, asyncRoute(async (req,
   const effet = effetVote(ancien, nouveau, cible.type);
   const maj = await Echange.findByIdAndUpdate(cible._id, { $inc: { nb_votes: effet.delta_votes } }, { new: true }).select('nb_votes');
   await reputation.changer(cible.auteur_id, effet.delta_reputation);
+  // On prévient l'auteur d'un vote positif (pas d'un vote négatif ni d'un retrait), une seule fois par personne et par question.
+  if (nouveau === 1) {
+    const postId = cible.type === 'post' ? cible._id : cible.parent_id;
+    await notifierForum({ kind: 'vote', destinataireId: cible.auteur_id, acteur: req.user, sujet: { type: 'post', id: postId }, unique: true });
+  }
   res.json({ nb_votes: maj.nb_votes, mon_vote: nouveau });
 }));
 
@@ -189,6 +195,7 @@ router.post('/reponses/:id/accepter', idValide, auth, asyncRoute(async (req, res
   await Echange.updateOne({ _id: rep._id }, { $set: { 'metadata.acceptee': true } });
   await Echange.updateOne({ _id: post._id }, { $set: { 'metadata.reponse_acceptee_id': rep._id, 'metadata.statut': 'resolu', 'metadata.derniere_activite': new Date() } });
   if (String(rep.auteur_id) !== req.userId) await reputation.changer(rep.auteur_id, BAREME.reponse_acceptee, ['resolveur']);
+  await notifierForum({ kind: 'reponse_acceptee', destinataireId: rep.auteur_id, acteur: req.user, sujet: { type: 'post', id: post._id } });
   res.json({ ok: true, reponse_acceptee_id: String(rep._id) });
 }));
 

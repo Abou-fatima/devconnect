@@ -7,7 +7,7 @@ const Projet = require('../models/Projet');
 const Echange = require('../models/Echange');
 const Depot = require('../models/Depot');
 const AppError = require('../utils/AppError');
-const cloudinary = require('../config/cloudinary');
+const stockage = require('../services/stockage');
 const { auth } = require('../middleware/auth');
 const { ecritureLimiter } = require('../middleware/rateLimit');
 
@@ -320,12 +320,9 @@ router.delete('/:id', auth, asyncRoute(async (req, res) => {
   const projet = await trouverProjet(req.params.id);
   verifierProprietaire(projet, req.userId);
 
-  // Supprime aussi ce qui dépend du projet : commentaires, likes et images (y compris sur Cloudinary).
+  // Supprime aussi ce qui dépend du projet : commentaires, likes et images (fichiers du serveur ou de Cloudinary).
   const depots = await Depot.find({ cible_type: 'projet', cible_id: projet._id }).lean();
-  if (cloudinary.configured) {
-    await Promise.all(depots.filter((d) => d.metadata && d.metadata.public_id)
-      .map((d) => cloudinary.uploader.destroy(d.metadata.public_id).catch(() => {})));
-  }
+  await Promise.all(depots.map((d) => stockage.supprimer(d)));
   await Depot.deleteMany({ cible_type: 'projet', cible_id: projet._id });
   await Echange.deleteMany({ cible_type: 'projet', cible_id: projet._id });
   await projet.deleteOne();

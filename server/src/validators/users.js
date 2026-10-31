@@ -4,6 +4,7 @@ const { NIVEAUX, OBJECTIFS } = require('../utils/constants');
 
 // Une chaîne vide efface le champ.
 const optionalUrl = c.urlHttp(300).or(z.literal(''));
+const optionalPhoto = c.urlHttpOuFichier(300).or(z.literal(''));
 
 const updateProfile = z.object({
   pseudo: c.pseudo.optional(),
@@ -13,7 +14,7 @@ const updateProfile = z.object({
   objectifs: z.array(z.enum(OBJECTIFS)).max(OBJECTIFS.length).transform((a) => [...new Set(a)]).optional(),
   profil: z.object({
     bio: z.string().trim().max(500).optional(),
-    photo: optionalUrl.optional(),
+    photo: optionalPhoto.optional(),
     niveau: z.enum(NIVEAUX).optional(),
     liens: z.object({
       github: optionalUrl.optional(),

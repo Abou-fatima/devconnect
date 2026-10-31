@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { getUser } from '../services/users';
 import { useAuth } from '../context/AuthContext';
 import Avatar from '../components/Avatar';
+import { canalPrive } from '../lib/canaux';
 
 // /profil → mon profil ; /developpeurs/:id → profil public
 export default function Profil() {
@@ -24,6 +25,7 @@ export default function Profil() {
   if (etat === 'introuvable' || !u) return <p className="erreur">{t('profil.introuvable')}</p>;
 
   const estMoi = moi && u.id === moi.id;
+  const canalMessage = moi && !estMoi ? canalPrive(moi.id, u.id) : null;
   // Sécurité : seuls les liens http(s) sont cliquables (jamais 'javascript:')
   const sur = (url) => (/^https?:\/\//i.test(url || '') ? url : '');
   const liens = Object.fromEntries(Object.entries(u.profil?.liens || {}).map(([k, v]) => [k, k === 'whatsapp' ? v : sur(v)]));
@@ -64,6 +66,7 @@ export default function Profil() {
       )}
 
       <p className="text-center text-xs text-slate-400">{t('profil.membre_depuis', { date })}</p>
+      {canalMessage && <div className="text-center"><Link to={`/messages/${encodeURIComponent(canalMessage)}`} className="btn">{t('chat.ecrire_a', { pseudo: u.pseudo })}</Link></div>}
       {estMoi && <div className="text-center"><Link to="/profil/modifier" className="btn">{t('profil.modifier')}</Link></div>}
     </div>
   );
