@@ -22,4 +22,11 @@ const tags = (max) => z.array(z.string().trim().toLowerCase().min(1).max(30)).ma
 const urlHttp = (max = 300) => z.string().trim().max(max).url('URL invalide')
   .refine((u) => /^https?:\/\//i.test(u), 'L\'adresse doit commencer par http:// ou https://');
 
-module.exports = { urlHttp, pseudo, email, telephone, motDePasse, pays, ville, tags };
+// Une adresse http(s) OU un fichier envoyé chez nous (/uploads/images/xxx.webp). Jamais de '..' ni de 'javascript:'.
+const FICHIER_RE = /^\/uploads\/[\w.-]+(\/[\w.-]+)*$/;
+const urlHttpOuFichier = (max = 300) => z.string().trim().max(max).refine((u) => {
+  if (FICHIER_RE.test(u)) return !u.split('/').some((p) => p === '..' || p === '.');
+  return /^https?:\/\//i.test(u) && z.string().url().safeParse(u).success;
+}, 'Adresse invalide : http(s):// ou un fichier envoyé (/uploads/...)');
+
+module.exports = { urlHttpOuFichier, urlHttp, pseudo, email, telephone, motDePasse, pays, ville, tags };

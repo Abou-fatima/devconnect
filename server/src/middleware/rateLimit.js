@@ -19,4 +19,7 @@ const apiLimiter = make(1, 300, 'Trop de requêtes');
 // Écriture (posts, réponses, commentaires, votes) : 60 par 10 min et par IP
 const ecritureLimiter = make(10, 60, 'Trop d\'actions, ralentissez');
 
-module.exports = { authLimiter, otpLimiter, apiLimiter, ecritureLimiter };
+// Envoi d'images (traitement lourd pour le serveur) : 30 par 10 min et par IP
+const uploadLimiter = make(10, 30, 'Trop d\'images envoyées, patientez quelques minutes');
+
+module.exports = { authLimiter, otpLimiter, apiLimiter, ecritureLimiter, uploadLimiter };

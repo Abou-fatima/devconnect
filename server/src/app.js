@@ -28,6 +28,10 @@ app.use(express.json({ limit: '1mb' }));
 
 app.get('/api/health', (_req, res) => res.json({ ok: true }));
 
+// Images envoyées (WebP). Noms uniques : cache long. Autorisées depuis le frontend (autre origine en développement).
+app.use('/uploads', (_req, res, next) => { res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin'); next(); },
+  express.static(env.uploadsDir, { maxAge: '30d', immutable: true, index: false, dotfiles: 'deny' }));
+
 app.use('/api', apiLimiter);
 
 // Dev 1

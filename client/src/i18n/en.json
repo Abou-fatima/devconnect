@@ -27,7 +27,7 @@
     "titre": "My profile",
     "modifier": "Edit my profile",
     "bio": "Bio",
-    "photo": "Photo URL",
+    "photo": "Profile photo",
     "niveau": "Level",
     "stacks": "Technologies (comma separated)",
     "objectifs": "Goals",
@@ -54,7 +54,14 @@
       "offrir_mentorat": "Offer mentoring",
       "emploi": "Find a job",
       "projet_perso": "Side project"
-    }
+    },
+    "photo_choisir": "Choose a photo",
+    "photo_changer": "Change photo",
+    "photo_retirer": "Remove",
+    "photo_envoi": "Uploading…",
+    "photo_aide": "From your phone or computer. It is resized automatically.",
+    "photo_erreur_type": "This file isn't an image. Pick a photo (JPEG, PNG or WebP).",
+    "photo_erreur_taille": "This image is too large (5 MB max) and couldn't be resized. Try another photo."
   },
   "recherche": {"titre": "Find developers", "q": "Search a username", "stack": "Technology", "pays": "Country (e.g. GN)", "niveau": "Level", "tous": "All", "tri": "Sort by", "tri_reputation": "Reputation", "tri_recent": "Newest", "tri_pseudo": "Username", "rechercher": "Search", "resultats": "{{count}} developer(s)"},
   "forum": {
