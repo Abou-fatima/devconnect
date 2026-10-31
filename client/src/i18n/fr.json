@@ -152,6 +152,7 @@
     "photo_aide": "Depuis ton téléphone ou ton ordinateur. Elle est réduite automatiquement.",
     "photo_erreur_type": "Ce fichier n'est pas une image. Choisis une photo (JPEG, PNG ou WebP).",
     "photo_erreur_taille": "Cette image est trop lourde (5 Mo maximum) et n'a pas pu être réduite. Essaie une autre photo."
+
   },
   "recherche": {
     "titre": "Trouver des développeurs",
@@ -166,6 +167,7 @@
     "tri_pseudo": "Pseudo",
     "rechercher": "Rechercher",
     "resultats": "{{count}} développeur(s)"
+
   },
   "forum": {
     "titre": "Forum",
