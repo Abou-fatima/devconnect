@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { register, githubUrl } from '../services/auth';
+import { register } from '../services/auth';
+import BoutonGithub from '../components/BoutonGithub';
 import { messageErreur } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import Field from '../components/Field';
@@ -33,7 +34,7 @@ export default function Inscription() {
   };
 
   return (
-    <div className="mx-auto max-w-md">
+    <div className="mx-auto max-w-md"><div className="anim-scale">
       <h1 className="mb-4 text-2xl font-bold">{t('auth.titre_inscription')}</h1>
       <form onSubmit={submit} className="card space-y-4">
         {erreur && <div className="erreur" role="alert">{erreur}</div>}
@@ -47,9 +48,9 @@ export default function Inscription() {
         </div>
         <button className="btn w-full" disabled={envoi}>{t('auth.creer_compte')}</button>
         <div className="text-center text-sm text-slate-400">{t('auth.ou')}</div>
-        <a href={githubUrl} className="btn-outline w-full">{t('auth.github')}</a>
+        <BoutonGithub />
       </form>
       <p className="mt-4 text-center text-sm">{t('auth.deja_compte')} <Link to="/connexion" className="text-brand-light underline">{t('nav.connexion')}</Link></p>
-    </div>
+    </div></div>
   );
 }

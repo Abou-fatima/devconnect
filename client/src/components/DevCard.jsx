@@ -3,7 +3,7 @@ import Avatar from './Avatar';
 
 export default function DevCard({ u }) {
   return (
-    <Link to={`/developpeurs/${u.id}`} className="card flex items-start gap-3 transition hover:shadow-md">
+    <Link to={`/developpeurs/${u.id}`} className="card lift flex items-start gap-3">
       <Avatar user={u} />
       <div className="min-w-0 flex-1">
         <div className="flex items-center justify-between gap-2">

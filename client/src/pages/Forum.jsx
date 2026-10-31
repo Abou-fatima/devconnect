@@ -14,7 +14,7 @@ function Carte({ q }) {
   const { t, i18n } = useTranslation();
   const resolue = q.statut === 'resolu';
   return (
-    <div className="card relative !p-0 transition-shadow hover:shadow-md">
+    <div className="card lift relative !p-0">
       <div className="flex gap-3 p-4">
         <div className="hidden w-14 shrink-0 flex-col items-center gap-2 text-center sm:flex" aria-hidden>
           <div className={q.nb_votes > 0 ? 'text-brand' : 'text-slate-500'}><div className="text-lg font-bold leading-none">{q.nb_votes}</div><div className="text-[11px]">{t('forum.votes')}</div></div>
@@ -134,7 +134,7 @@ export default function Forum() {
 
       {etat === 'chargement' && (
         <ul className="space-y-3" aria-busy="true" aria-label={t('commun.chargement')}>
-          {[0, 1, 2].map((i) => <li key={i} className="card h-28 motion-safe:animate-pulse"><div className="h-4 w-2/3 rounded bg-slate-200" /><div className="mt-3 h-3 w-full rounded bg-slate-100" /><div className="mt-2 h-3 w-1/2 rounded bg-slate-100" /></li>)}
+          {[0, 1, 2].map((i) => <li key={i} className="card h-28"><div className="shimmer h-4 w-2/3 rounded" /><div className="shimmer mt-3 h-3 w-full rounded" /><div className="shimmer mt-2 h-3 w-1/2 rounded" /></li>)}
         </ul>
       )}
       {etat === 'erreur' && (
@@ -150,7 +150,7 @@ export default function Forum() {
           </div>
         </div>
       )}
-      {etat === 'ok' && items.length > 0 && <ul className="space-y-3">{items.map((q) => <li key={q.id}><Carte q={q} /></li>)}</ul>}
+      {etat === 'ok' && items.length > 0 && <ul className="stagger space-y-3">{items.map((q) => <li key={q.id}><Carte q={q} /></li>)}</ul>}
       {etat === 'ok' && page < pages && (
         <div className="mt-5 text-center"><button type="button" onClick={voirPlus} disabled={plus} className="btn-outline">{plus ? t('commun.chargement') : t('forum.voir_plus')}</button></div>
       )}

@@ -15,3 +15,76 @@ body { @apply bg-slate-50 text-slate-900 antialiased; }
 .erreur { @apply rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700; }
 
 @keyframes toast-in { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: none; } }
+
+/* ------------------------------------------------------------------ */
+/* Animations : sobres, rapides (150-500 ms), jamais bloquantes.       */
+/* Tout est coupé pour les personnes qui demandent moins de mouvement. */
+/* ------------------------------------------------------------------ */
+@theme {
+  --ease-sortie: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes fade-up { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+@keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes scale-in { from { opacity: 0; transform: scale(0.94); } to { opacity: 1; transform: none; } }
+@keyframes slide-down { from { opacity: 0; transform: translateY(-100%); } to { opacity: 1; transform: none; } }
+@keyframes pop { 0% { transform: scale(1); } 40% { transform: scale(1.35); } 100% { transform: scale(1); } }
+@keyframes ring { 0%, 100% { transform: rotate(0); } 15% { transform: rotate(14deg); } 30% { transform: rotate(-12deg); } 45% { transform: rotate(8deg); } 60% { transform: rotate(-6deg); } 75% { transform: rotate(3deg); } }
+@keyframes msg-in { from { opacity: 0; transform: translateY(8px) scale(0.97); } to { opacity: 1; transform: none; } }
+@keyframes barre { 0% { transform: scaleX(0); opacity: 1; } 70% { transform: scaleX(0.9); opacity: 1; } 100% { transform: scaleX(1); opacity: 0; } }
+@keyframes flotte { 0%, 100% { transform: translate3d(0, 0, 0); } 50% { transform: translate3d(24px, -18px, 0); } }
+@keyframes shimmer { from { background-position: 200% 0; } to { background-position: -200% 0; } }
+@keyframes surligne { 0% { box-shadow: 0 0 0 0 rgb(16 185 129 / 0.45); } 100% { box-shadow: 0 0 0 14px rgb(16 185 129 / 0); } }
+
+/* Entrée de page : à chaque changement de route */
+.page-enter { animation: fade-up 0.45s var(--ease-sortie) backwards; }
+
+/* Liste qui apparaît en cascade (les enfants entrent l'un après l'autre) */
+.stagger > * { animation: fade-up 0.45s var(--ease-sortie) backwards; }
+.stagger > *:nth-child(1) { animation-delay: 0.04s; } .stagger > *:nth-child(2) { animation-delay: 0.09s; }
+.stagger > *:nth-child(3) { animation-delay: 0.14s; } .stagger > *:nth-child(4) { animation-delay: 0.19s; }
+.stagger > *:nth-child(5) { animation-delay: 0.24s; } .stagger > *:nth-child(6) { animation-delay: 0.29s; }
+.stagger > *:nth-child(7) { animation-delay: 0.34s; } .stagger > *:nth-child(8) { animation-delay: 0.39s; }
+.stagger > *:nth-child(n+9) { animation-delay: 0.42s; }
+
+/* Apparition au défilement (composant Reveal) */
+.reveal { opacity: 0; transform: translateY(22px); transition: opacity 0.6s var(--ease-sortie), transform 0.6s var(--ease-sortie); transition-delay: var(--delai, 0s); }
+.reveal.reveal-vu { opacity: 1; transform: none; }
+
+/* Interactions */
+.btn, .btn-outline { transition: transform 0.15s var(--ease-sortie), box-shadow 0.2s, background-color 0.2s, color 0.2s; }
+.btn:not(:disabled):hover { transform: translateY(-1px); box-shadow: 0 6px 14px -6px rgb(31 56 100 / 0.55); }
+.btn-outline:hover { transform: translateY(-1px); box-shadow: 0 4px 10px -6px rgb(15 23 42 / 0.35); }
+.btn:not(:disabled):active, .btn-outline:active { transform: translateY(0) scale(0.97); box-shadow: none; }
+.lift { transition: transform 0.25s var(--ease-sortie), box-shadow 0.25s; }
+.lift:hover { transform: translateY(-3px); box-shadow: 0 14px 28px -14px rgb(15 23 42 / 0.3); }
+.input { transition: border-color 0.2s, box-shadow 0.2s; }
+
+/* Menu du haut : trait qui se dessine sous le lien actif ou survolé */
+.nav-lien { position: relative; }
+.nav-lien::after { content: ""; position: absolute; left: 0.75rem; right: 0.75rem; bottom: 0.2rem; height: 2px; border-radius: 2px; background: var(--color-accent); transform: scaleX(0); transform-origin: left; transition: transform 0.3s var(--ease-sortie); }
+.nav-lien:hover::after, .nav-lien.nav-actif::after { transform: scaleX(1); }
+.en-tete { animation: slide-down 0.5s var(--ease-sortie) backwards; }
+.nav-bas-actif > span:first-child { animation: pop 0.35s var(--ease-sortie); }
+
+/* Barre de progression en haut lors d'un changement de page */
+.barre-route { position: fixed; inset: 0 0 auto 0; z-index: 70; height: 3px; transform-origin: left; background: var(--color-accent); pointer-events: none; animation: barre 0.8s var(--ease-sortie) both; }
+
+/* Petits retours visuels */
+.anim-pop { animation: pop 0.3s var(--ease-sortie); }
+.anim-scale { animation: scale-in 0.25s var(--ease-sortie) backwards; }
+.anim-fade { animation: fade-in 0.3s ease-out backwards; }
+.anim-ring { animation: ring 0.9s ease-in-out; transform-origin: 50% 0; }
+.anim-msg { animation: msg-in 0.22s var(--ease-sortie) backwards; }
+.anim-surligne { animation: surligne 1.4s ease-out 0.3s 2; }
+
+/* Chargement : bloc gris avec reflet qui passe */
+.shimmer { background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%); background-size: 200% 100%; animation: shimmer 1.6s linear infinite; }
+
+/* Bandeau d'accueil : formes douces qui flottent */
+.blob { position: absolute; border-radius: 9999px; filter: blur(48px); opacity: 0.35; pointer-events: none; animation: flotte 9s ease-in-out infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; animation-delay: 0s !important; transition-duration: 0.01ms !important; transition-delay: 0s !important; scroll-behavior: auto !important; }
+  .reveal { opacity: 1; transform: none; }
+}

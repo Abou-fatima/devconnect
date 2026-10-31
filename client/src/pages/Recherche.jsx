@@ -62,7 +62,7 @@ export default function Recherche() {
       {res && (
         <>
           <p className="mb-2 text-sm text-slate-500">{t('recherche.resultats', { count: res.total })}</p>
-          {res.data.length === 0 ? <p>{t('commun.aucun')}</p> : <div className="grid gap-3 md:grid-cols-2">{res.data.map((u) => <DevCard key={u.id} u={u} />)}</div>}
+          {res.data.length === 0 ? <p>{t('commun.aucun')}</p> : <div className="stagger grid gap-3 md:grid-cols-2">{res.data.map((u) => <DevCard key={u.id} u={u} />)}</div>}
           {res.pages > 1 && (
             <div className="mt-6 flex items-center justify-center gap-3">
               <button className="btn-outline" disabled={page <= 1} onClick={() => allerA(page - 1)}>{t('commun.precedent')}</button>

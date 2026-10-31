@@ -222,7 +222,7 @@ export default function Conversation({ canal, onRetour, onNom }) {
     const debutGroupe = !prec || prec.auteur?.id !== m.auteur?.id || !memeJour(prec.created_at, m.created_at) || new Date(m.created_at) - new Date(prec.created_at) > GROUPE_MS;
     const moi = m.auteur?.id === user?.id;
     lignes.push(
-      <div key={m.id} className={`flex flex-col ${moi ? 'items-end' : 'items-start'} ${debutGroupe ? 'mt-3' : 'mt-0.5'}`}>
+      <div key={m.id} className={`anim-msg flex flex-col ${moi ? 'items-end' : 'items-start'} ${debutGroupe ? 'mt-3' : 'mt-0.5'}`}>
         {debutGroupe && (
           <div className="mb-0.5 flex items-baseline gap-2 px-1 text-xs">
             {m.auteur
