@@ -8,7 +8,10 @@ import AuthCallback from './pages/AuthCallback';
 import Profil from './pages/Profil';
 import ProfilEdit from './pages/ProfilEdit';
 import Recherche from './pages/Recherche';
-import Bientot from './pages/Bientot';
+import Forum from './pages/Forum';
+import Question from './pages/Question';
+import PoserQuestion from './pages/PoserQuestion';
+import Classement from './pages/Classement';
 import Messages from './pages/Messages';
 import Notifications from './pages/Notifications';
 
@@ -24,9 +27,10 @@ export default function App() {
         <Route path="developpeurs/:id" element={<Profil />} />
         <Route path="profil" element={<ProtectedRoute><Profil /></ProtectedRoute>} />
         <Route path="profil/modifier" element={<ProtectedRoute><ProfilEdit /></ProtectedRoute>} />
-        {/* TODO Dev 2 (API) : brancher Forum, Question/:id, PoserQuestion, Classement */}
-        <Route path="forum" element={<Bientot cle="forum" />} />
-        <Route path="classement" element={<Bientot cle="classement" />} />
+        <Route path="forum" element={<Forum />} />
+        <Route path="forum/poser" element={<ProtectedRoute><PoserQuestion /></ProtectedRoute>} />
+        <Route path="forum/questions/:id" element={<Question />} />
+        <Route path="classement" element={<Classement />} />
         <Route path="messages" element={<ProtectedRoute><Messages /></ProtectedRoute>} />
         <Route path="messages/:canal" element={<ProtectedRoute><Messages /></ProtectedRoute>} />
         <Route path="notifications" element={<ProtectedRoute><Notifications /></ProtectedRoute>} />

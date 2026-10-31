@@ -22,12 +22,12 @@ export function texteNotification(n, t) {
 }
 
 /* Où mène un clic sur une notification.
-   Les pages « question » et « projet » n'existent pas encore côté client : on renvoie vers le forum
-   et vers le profil de la personne concernée. À remplacer ici, en un seul endroit, quand elles seront prêtes. */
+   La page « projet » n'existe pas encore côté client : une candidature mène au profil de la personne concernée.
+   À remplacer ici, en un seul endroit, quand elle sera prête. */
 export function lienNotification(n) {
   const s = n.sujet;
   if (s?.type === 'canal' && s.canal) return `/messages/${encodeURIComponent(s.canal)}`;
-  if (s?.type === 'post') return '/forum';
+  if (s?.type === 'post' && s.id) return `/forum/questions/${s.id}`;
   if (n.acteur?.id) return `/developpeurs/${n.acteur.id}`;
   return '/notifications';
 }
