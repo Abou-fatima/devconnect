@@ -119,7 +119,7 @@ export default function Classement() {
         {etat === 'chargement' && <p className="p-8 text-center text-slate-400" aria-busy="true">{t('commun.chargement')}</p>}
         {etat === 'erreur' && <div className="p-6 text-center"><p className="erreur">{erreur}</p><button type="button" onClick={charger} className="btn mt-3">{t('chat.reessayer')}</button></div>}
         {etat === 'ok' && vue === 'devs' && (devs.length > 0
-          ? <ol className="divide-y divide-slate-100">{devs.map((d) => <LigneDev key={d.id} d={d} moi={user} />)}</ol>
+          ? <ol className="stagger divide-y divide-slate-100">{devs.map((d) => <LigneDev key={d.id} d={d} moi={user} />)}</ol>
           : <p className="p-8 text-center text-slate-500">{t('classement.vide')}</p>)}
         {etat === 'ok' && vue === 'pays' && (listePays.length > 0
           ? <Pays_ pays={listePays} onChoisir={(p) => maj({ vue: '', pays: p })} />

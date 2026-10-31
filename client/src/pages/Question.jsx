@@ -248,7 +248,7 @@ export default function Question() {
       {reponses.length === 0 && (
         <div className="card text-center"><p className="font-medium text-slate-800">{t('forum.sans_reponse')}</p><p className="mt-1 text-sm text-slate-600">{t('forum.sans_reponse_texte')}</p></div>
       )}
-      <div className="space-y-3">
+      <div className="stagger space-y-3">
         {reponses.map((r) => (
           <Bloc key={r.id} item={r} post={post} moi={user} estModo={estModo} connecte={connecte} commentaires={r.commentaires}
             setCommentaires={(l) => maj((d) => ({ ...d, reponses: d.reponses.map((x) => (x.id === r.id ? { ...x, commentaires: l } : x)) }))}

@@ -44,7 +44,7 @@ export default function Notifications() {
             <p className="mt-1 text-sm">{seulementNonLues ? t('notif.tout_lu_texte') : t('notif.vide')}</p>
           </div>
         )}
-        {visibles.map((n) => <NotificationItem key={n.id} n={n} onOuvrir={ouvrir} />)}
+        {visibles.length > 0 && <div className="stagger divide-y divide-slate-100">{visibles.map((n) => <NotificationItem key={n.id} n={n} onOuvrir={ouvrir} />)}</div>}
       </div>
 
       {aSuivre && <div className="mt-4 text-center"><button type="button" onClick={voirPlus} disabled={plus} className="btn-outline">{plus ? t('commun.chargement') : t('notif.plus')}</button></div>}

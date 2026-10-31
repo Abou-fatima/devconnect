@@ -1,8 +1,88 @@
 {
-  "app": {"nom": "DevConnect", "slogan": "The African developer community"},
-  "nav": {"messages": "Messages", "accueil": "Home", "forum": "Forum", "devs": "Developers", "classement": "Ranking", "profil": "Profile", "connexion": "Log in", "inscription": "Sign up", "deconnexion": "Log out"},
-  "commun": {"chargement": "Loading...", "enregistrer": "Save", "annuler": "Cancel", "precedent": "Previous", "suivant": "Next", "aucun": "No results", "erreur": "Something went wrong", "hors_ligne": "You are offline: the data shown may be outdated.", "page": "Page {{page}} / {{pages}}", "bientot": "Coming soon"},
-  "accueil": {"titre": "Ask questions, showcase projects, find your team.", "texte": "DevConnect brings African developers together to learn, collaborate and build.", "cta_inscription": "Join the community", "cta_devs": "Find developers"},
+  "app": {
+    "nom": "DevConnect",
+    "slogan": "The African developer community"
+  },
+  "nav": {
+    "messages": "Messages",
+    "accueil": "Home",
+    "forum": "Forum",
+    "devs": "Developers",
+    "classement": "Ranking",
+    "profil": "Profile",
+    "connexion": "Log in",
+    "inscription": "Sign up",
+    "deconnexion": "Log out"
+  },
+  "commun": {
+    "chargement": "Loading...",
+    "enregistrer": "Save",
+    "annuler": "Cancel",
+    "precedent": "Previous",
+    "suivant": "Next",
+    "aucun": "No results",
+    "erreur": "Something went wrong",
+    "hors_ligne": "You are offline: the data shown may be outdated.",
+    "page": "Page {{page}} / {{pages}}",
+    "bientot": "Coming soon"
+  },
+  "accueil": {
+    "titre": "Ask questions, showcase projects, find your team.",
+    "texte": "DevConnect brings African developers together to learn, collaborate and build.",
+    "cta_inscription": "Join the community",
+    "cta_devs": "Find developers",
+    "badge": "The community of African developers",
+    "bonjour": "Welcome back, {{pseudo}} 👋",
+    "texte_connecte": "Ask a question, share your project or find developers for your team.",
+    "cta_poser": "Ask a question",
+    "cta_forum": "Browse the forum",
+    "stats_titre": "Community numbers",
+    "stat_devs": "developers",
+    "stat_questions": "questions",
+    "stat_projets": "projects",
+    "stat_pays": "countries",
+    "comment_titre": "How it works",
+    "comment_texte": "Four steps to grow with the community.",
+    "etape": {
+      "question": {
+        "titre": "Ask your question",
+        "texte": "Stuck on a bug? Describe it, the community answers and the best answer gets accepted."
+      },
+      "projet": {
+        "titre": "Show your project",
+        "texte": "Present what you're building, its stack and the roles you need."
+      },
+      "equipe": {
+        "titre": "Find your team",
+        "texte": "Search developers by technology, country or city, and message them directly."
+      },
+      "reputation": {
+        "titre": "Earn reputation",
+        "texte": "Good answers move you up the ranking, in your country and across Africa."
+      }
+    },
+    "questions_titre": "Latest questions",
+    "questions_vide": "No questions yet. Ask the first one!",
+    "tout_voir": "See all",
+    "top_titre": "Top developers",
+    "top_vide": "The ranking fills up with the first contributions.",
+    "classement_complet": "Ranking",
+    "projets_titre": "Recent projects",
+    "projets_vide": "No projects yet.",
+    "projet_statut": {
+      "idee": "Idea",
+      "en_cours": "In progress",
+      "termine": "Done"
+    },
+    "cherche": "Looking for",
+    "par": "by",
+    "tags_titre": "Popular topics",
+    "tags_vide": "Topics will appear with the first questions.",
+    "pays_titre": "Most active countries",
+    "pays_vide": "No countries filled in yet.",
+    "final_titre": "Ready to join the community?",
+    "final_texte": "Create your free account with your email or GitHub in under a minute."
+  },
   "auth": {
     "email": "Email",
     "telephone": "Phone (optional, e.g. +224620000000)",
@@ -21,7 +101,17 @@
     "titre_connexion": "Log in",
     "titre_inscription": "Sign up",
     "erreur_github": "GitHub login failed. Please try again.",
-    "callback": "Signing you in..."
+    "callback": "Signing you in...",
+    "callback_titre": "Signing in with GitHub",
+    "callback_texte": "One moment, we're getting your space ready.",
+    "callback_erreur_titre": "Sign-in failed",
+    "etape_verif": "Securely verifying your account",
+    "etape_profil": "Loading your profile",
+    "redirection_titre": "Redirecting to GitHub",
+    "redirection_texte": "You'll allow DevConnect to read your public profile.",
+    "etape_redirection": "Opening GitHub",
+    "reessayer": "Try again",
+    "retour_accueil": "Back to home"
   },
   "profil": {
     "titre": "My profile",
@@ -63,7 +153,20 @@
     "photo_erreur_type": "This file isn't an image. Pick a photo (JPEG, PNG or WebP).",
     "photo_erreur_taille": "This image is too large (5 MB max) and couldn't be resized. Try another photo."
   },
-  "recherche": {"titre": "Find developers", "q": "Search a username", "stack": "Technology", "pays": "Country (e.g. GN)", "niveau": "Level", "tous": "All", "tri": "Sort by", "tri_reputation": "Reputation", "tri_recent": "Newest", "tri_pseudo": "Username", "rechercher": "Search", "resultats": "{{count}} developer(s)"},
+  "recherche": {
+    "titre": "Find developers",
+    "q": "Search a username",
+    "stack": "Technology",
+    "pays": "Country (e.g. GN)",
+    "niveau": "Level",
+    "tous": "All",
+    "tri": "Sort by",
+    "tri_reputation": "Reputation",
+    "tri_recent": "Newest",
+    "tri_pseudo": "Username",
+    "rechercher": "Search",
+    "resultats": "{{count}} developer(s)"
+  },
   "forum": {
     "titre": "Forum",
     "bientot": "The forum is coming soon.",
