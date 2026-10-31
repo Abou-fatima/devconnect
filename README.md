@@ -111,6 +111,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File scripts/smoke.ps1
 - `smoke.ps1` : doit finir par `TOUT EST BON` en vert.
 - `smoke-forum.ps1` (même commande, autre fichier) : teste tout le forum (questions, réponses, votes, réputation, classement). Doit aussi finir par `TOUT EST BON`. Il crée des comptes de test à chaque lancement et ne peut pas être relancé plus de 3 fois en 10 minutes (limite anti-spam).
 - `smoke-projets.ps1` (même commande) : teste l'API des projets (création, filtres, tendances, commentaires, likes, droits). Doit finir par `TOUT EST BON`.
+- `smoke-upload.ps1` (même commande) : teste l'envoi d'images (refus des faux fichiers et des fichiers trop gros, réduction à 1600 px, conversion en WebP, photo de profil, ancienne photo supprimée). Il faut avoir fait `npm install` dans `server` (module `sharp`). Les images sont enregistrées dans `server/uploads/` (ignoré par Git) : sauvegarde ce dossier en production.
 - `npm test` lance tous les tests logiques (Dev 1, forum, chat).
 
 Ensuite ouvre http://localhost:4000/api/docs : c'est la documentation interactive (Swagger) de toute l'API. Chaque développeur y ajoute ses propres routes (voir `server/src/docs/openapi.js`).

@@ -1,4 +1,5 @@
 require('dotenv').config();
+const path = require('path');
 
 const env = {
   nodeEnv: process.env.NODE_ENV || 'development',
@@ -14,6 +15,10 @@ const env = {
     clientId: process.env.GITHUB_CLIENT_ID || '',
     clientSecret: process.env.GITHUB_CLIENT_SECRET || ''
   },
+  // Fichiers envoyés (images converties en WebP). Dossier à sauvegarder en production.
+  uploadsDir: process.env.UPLOADS_DIR ? path.resolve(process.env.UPLOADS_DIR) : path.join(__dirname, '..', '..', 'uploads'),
+  // 'local' (par défaut : sur le serveur) ou 'cloudinary' (service externe, voir CLOUDINARY_* ci-dessous)
+  uploadDriver: (process.env.UPLOAD_DRIVER || 'local').toLowerCase(),
   cloudinary: {
     cloudName: process.env.CLOUDINARY_CLOUD_NAME || '',
     apiKey: process.env.CLOUDINARY_API_KEY || '',

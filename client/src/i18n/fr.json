@@ -27,7 +27,7 @@
     "titre": "Mon profil",
     "modifier": "Modifier mon profil",
     "bio": "Bio",
-    "photo": "URL de la photo",
+    "photo": "Photo de profil",
     "niveau": "Niveau",
     "stacks": "Technologies (séparées par des virgules)",
     "objectifs": "Objectifs",
@@ -54,7 +54,14 @@
       "offrir_mentorat": "Offrir du mentorat",
       "emploi": "Trouver un emploi",
       "projet_perso": "Projet personnel"
-    }
+    },
+    "photo_choisir": "Choisir une photo",
+    "photo_changer": "Changer la photo",
+    "photo_retirer": "Retirer",
+    "photo_envoi": "Envoi en cours…",
+    "photo_aide": "Depuis ton téléphone ou ton ordinateur. Elle est réduite automatiquement.",
+    "photo_erreur_type": "Ce fichier n'est pas une image. Choisis une photo (JPEG, PNG ou WebP).",
+    "photo_erreur_taille": "Cette image est trop lourde (5 Mo maximum) et n'a pas pu être réduite. Essaie une autre photo."
   },
   "recherche": {"titre": "Trouver des développeurs", "q": "Rechercher un pseudo", "stack": "Technologie", "pays": "Pays (ex : GN)", "niveau": "Niveau", "tous": "Tous", "tri": "Trier par", "tri_reputation": "Réputation", "tri_recent": "Plus récents", "tri_pseudo": "Pseudo", "rechercher": "Rechercher", "resultats": "{{count}} développeur(s)"},
   "forum": {

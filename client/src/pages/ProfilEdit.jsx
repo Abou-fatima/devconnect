@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { getOptions, updateMe } from '../services/users';
+import { envoyerPhoto, getOptions, updateMe } from '../services/users';
 import { messageErreur } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import Field from '../components/Field';
+import Avatar from '../components/Avatar';
+import { preparerImage } from '../lib/fichiers';
 
 export default function ProfilEdit() {
   const { t } = useTranslation();
@@ -20,11 +22,28 @@ export default function ProfilEdit() {
   }));
   const [erreur, setErreur] = useState('');
   const [envoi, setEnvoi] = useState(false);
+  const [envoiPhoto, setEnvoiPhoto] = useState(false);
+  const [erreurPhoto, setErreurPhoto] = useState('');
 
   useEffect(() => { getOptions().then(setOptions).catch(() => {}); }, []);
 
   const change = (k) => (e) => setF((x) => ({ ...x, [k]: e.target.value }));
   const toggleObjectif = (o) => setF((x) => ({ ...x, objectifs: x.objectifs.includes(o) ? x.objectifs.filter((y) => y !== o) : [...x.objectifs, o] }));
+
+  // La photo est envoyée dès qu'elle est choisie : réduite ici, convertie en WebP par le serveur, qui met le profil à jour.
+  const choisirPhoto = async (e) => {
+    const fichier = e.target.files?.[0];
+    e.target.value = ''; // permet de rechoisir le même fichier
+    if (!fichier) return;
+    setErreurPhoto(''); setEnvoiPhoto(true);
+    try {
+      const url = await envoyerPhoto(await preparerImage(fichier), 'photo.jpg');
+      setF((x) => ({ ...x, photo: url }));
+      setUser((u) => ({ ...u, profil: { ...u.profil, photo: url } }));
+    } catch (err) {
+      setErreurPhoto(err.message === 'type' ? t('profil.photo_erreur_type') : err.message === 'taille' ? t('profil.photo_erreur_taille') : messageErreur(err, t('commun.erreur')));
+    } finally { setEnvoiPhoto(false); }
+  };
 
   const submit = async (e) => {
     e.preventDefault();
@@ -64,7 +83,23 @@ export default function ProfilEdit() {
           <Field label={t('auth.ville')}><input className="input" value={f.ville} onChange={change('ville')} /></Field>
         </div>
         <Field label={t('profil.bio')}><textarea className="input" rows={4} maxLength={500} value={f.bio} onChange={change('bio')} /></Field>
-        <Field label={t('profil.photo')}><input className="input" type="url" value={f.photo} onChange={change('photo')} /></Field>
+        <div>
+          <span className="label">{t('profil.photo')}</span>
+          <div className="flex items-center gap-4">
+            <Avatar user={{ pseudo: f.pseudo, profil: { photo: f.photo } }} size={72} />
+            <div className="space-y-1">
+              <div className="flex flex-wrap items-center gap-3">
+                <input id="photo-fichier" type="file" accept="image/*" className="peer sr-only" onChange={choisirPhoto} disabled={envoiPhoto} />
+                <label htmlFor="photo-fichier" className={`btn-outline cursor-pointer peer-focus-visible:ring-2 peer-focus-visible:ring-brand-light ${envoiPhoto ? 'pointer-events-none opacity-60' : ''}`}>
+                  {envoiPhoto ? t('profil.photo_envoi') : f.photo ? t('profil.photo_changer') : t('profil.photo_choisir')}
+                </label>
+                {f.photo && !envoiPhoto && <button type="button" onClick={() => setF((x) => ({ ...x, photo: '' }))} className="text-sm text-red-700 hover:underline">{t('profil.photo_retirer')}</button>}
+              </div>
+              <p className="text-xs text-slate-500">{t('profil.photo_aide')}</p>
+              {erreurPhoto && <p className="text-sm text-red-700" role="alert">{erreurPhoto}</p>}
+            </div>
+          </div>
+        </div>
         <Field label={t('profil.niveau')}>
           <select className="input" value={f.niveau} onChange={change('niveau')}>
             <option value="">—</option>
