@@ -121,6 +121,18 @@ export default function Accueil() {
         </ol>
       </Reveal>
 
+      {/* Mentorat */}
+      <Reveal as="section" className="card flex flex-wrap items-center justify-between gap-3">
+        <div className="flex items-center gap-3">
+          <span className="flex h-11 w-11 items-center justify-center rounded-full bg-brand/10 text-2xl" aria-hidden>🎓</span>
+          <div>
+            <h2 className="font-semibold">{t('mentorat.cta_titre')}</h2>
+            <p className="text-sm text-slate-600">{t('mentorat.cta_texte')}</p>
+          </div>
+        </div>
+        <Link to="/mentorat" className="btn">{t('mentorat.cta_bouton')}</Link>
+      </Reveal>
+
       {/* Questions récentes + meilleurs développeurs */}
       <div className="grid gap-4 lg:grid-cols-5">
         <div className="lg:col-span-3">

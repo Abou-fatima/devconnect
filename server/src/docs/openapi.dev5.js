@@ -3,6 +3,7 @@ const projetsPaths = require('./paths/projets');
 const projetsSchemas = require('./schemas/projets');
 const uploadPaths = require('./paths/upload');
 const collabPaths = require('./paths/candidatures');
+const mentoratPaths = require('./paths/mentorat');
 
 module.exports = {
   ...openapi,
@@ -17,6 +18,10 @@ module.exports = {
       description: 'Candidatures, équipe et rôles d’un projet',
     },
     {
+      name: 'Mentorat',
+      description: 'Trouver un mentor, demander et suivre un accompagnement',
+    },
+    {
       name: 'Upload',
       description: 'Envoi et stockage des fichiers',
     },
@@ -26,6 +31,7 @@ module.exports = {
     ...projetsPaths,
     ...uploadPaths,
     ...collabPaths,
+    ...mentoratPaths,
   },
   components: {
     ...openapi.components,

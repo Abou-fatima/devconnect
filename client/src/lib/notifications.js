@@ -18,6 +18,7 @@ export function texteNotification(n, t) {
     const c = n.sujet?.canal || '';
     options.lieu = c.startsWith('prive:') ? t('notif.lieu_prive') : c.startsWith('stack:') ? `#${c.slice(6)}` : c.startsWith('ville:') ? c.slice(6) : t('notif.lieu_chat');
   }
+  if (n.kind === 'mentorat' && ['demande', 'acceptee', 'refusee'].includes(n.sujet?.etape)) return t(`mentorat.notif.${n.sujet.etape}`, options);
   return t(`notif.kinds.${n.kind}`, options);
 }
 
@@ -28,6 +29,7 @@ export function lienNotification(n) {
   if (s?.type === 'canal' && s.canal) return `/messages/${encodeURIComponent(s.canal)}`;
   if (s?.type === 'post' && s.id) return `/forum/questions/${s.id}`;
   if (s?.type === 'projet' && s.id) return `/projets/${s.id}`;
+  if (s?.type === 'mentorat') return s.etape === 'demande' ? '/mentorat?onglet=demandes' : '/mentorat?onglet=demandes';
   if (n.acteur?.id) return `/developpeurs/${n.acteur.id}`;
   return '/notifications';
 }
