@@ -42,7 +42,8 @@ app.use('/api/meta', require('./routes/meta'));
 // Dev 5 : projets et images
 app.use('/api/upload', require('./routes/upload'));
 app.use('/api/projets', require('./routes/projets'));
-app.use('api', require('./routes/taches'));
+app.use('/api', require('./routes/candidatures'));
+app.use('/api', require('./routes/taches'));
 app.use('/api/mentorat', require('./routes/mentorat'));
 
 // Forum, votes, classement, administration
