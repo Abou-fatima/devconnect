@@ -8,7 +8,7 @@ const Echange = require('../models/Echange');
 const Depot = require('../models/Depot');
 const AppError = require('../utils/AppError');
 const stockage = require('../services/stockage');
-const { auth } = require('../middleware/auth');
+const { auth, optionalAuth } = require('../middleware/auth');
 const { ecritureLimiter } = require('../middleware/rateLimit');
 
 const router = express.Router();
@@ -270,6 +270,9 @@ router.get('/tendances', asyncRoute(async (req, res) => {
     { $limit: limit },
   ]);
 
+  // Même présentation que la liste : le porteur est affiché avec son pseudo et sa photo.
+  await Projet.populate(projets, { path: 'porteur_id', select: PORTEUR });
+
   res.json({
     data: projets,
     limit,
@@ -280,7 +283,7 @@ router.get('/tendances', asyncRoute(async (req, res) => {
 
 // GET /api/projets/:id
 // Consulter un projet et incrémenter son nombre de vues.
-router.get('/:id', asyncRoute(async (req, res) => {
+router.get('/:id', optionalAuth, asyncRoute(async (req, res) => {
   verifierId(req.params.id);
 
   const projet = await Projet.findByIdAndUpdate(
@@ -293,7 +296,24 @@ router.get('/:id', asyncRoute(async (req, res) => {
     throw new AppError(404, 'Projet introuvable');
   }
 
-  res.json({ projet });
+  // Si la personne est connectée, on indique si elle a déjà aimé ce projet (pour afficher le bon état du bouton).
+  const mon_like = req.userId
+    ? Boolean(await Echange.exists({ type: 'vote', auteur_id: req.userId, cible_type: 'projet', cible_id: projet._id }))
+    : false;
+
+  // Ce que la personne connectée peut faire ici : sa candidature, son appartenance à l'équipe, et (pour le porteur) le nombre de demandes à traiter.
+  let ma_candidature = null;
+  let nb_candidatures_en_attente = 0;
+  const est_membre = Boolean(req.userId && (projet.membres || []).some((m) => String(m.user_id?._id || m.user_id) === req.userId));
+  if (req.userId) {
+    const derniere = await Echange.findOne({ type: 'candidature', auteur_id: req.userId, cible_type: 'projet', cible_id: projet._id }).sort({ created_at: -1 }).lean();
+    if (derniere) ma_candidature = { id: String(derniere._id), statut: derniere.metadata?.statut, role: derniere.metadata?.role || null, created_at: derniere.created_at };
+    if (String(projet.porteur_id?._id || projet.porteur_id) === req.userId) {
+      nb_candidatures_en_attente = await Echange.countDocuments({ type: 'candidature', cible_type: 'projet', cible_id: projet._id, 'metadata.statut': 'en_attente' });
+    }
+  }
+
+  res.json({ projet, mon_like, ma_candidature, est_membre, nb_candidatures_en_attente });
 }));
 
 // PUT /api/projets/:id
@@ -308,7 +328,10 @@ router.put('/:id', auth, asyncRoute(async (req, res) => {
     throw new AppError(400, 'Aucune modification fournie');
   }
 
-  projet.set(body);
+  // Les liens sont remplacés un par un : un lien absent de la requête est supprimé (on peut donc en retirer un).
+  const { liens, ...autres } = body;
+  projet.set(autres);
+  if (liens) for (const k of ['github', 'demo', 'video']) projet.set(`liens.${k}`, liens[k]);
   await projet.save();
 
   res.json({ projet });

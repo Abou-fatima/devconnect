@@ -9,6 +9,9 @@ import { STYLE_STATUT, hoteLien, idPersonne, lienSur } from '../lib/projets';
 import { ilYA } from '../lib/notifications';
 import Avatar from '../components/Avatar';
 import Pays from '../components/Pays';
+import RejoindreProjet from '../components/RejoindreProjet';
+import CandidaturesPorteur from '../components/CandidaturesPorteur';
+import EquipeProjet from '../components/EquipeProjet';
 
 const Squelette = () => (
   <div aria-busy="true" aria-label="…" className="mx-auto max-w-4xl">
@@ -26,6 +29,7 @@ export default function Projet() {
   const [etat, setEtat] = useState('chargement'); // chargement | ok | introuvable | erreur
   const [aime, setAime] = useState(false);
   const [nbLikes, setNbLikes] = useState(0);
+  const [collab, setCollab] = useState({ maCandidature: null, estMembre: false, nbAttente: 0 });
   const [occupe, setOccupe] = useState(false);
   const [erreur, setErreur] = useState('');
   const [copie, setCopie] = useState(false);
@@ -35,14 +39,20 @@ export default function Projet() {
   const [texte, setTexte] = useState('');
   const [envoi, setEnvoi] = useState(false);
 
+  const appliquer = ({ projet: p, mon_like, ma_candidature, est_membre, nb_candidatures_en_attente }) => {
+    setProjet(p); setAime(Boolean(mon_like)); setNbLikes(p.nb_likes || 0);
+    setCollab({ maCandidature: ma_candidature || null, estMembre: Boolean(est_membre), nbAttente: nb_candidatures_en_attente || 0 });
+  };
   const charger = useCallback(() => {
     setEtat('chargement');
     detailProjet(id)
-      .then(({ projet: p, mon_like }) => { setProjet(p); setAime(Boolean(mon_like)); setNbLikes(p.nb_likes || 0); setEtat('ok'); })
+      .then((d) => { appliquer(d); setEtat('ok'); })
       .catch((e) => setEtat(e?.response?.status === 404 ? 'introuvable' : 'erreur'));
     commentairesProjet(id).then(setCommentaires).catch(() => {});
-  }, [id]);
+  }, [id]); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => { charger(); }, [charger]);
+  // Rafraîchit les données du projet sans remettre la page en chargement (après une candidature, une décision, un changement d'équipe).
+  const rafraichir = useCallback(() => detailProjet(id).then(appliquer).catch(() => {}), [id]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const versConnexion = () => navigate('/connexion', { state: { from: `/projets/${id}` } });
 
@@ -94,6 +104,7 @@ export default function Projet() {
   const estProprietaire = Boolean(user && porteurId && String(user.id) === String(porteurId));
   const membres = (projet.membres || []).filter((m) => m.user_id && typeof m.user_id === 'object');
   const liens = [['github', projet.liens?.github], ['demo', projet.liens?.demo], ['video', projet.liens?.video]].filter(([, u]) => lienSur(u));
+  const monRole = user ? membres.find((m) => String(idPersonne(m.user_id)) === String(user.id))?.role : null;
   const canalMessage = user && porteurId && !estProprietaire ? canalPrive(user.id, porteurId) : null;
 
   return (
@@ -126,7 +137,7 @@ export default function Projet() {
             <span key={nbLikes} className="anim-pop tabular-nums text-sm" aria-label={t('projets.nb_likes', { count: nbLikes })}>{nbLikes}</span>
           </button>
           <button type="button" onClick={partager} className="btn-outline">{copie ? `✓ ${t('projets.lien_copie')}` : t('projets.partager')}</button>
-          {canalMessage && !(projet.roles_recherches?.length > 0) && <Link to={`/messages/${encodeURIComponent(canalMessage)}`} className="btn-outline">✉ {t('projets.ecrire_porteur', { pseudo: porteur.pseudo })}</Link>}
+          {canalMessage && <Link to={`/messages/${encodeURIComponent(canalMessage)}`} className="btn-outline">✉ {t('projets.ecrire_porteur', { pseudo: porteur.pseudo })}</Link>}
           {estProprietaire && (
             <span className="ml-auto flex gap-2">
               <Link to={`/projets/${id}/modifier`} className="btn-outline">{t('projets.modifier')}</Link>
@@ -149,6 +160,9 @@ export default function Projet() {
 
       <div className="mt-6 grid gap-4 lg:grid-cols-3">
         <div className="space-y-4 lg:col-span-2">
+          {estProprietaire
+            ? <CandidaturesPorteur projetId={id} moiId={user.id} onChange={rafraichir} />
+            : <RejoindreProjet projetId={id} projet={projet} user={user} maCandidature={collab.maCandidature} estMembre={collab.estMembre} monRole={monRole} onChange={rafraichir} versConnexion={versConnexion} />}
           <section className="card">
             <h2 className="mb-2 text-lg font-bold">{t('projets.description')}</h2>
             {projet.description ? <p className="whitespace-pre-wrap break-words text-slate-700">{projet.description}</p> : <p className="text-slate-500">{t('projets.aucune_description')}</p>}
@@ -166,9 +180,6 @@ export default function Projet() {
               <h2 className="text-lg font-bold text-amber-900">🔎 {t('projets.roles_titre')}</h2>
               <p className="mt-1 text-sm text-amber-900/80">{t('projets.roles_texte')}</p>
               <div className="mt-3 flex flex-wrap gap-2">{projet.roles_recherches.map((r) => <span key={r} className="rounded-full bg-white px-3 py-1 text-sm font-medium text-amber-900 ring-1 ring-amber-200">{r}</span>)}</div>
-              {!estProprietaire && (user
-                ? (canalMessage && <Link to={`/messages/${encodeURIComponent(canalMessage)}`} className="btn mt-4">{t('projets.ecrire_porteur', { pseudo: porteur.pseudo })}</Link>)
-                : <button type="button" onClick={versConnexion} className="btn mt-4">{t('projets.connexion_pour_contacter')}</button>)}
             </section>
           )}
 
@@ -212,14 +223,7 @@ export default function Projet() {
               </ul>
             </section>
           )}
-          <section className="card">
-            <h2 className="mb-2 text-lg font-bold">{t('projets.equipe')}</h2>
-            <ul className="space-y-2">
-              {porteur && <li><Link to={`/developpeurs/${porteurId}`} className="flex items-center gap-3 rounded-lg p-1 transition hover:bg-slate-50"><Avatar user={porteur} size={34} /><span className="min-w-0 flex-1"><span className="block truncate font-medium">{porteur.pseudo}</span><span className="text-xs text-slate-500">{t('projets.porteur')}</span></span></Link></li>}
-              {membres.map((m) => <li key={idPersonne(m.user_id)}><Link to={`/developpeurs/${idPersonne(m.user_id)}`} className="flex items-center gap-3 rounded-lg p-1 transition hover:bg-slate-50"><Avatar user={m.user_id} size={34} /><span className="min-w-0 flex-1"><span className="block truncate font-medium">{m.user_id.pseudo}</span>{m.role && <span className="text-xs text-slate-500">{m.role}</span>}</span></Link></li>)}
-            </ul>
-            {membres.length === 0 && <p className="mt-2 text-sm text-slate-500">{t('projets.equipe_vide')}</p>}
-          </section>
+          <EquipeProjet projetId={id} porteur={porteur} membres={membres} estProprietaire={estProprietaire} onChange={rafraichir} />
         </aside>
       </div>
     </article>

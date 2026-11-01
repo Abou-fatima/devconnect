@@ -22,12 +22,12 @@ export function texteNotification(n, t) {
 }
 
 /* Où mène un clic sur une notification.
-   La page « projet » n'existe pas encore côté client : une candidature mène au profil de la personne concernée.
-   À remplacer ici, en un seul endroit, quand elle sera prête. */
+   Une notification de projet (candidature reçue, acceptée, refusée) ouvre la page du projet. */
 export function lienNotification(n) {
   const s = n.sujet;
   if (s?.type === 'canal' && s.canal) return `/messages/${encodeURIComponent(s.canal)}`;
   if (s?.type === 'post' && s.id) return `/forum/questions/${s.id}`;
+  if (s?.type === 'projet' && s.id) return `/projets/${s.id}`;
   if (n.acteur?.id) return `/developpeurs/${n.acteur.id}`;
   return '/notifications';
 }
