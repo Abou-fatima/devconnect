@@ -31,7 +31,7 @@ const schemas = {
     canal: { type: 'string' }, page: { type: 'integer' }, limit: { type: 'integer' }, a_suivre: { type: 'boolean' },
     messages: { type: 'array', items: ref('MessageChat') } } },
   Notification: { type: 'object', properties: {
-    id: { type: 'string' }, kind: { type: 'string', enum: ['reponse', 'reponse_acceptee', 'mention', 'vote', 'candidature', 'candidature_acceptee', 'candidature_refusee', 'mentorat'] },
+    id: { type: 'string' }, kind: { type: 'string', enum: ['reponse', 'reponse_acceptee', 'mention', 'vote', 'candidature', 'candidature_acceptee', 'candidature_refusee', 'mentorat', 'tache'] },
     message: { type: 'string', nullable: true }, lue: { type: 'boolean' }, sujet: { type: 'object', nullable: true, additionalProperties: true },
     created_at: { type: 'string', format: 'date-time' }, acteur: { type: 'object', nullable: true, properties: { id: { type: 'string' }, pseudo: { type: 'string' } } } } },
   ListeNotifications: { type: 'object', properties: {

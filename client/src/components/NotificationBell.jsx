@@ -37,11 +37,11 @@ export default function NotificationBell() {
         type="button" onClick={() => setOuvert((o) => !o)} aria-haspopup="true" aria-expanded={ouvert} aria-label={libelle}
         className="relative rounded-lg p-2 text-white/90 hover:bg-white/10 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
       >
-        <svg key={nonLues} className={nonLues > 0 ? 'anim-ring' : ''} width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+        <svg key={`cloche${nonLues}`} className={nonLues > 0 ? 'anim-ring' : ''} width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
           <path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9" /><path d="M13.7 21a2 2 0 0 1-3.4 0" />
         </svg>
         {nonLues > 0 && (
-          <span key={nonLues} className="anim-pop absolute -right-0.5 -top-0.5 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-accent px-1 text-[11px] font-bold leading-none text-slate-900">
+          <span key={`badge${nonLues}`} className="anim-pop absolute -right-0.5 -top-0.5 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-accent px-1 text-[11px] font-bold leading-none text-slate-900">
             {nonLues > 99 ? '99+' : nonLues}
           </span>
         )}

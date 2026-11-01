@@ -25,7 +25,8 @@ function initSockets(io) {
 function mountRoutes(app) {
   app.use('/api/chat', require('./chat.routes'));
   app.use('/api/notifications', require('./notifications/notifications.routes'));
-  // L'envoi d'images est dans routes/upload.js. Les notes vocales (transcription Whisper) viendront ici : /api/audio.
+  // L'envoi d'images est dans routes/upload.js ; les notes vocales (transcription Whisper) dans routes/audio.js.
+  app.use('/api/audio', require('../routes/audio'));
 }
 
 // Appelé par src/app.js AVANT swagger : ajoute la doc du module communication à l'objet OpenAPI.

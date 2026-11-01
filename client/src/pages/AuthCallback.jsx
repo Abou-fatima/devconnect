@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
 import EcranAttente, { IconeGithub } from '../components/EcranAttente';
+import { doitOnboarder } from '../lib/onboarding';
 
 // Le serveur redirige ici avec #token=... (ou #erreur=...) après la connexion GitHub.
 export default function AuthCallback() {
@@ -24,7 +25,7 @@ export default function AuthCallback() {
     try { localStorage.setItem('token', token); } catch { /* ignore */ }
     setEtape('profil');
     refresh().then((u) => {
-      if (u) navigate('/profil', { replace: true });
+      if (u) navigate(doitOnboarder(u) ? '/bienvenue' : '/profil', { replace: true });
       else { try { localStorage.removeItem('token'); } catch { /* ignore */ } setEtape('erreur'); }
     });
   }, [navigate, refresh]);

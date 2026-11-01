@@ -3,6 +3,7 @@ const Echange = require('../models/Echange');
 const { verifyToken } = require('../utils/jwt');
 const { parseCanal } = require('./canaux');
 const { notifierMentions } = require('./notifications/notifier');
+const { transcriptionDe } = require('../services/audio');
 
 const MAX_CONTENU = 2000;
 const LIMITE_MSG = { max: 20, fenetreMs: 10_000 }; // 20 messages / 10 s / socket
@@ -78,6 +79,7 @@ module.exports = (io) => {
           ...(c.cible_id ? { cible_id: c.cible_id } : {}),
           contenu: contenu || undefined,
           audio_url: audio || undefined,
+          transcription: audio ? await transcriptionDe(audio, userId) : undefined,
           metadata: { canal: c.canal }
         });
 
@@ -103,7 +105,8 @@ module.exports = (io) => {
     socket.on('typing', (payload) => {
       const c = parseCanal(payload && payload.canal, userId);
       if (c.erreur || !socket.rooms.has(c.canal)) return;
-      socket.to(c.canal).emit('typing', { canal: c.canal, user_id: userId, pseudo, actif: payload.actif !== false });
+      // mode « vocal » : la personne enregistre une note vocale (au lieu d'écrire)
+      socket.to(c.canal).emit('typing', { canal: c.canal, user_id: userId, pseudo, actif: payload.actif !== false, mode: payload.mode === 'vocal' ? 'vocal' : 'texte' });
     });
 
     socket.on('disconnect', () => { /* les salles sont quittées automatiquement */ });

@@ -5,7 +5,7 @@ const mongoose = require('mongoose');
 const Echange = require('../../models/Echange');
 const Utilisateur = require('../../models/Utilisateur');
 
-const KINDS = ['reponse', 'reponse_acceptee', 'mention', 'vote', 'candidature', 'candidature_acceptee', 'candidature_refusee', 'mentorat'];
+const KINDS = ['reponse', 'reponse_acceptee', 'mention', 'vote', 'candidature', 'candidature_acceptee', 'candidature_refusee', 'mentorat', 'tache'];
 const MAX_MENTIONS = 5;
 
 let io = null;

@@ -1,7 +1,7 @@
 import { createPortal } from 'react-dom';
 
 /* Écran plein cadre « un instant » : sert pendant la redirection vers GitHub et pendant la récupération du profil.
-   Il remplace l'ancien lien qui ne donnait aucun retour. Les étapes montrent où en est la connexion. */
+  */
 export function IconeGithub({ className = 'h-5 w-5' }) {
   return (
     <svg viewBox="0 0 24 24" className={className} fill="currentColor" aria-hidden>

@@ -10,6 +10,7 @@ const reputation = require('../services/reputation');
 const { BAREME, effetVote } = require('../services/bareme');
 const { AUTEUR_FIELDS, formater, supprimerEchange } = require('../services/echanges');
 const { notifierForum } = require('../services/notifForum');
+const { transcriptionDe } = require('../services/audio');
 
 const router = express.Router();
 const asyncRoute = (fn) => (req, res, next) => Promise.resolve(fn(req, res, next)).catch(next);
@@ -37,6 +38,7 @@ router.post('/posts', auth, ecritureLimiter, asyncRoute(async (req, res) => {
     titre: b.titre,
     contenu: b.contenu,
     audio_url: b.audio_url,
+    transcription: await transcriptionDe(b.audio_url, req.userId),
     metadata: { tags: b.tags, statut: 'ouvert', nb_reponses: 0, suiveurs: [oid(req.userId)], derniere_activite: new Date() }
   });
   const doc = await Echange.findById(post._id).populate('auteur_id', AUTEUR_FIELDS).lean();
@@ -94,7 +96,7 @@ router.post('/posts/:id/reponses', idValide, auth, ecritureLimiter, asyncRoute(a
   const post = await trouver(req.params.id, ['post'], 'Question introuvable');
   const rep = await Echange.create({
     type: 'reponse', auteur_id: req.userId, parent_id: post._id, cible_type: 'post', cible_id: post._id,
-    contenu: b.contenu, audio_url: b.audio_url, metadata: { acceptee: false }
+    contenu: b.contenu, audio_url: b.audio_url, transcription: await transcriptionDe(b.audio_url, req.userId), metadata: { acceptee: false }
   });
   await Echange.updateOne({ _id: post._id }, {
     $inc: { 'metadata.nb_reponses': 1 },
