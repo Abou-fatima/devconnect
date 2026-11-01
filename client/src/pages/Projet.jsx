@@ -12,6 +12,7 @@ import Pays from '../components/Pays';
 import RejoindreProjet from '../components/RejoindreProjet';
 import CandidaturesPorteur from '../components/CandidaturesPorteur';
 import EquipeProjet from '../components/EquipeProjet';
+import TableauTaches from '../components/TableauTaches';
 
 const Squelette = () => (
   <div aria-busy="true" aria-label="…" className="mx-auto max-w-4xl">
@@ -163,6 +164,7 @@ export default function Projet() {
           {estProprietaire
             ? <CandidaturesPorteur projetId={id} moiId={user.id} onChange={rafraichir} />
             : <RejoindreProjet projetId={id} projet={projet} user={user} maCandidature={collab.maCandidature} estMembre={collab.estMembre} monRole={monRole} onChange={rafraichir} versConnexion={versConnexion} />}
+          {(estProprietaire || collab.estMembre) && <TableauTaches projetId={id} equipe={[porteur, ...membres.map((m) => m.user_id)].filter(Boolean).map((u) => ({ id: String(idPersonne(u)), pseudo: u.pseudo, profil: u.profil }))} />}
           <section className="card">
             <h2 className="mb-2 text-lg font-bold">{t('projets.description')}</h2>
             {projet.description ? <p className="whitespace-pre-wrap break-words text-slate-700">{projet.description}</p> : <p className="text-slate-500">{t('projets.aucune_description')}</p>}

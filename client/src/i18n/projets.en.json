@@ -143,5 +143,27 @@
     "retirer_membre": "Remove from team",
     "retirer_membre_confirm": "Remove {{pseudo}} from the team?",
     "retirer_membre_oui": "Yes, remove"
+  },
+  "taches": {
+    "titre": "Workspace",
+    "sous_titre": "The team's tasks. Only visible to the owner and members.",
+    "avancement": "{{fait}} / {{total}} done",
+    "nouvelle": "New task",
+    "nouvelle_placeholder": "E.g.: Home page mockup",
+    "assigner": "Assign to",
+    "personne": "Nobody",
+    "ajouter": "Add",
+    "vide": "No tasks yet: add the first one to organise the work.",
+    "col": {
+      "a_faire": "To do",
+      "en_cours": "In progress",
+      "termine": "Done"
+    },
+    "avancer": "Next step",
+    "reculer": "Previous step",
+    "supprimer": "Delete task",
+    "supprimer_confirm": "Delete this task?",
+    "supprimer_oui": "Yes, delete",
+    "notif": "{{pseudo}} assigned you a task"
   }
 }

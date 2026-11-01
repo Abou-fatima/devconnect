@@ -4,6 +4,7 @@ const projetsSchemas = require('./schemas/projets');
 const uploadPaths = require('./paths/upload');
 const collabPaths = require('./paths/candidatures');
 const mentoratPaths = require('./paths/mentorat');
+const tachesPaths = require('./paths/taches');
 
 module.exports = {
   ...openapi,
@@ -16,6 +17,10 @@ module.exports = {
     {
       name: 'Collaboration',
       description: 'Candidatures, équipe et rôles d’un projet',
+    },
+    {
+      name: 'Espace projet',
+      description: 'Tableau de tâches de l’équipe d’un projet',
     },
     {
       name: 'Mentorat',
@@ -32,6 +37,7 @@ module.exports = {
     ...uploadPaths,
     ...collabPaths,
     ...mentoratPaths,
+    ...tachesPaths,
   },
   components: {
     ...openapi.components,

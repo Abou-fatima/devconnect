@@ -143,5 +143,27 @@
     "retirer_membre": "Retirer de l'équipe",
     "retirer_membre_confirm": "Retirer {{pseudo}} de l'équipe ?",
     "retirer_membre_oui": "Oui, retirer"
+  },
+  "taches": {
+    "titre": "Espace de travail",
+    "sous_titre": "Les tâches de l'équipe. Visible seulement par le porteur et les membres.",
+    "avancement": "{{fait}} / {{total}} terminées",
+    "nouvelle": "Nouvelle tâche",
+    "nouvelle_placeholder": "Ex. : Maquette de la page d'accueil",
+    "assigner": "Confier à",
+    "personne": "Personne",
+    "ajouter": "Ajouter",
+    "vide": "Aucune tâche pour l'instant : ajoutez la première pour organiser le travail.",
+    "col": {
+      "a_faire": "À faire",
+      "en_cours": "En cours",
+      "termine": "Terminé"
+    },
+    "avancer": "Étape suivante",
+    "reculer": "Étape précédente",
+    "supprimer": "Supprimer la tâche",
+    "supprimer_confirm": "Supprimer cette tâche ?",
+    "supprimer_oui": "Oui, supprimer",
+    "notif": "{{pseudo}} t'a confié une tâche"
   }
 }
