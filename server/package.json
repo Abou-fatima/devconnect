@@ -6,6 +6,8 @@
     "node": ">=20"
   },
   "scripts": {
+    "seed": "node scripts/seed-demo.js",
+    "seed:clean": "node scripts/seed-demo.js --clean", 
     "dev": "node --watch src/index.js",
     "start": "node src/index.js",
     "check": "node --check src/index.js && node --check src/app.js",
@@ -36,3 +38,4 @@
     "socket.io-client": "^4.8.4"
   }
 }
+

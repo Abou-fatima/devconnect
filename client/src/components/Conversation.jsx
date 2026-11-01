@@ -8,6 +8,10 @@ import { getUser } from '../services/users';
 import { lireCanal, majuscule, ajouterRecent } from '../lib/canaux';
 import { messageErreur } from '../services/api';
 import RichText from './RichText';
+import LecteurVocal from './LecteurVocal';
+import BarreVocale from './BarreVocale';
+import useEnregistreurVocal, { DUREE_MAX, vocalPossible } from '../hooks/useEnregistreurVocal';
+import { envoyerVocal } from '../services/audio';
 
 const COULEURS = ['#1d4ed8', '#047857', '#b45309', '#7e22ce', '#be123c', '#0e7490'];
 const couleurPseudo = (p = '') => COULEURS[[...p].reduce((a, c) => a + c.charCodeAt(0), 0) % COULEURS.length];
@@ -56,7 +60,7 @@ export default function Conversation({ canal, onRetour, onNom }) {
       onNom?.(canal, u.pseudo);
     }).catch(() => {});
     return () => { actif = false; };
-  }, [autreId, canal]); 
+  }, [autreId, canal]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Historique (page 1) à chaque changement de salon.
   const chargerHistorique = useCallback(() => {
@@ -76,7 +80,7 @@ export default function Conversation({ canal, onRetour, onNom }) {
     setMessages([]); setTexte(''); setErreurEnvoi(''); setErreurSalon(''); setEcrivent({});
     chargerHistorique();
     if (infos && infos.type !== 'prive') ajouterRecent(canal);
-  }, [canal]); 
+  }, [canal]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Rejoindre le salon en temps réel (et à chaque reconnexion).
   useEffect(() => {
@@ -102,7 +106,7 @@ export default function Conversation({ canal, onRetour, onNom }) {
       if (d.canal !== canal || d.user_id === user?.id) return;
       setEcrivent((e) => {
         if (!d.actif) { const { [d.user_id]: _, ...reste } = e; return reste; }
-        return { ...e, [d.user_id]: { pseudo: d.pseudo, at: Date.now() } };
+        return { ...e, [d.user_id]: { pseudo: d.pseudo, at: Date.now(), mode: d.mode === 'vocal' ? 'vocal' : 'texte' } };
       });
     };
     socket.on('message', onMessage);
@@ -150,9 +154,26 @@ export default function Conversation({ canal, onRetour, onNom }) {
     } finally { setChargePlus(false); }
   };
 
+  const [envoiVocal, setEnvoiVocal] = useState(false);
+  const signalerVocal = useCallback((actif) => { if (socket && connecte) socket.emit('typing', { canal, actif, mode: 'vocal' }); }, [socket, connecte, canal]);
+  const vocal = useEnregistreurVocal({ onDebut: () => signalerVocal(true), onFin: () => signalerVocal(false) });
+
+  const envoyerNoteVocale = async () => {
+    if (!vocal.resultat || envoiVocal || !socket || !connecte) return;
+    setEnvoiVocal(true); setErreurEnvoi('');
+    try {
+      const { audio_url: audioUrl } = await envoyerVocal(vocal.resultat.blob, i18n.language?.startsWith('en') ? 'en' : 'fr');
+      socket.timeout(8000).emit('message', { canal, audio_url: audioUrl }, (err, ack) => {
+        setEnvoiVocal(false);
+        if (err || !ack?.ok) { setErreurEnvoi(err ? t('chat.erreur_delai') : ack?.erreur || t('vocal.erreur_envoi')); return; } // l'enregistrement reste prêt
+        suivreBas.current = true; vocal.terminer(); ajouter(ack.message);
+      });
+    } catch (e) { setEnvoiVocal(false); setErreurEnvoi(messageErreur(e, t('vocal.erreur_envoi'))); }
+  };
+
   const signalerFrappe = (actif) => {
     if (!socket || !connecte) return;
-    if (actif === frappe.current.actif && actif) return; 
+    if (actif === frappe.current.actif && actif) return; // déjà signalé
     frappe.current.actif = actif;
     socket.emit('typing', { canal, actif });
   };
@@ -207,8 +228,11 @@ export default function Conversation({ canal, onRetour, onNom }) {
 
   const titre = infos.type === 'stack' ? `#${infos.valeur}` : infos.type === 'ville' ? majuscule(infos.valeur) : autre ? `@${autre.pseudo}` : '…';
   const sousTitre = infos.type === 'stack' ? t('chat.sous_stack') : infos.type === 'ville' ? t('chat.sous_ville') : t('chat.sous_prive');
-  const noms = Object.values(ecrivent).map((x) => x.pseudo);
-  const ecrit = noms.length === 0 ? '' : noms.length === 1 ? t('chat.ecrit_un', { pseudo: noms[0] }) : noms.length === 2 ? t('chat.ecrit_deux', { a: noms[0], b: noms[1] }) : t('chat.ecrit_plusieurs');
+  const phrase = (liste, cle) => (liste.length === 0 ? '' : liste.length === 1 ? t(`${cle}_un`, { pseudo: liste[0] }) : liste.length === 2 ? t(`${cle}_deux`, { a: liste[0], b: liste[1] }) : t(`${cle}_plusieurs`));
+  const enCours = Object.values(ecrivent);
+  const ecrit = [phrase(enCours.filter((x) => x.mode !== 'vocal').map((x) => x.pseudo), 'chat.ecrit'), phrase(enCours.filter((x) => x.mode === 'vocal').map((x) => x.pseudo), 'vocal.ecrit')].filter(Boolean).join(' · ');
+  const enVocal = vocal.etat === 'enregistre' || vocal.etat === 'pret';
+  const erreurVocal = vocal.etat === 'erreur' ? t(`vocal.erreur_${vocal.erreur || 'autre'}`) : '';
   const peutEcrire = connecte && etat !== 'erreur';
   const restant = MAX_CAR - texte.length;
 
@@ -235,8 +259,7 @@ export default function Conversation({ canal, onRetour, onNom }) {
           {m.contenu && <RichText texte={m.contenu} moi={user?.pseudo} propre={moi} />}
           {m.audio_url && (
             <div className="mt-1">
-              <audio controls preload="none" src={m.audio_url} className="h-9 max-w-full" />
-              {m.transcription && <p className={`mt-1 text-sm italic ${moi ? 'text-white/80' : 'text-slate-500'}`}>{m.transcription}</p>}
+              <LecteurVocal url={m.audio_url} transcription={m.transcription} propre={moi} />
             </div>
           )}
         </div>
@@ -286,6 +309,12 @@ export default function Conversation({ canal, onRetour, onNom }) {
         <div className="h-5 px-1 text-xs text-slate-500" aria-live="polite">{ecrit}</div>
         {erreurSalon && etat !== 'erreur' && <p className="erreur mb-2">{erreurSalon}</p>}
         {erreurEnvoi && <p className="erreur mb-2" role="alert">{erreurEnvoi}</p>}
+        {erreurVocal && <p className="erreur mb-2" role="alert">{erreurVocal}</p>}
+        {enVocal ? (
+          <div className="flex items-center gap-2">
+            <BarreVocale etat={vocal.etat} secondes={vocal.secondes} resultat={vocal.resultat} envoi={envoiVocal} dureeMax={DUREE_MAX} onArreter={vocal.arreter} onAnnuler={vocal.annuler} onEnvoyer={envoyerNoteVocale} />
+          </div>
+        ) : (
         <div className="flex items-end gap-2">
           <button type="button" onClick={insererCode} disabled={!peutEcrire} title={t('chat.bloc_code')} aria-label={t('chat.bloc_code')} className="btn-outline !px-2.5 font-mono text-sm">{'{ }'}</button>
           <textarea
@@ -294,8 +323,11 @@ export default function Conversation({ canal, onRetour, onNom }) {
             aria-label={t('chat.placeholder', { salon: titre })}
             className="input max-h-32 min-h-[2.5rem] flex-1 resize-none [field-sizing:content]"
           />
-          <button type="button" onClick={envoyer} disabled={!peutEcrire || envoi || !texte.trim()} className="btn">{envoi ? '…' : t('chat.envoyer')}</button>
+          {!texte.trim() && vocalPossible()
+            ? <button type="button" onClick={vocal.demarrer} disabled={!peutEcrire} className="btn" title={t('vocal.micro')} aria-label={t('vocal.micro')}>🎤</button>
+            : <button type="button" onClick={envoyer} disabled={!peutEcrire || envoi || !texte.trim()} className="btn">{envoi ? '…' : t('chat.envoyer')}</button>}
         </div>
+        )}
         <p className="mt-1 hidden px-1 text-xs text-slate-400 sm:block">
           {t('chat.astuce')}{restant < 200 && <span className={`ml-2 ${restant < 0 ? 'text-red-600' : ''}`}>{restant}</span>}
         </p>

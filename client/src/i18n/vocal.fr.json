@@ -1,0 +1,21 @@
+{
+  "note": "Note vocale",
+  "micro": "Enregistrer un vocal",
+  "annuler": "Annuler le vocal",
+  "arreter": "Arrêter",
+  "ecouter": "Écouter avant d'envoyer",
+  "envoyer": "Envoyer",
+  "envoi": "Envoi…",
+  "enregistrement": "Enregistrement…",
+  "reste_one": "{{count}} s restante",
+  "reste_other": "{{count}} s restantes",
+  "voir_texte": "Voir le texte",
+  "masquer": "Masquer le texte",
+  "erreur_refuse": "Micro refusé : autorise-le dans les réglages du navigateur (icône à gauche de l'adresse), puis réessaie.",
+  "erreur_absent": "Aucun micro détecté sur cet appareil.",
+  "erreur_autre": "Impossible de démarrer l'enregistrement.",
+  "erreur_envoi": "Le vocal n'a pas pu être envoyé. Réessaie : il est conservé.",
+  "ecrit_un": "{{pseudo}} enregistre un vocal…",
+  "ecrit_deux": "{{a}} et {{b}} enregistrent un vocal…",
+  "ecrit_plusieurs": "Plusieurs personnes enregistrent un vocal…"
+}

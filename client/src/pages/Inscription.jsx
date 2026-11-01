@@ -25,7 +25,7 @@ export default function Inscription() {
     const body = Object.fromEntries(Object.entries(form).filter(([, v]) => v.trim() !== ''));
     try {
       setSession(await register(body));
-      navigate('/profil', { replace: true });
+      navigate('/bienvenue', { replace: true }); // parcours de bienvenue : un compte neuf n'a encore ni niveau ni technologies
     } catch (err) {
       setErreur(messageErreur(err, t('commun.erreur')));
     } finally {

@@ -1,0 +1,93 @@
+{
+  "progression": "Étape {{etape}} sur {{total}}",
+  "plus_tard": "Plus tard",
+  "retour": "Retour",
+  "suivant": "Suivant",
+  "passer_etape": "Passer",
+  "terminer": "Terminer",
+  "niveau_requis": "Choisis un niveau pour continuer.",
+  "bienvenue": "Bienvenue, {{pseudo}} 👋",
+  "objectifs_titre": "Mes objectifs",
+  "objectifs_texte": "Dis-nous ce que tu cherches : on te montrera les bonnes choses en premier. Tu peux en choisir plusieurs.",
+  "objectif_aide": {
+    "apprendre": "Poser des questions et progresser",
+    "collaborer": "Rejoindre une équipe sur un projet",
+    "mentorat": "Être guidé par un développeur expérimenté",
+    "offrir_mentorat": "Aider les débutants à avancer",
+    "emploi": "Se faire remarquer par les recruteurs",
+    "projet_perso": "Présenter et faire avancer mon projet"
+  },
+  "niveau_titre": "Quel est ton niveau ?",
+  "niveau_texte": "Sois honnête, c'est pour mieux t'aider. Tu pourras le changer quand tu veux.",
+  "niveau_aide": {
+    "debutant": "Je découvre la programmation ou je fais mes premiers projets",
+    "intermediaire": "Je construis des applications mais j'ai encore beaucoup à apprendre",
+    "avance": "Je suis à l'aise et je peux aider les autres",
+    "expert": "J'ai de nombreuses années d'expérience"
+  },
+  "stacks_titre": "Tes technologies",
+  "stacks_texte": "Choisis celles que tu utilises ou que tu veux apprendre. Elles servent à te proposer des questions, des projets et des mentors.",
+  "autre_techno": "Une autre technologie…",
+  "ajouter": "Ajouter",
+  "pays": "Pays",
+  "pays_vide": "Choisir (facultatif)",
+  "ville": "Ville (facultatif)",
+  "pret_titre": "Tout est prêt !",
+  "pret_texte": "Voici par où commencer, selon ce que tu cherches.",
+  "action": {
+    "poser": {
+      "titre": "Poser ta première question",
+      "texte": "La communauté répond généralement vite."
+    },
+    "equipe": {
+      "titre": "Trouver un projet à rejoindre",
+      "texte": "Propose ton aide à une équipe."
+    },
+    "mentor": {
+      "titre": "Trouver un mentor",
+      "texte": "Un développeur expérimenté t'accompagne."
+    },
+    "offrir": {
+      "titre": "Aider des débutants",
+      "texte": "Active ton profil de mentor."
+    },
+    "profil": {
+      "titre": "Soigner ton profil",
+      "texte": "Photo, présentation et liens : c'est ta vitrine."
+    },
+    "projet": {
+      "titre": "Présenter ton projet",
+      "texte": "Montre-le et trouve des coéquipiers."
+    }
+  },
+  "visite": "Ce que tu peux faire ici",
+  "visite_forum": {
+    "titre": "Forum",
+    "texte": "questions, réponses et réputation."
+  },
+  "visite_projets": {
+    "titre": "Projets",
+    "texte": "montrer, aimer, rejoindre une équipe."
+  },
+  "visite_mentorat": {
+    "titre": "Mentorat",
+    "texte": "apprendre ou aider."
+  },
+  "visite_messages": {
+    "titre": "Messages",
+    "texte": "salons par technologie, vocaux et conversations privées."
+  },
+  "aller_accueil": "Aller à l'accueil",
+  "bandeau_titre": "Ton profil est complet à {{pct}} %",
+  "bandeau_manque": "Il manque : {{liste}}.",
+  "bandeau_action": "Compléter",
+  "bandeau_fermer": "Masquer",
+  "manque": {
+    "objectifs": "tes objectifs",
+    "niveau": "ton niveau",
+    "stacks": "tes technologies",
+    "pays": "ton pays",
+    "bio": "une présentation",
+    "photo": "une photo"
+  }
+}

@@ -7,13 +7,17 @@ import projetsFr from './projets.fr.json';
 import projetsEn from './projets.en.json';
 import mentoratFr from './mentorat.fr.json';
 import mentoratEn from './mentorat.en.json';
+import vocalFr from './vocal.fr.json';
+import vocalEn from './vocal.en.json';
+import onboardingFr from './onboarding.fr.json';
+import onboardingEn from './onboarding.en.json';
 
 let saved = null;
 try { saved = localStorage.getItem('lang'); } catch { /* ignore */ }
 const initial = saved || (navigator.language || 'fr').slice(0, 2);
 
 i18n.use(initReactI18next).init({
-  resources: { fr: { translation: { ...fr, projets: projetsFr, mentorat: mentoratFr } }, en: { translation: { ...en, projets: projetsEn, mentorat: mentoratEn } } },
+  resources: { fr: { translation: { ...fr, projets: projetsFr, mentorat: mentoratFr, vocal: vocalFr, onboarding: onboardingFr } }, en: { translation: { ...en, projets: projetsEn, mentorat: mentoratEn, vocal: vocalEn, onboarding: onboardingEn } } },
   lng: ['fr', 'en'].includes(initial) ? initial : 'fr',
   fallbackLng: 'fr',
   interpolation: { escapeValue: false }

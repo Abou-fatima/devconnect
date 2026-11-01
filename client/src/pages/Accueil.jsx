@@ -10,6 +10,7 @@ import useCompteur from '../hooks/useCompteur';
 import Avatar from '../components/Avatar';
 import Pays from '../components/Pays';
 import Reveal from '../components/Reveal';
+import BandeauProfil from '../components/BandeauProfil';
 import ProjetCarte from '../components/ProjetCarte';
 import { idProjet } from '../lib/projets';
 
@@ -103,6 +104,8 @@ export default function Accueil() {
         </div>
         </div>
       </section>
+
+      {user && <BandeauProfil user={user} />}
 
       {/* Comment ça marche */}
       <Reveal as="section">

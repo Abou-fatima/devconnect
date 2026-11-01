@@ -5,6 +5,7 @@ const uploadPaths = require('./paths/upload');
 const collabPaths = require('./paths/candidatures');
 const mentoratPaths = require('./paths/mentorat');
 const tachesPaths = require('./paths/taches');
+const audioPaths = require('./paths/audio');
 
 module.exports = {
   ...openapi,
@@ -17,6 +18,10 @@ module.exports = {
     {
       name: 'Collaboration',
       description: 'Candidatures, équipe et rôles d’un projet',
+    },
+    {
+      name: 'Audio',
+      description: 'Notes vocales et transcription Whisper',
     },
     {
       name: 'Espace projet',
@@ -38,6 +43,7 @@ module.exports = {
     ...collabPaths,
     ...mentoratPaths,
     ...tachesPaths,
+    ...audioPaths,
   },
   components: {
     ...openapi.components,
