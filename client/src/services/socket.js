@@ -1,4 +1,4 @@
-import { io } from 'socket.io-client';
+import { io } from "socket.io-client";
 
 // Une seule connexion Socket.IO par session : chat et notifications la partagent.
 let socket = null;

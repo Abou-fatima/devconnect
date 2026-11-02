@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState } from "react";
 
 // Renvoie `valeur` avec un retard : évite de lancer une recherche à chaque lettre tapée.
 export default function useDebounce(valeur, delai = 350) {

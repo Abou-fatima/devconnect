@@ -5,6 +5,8 @@ import useOnline from '../hooks/useOnline';
 import LangSwitch from './LangSwitch';
 import NotificationBell from './NotificationBell';
 import NotificationToast from './NotificationToast';
+import AideBouton from './AideBouton';
+import AstucePage from './AstucePage';
 
 const lien = ({ isActive }) => `nav-lien px-3 py-2 rounded-lg text-sm font-medium transition-colors ${isActive ? 'nav-actif bg-white/15 text-white' : 'text-white/80 hover:text-white'}`;
 
@@ -48,6 +50,7 @@ export default function Layout() {
       </header>
 
       <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-6 pb-24 md:pb-6">
+        <AstucePage />
         <div key={pathname.split('/').slice(0, 2).join('/')} className="page-enter"><Outlet /></div>
       </main>
 
@@ -60,6 +63,7 @@ export default function Layout() {
         ))}
       </nav>
       <NotificationToast />
+      <AideBouton />
     </div>
   );
 }

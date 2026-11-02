@@ -1,24 +1,36 @@
-import { Route, Routes } from 'react-router-dom';
-import Layout from './components/Layout';
-import ProtectedRoute from './components/ProtectedRoute';
-import Accueil from './pages/Accueil';
-import Connexion from './pages/Connexion';
-import Inscription from './pages/Inscription';
-import AuthCallback from './pages/AuthCallback';
-import Projets from './pages/Projets';
-import Mentorat from './pages/Mentorat';
-import Bienvenue from './pages/Bienvenue';
-import Projet from './pages/Projet';
-import ProjetForm from './pages/ProjetForm';
-import Profil from './pages/Profil';
-import ProfilEdit from './pages/ProfilEdit';
-import Recherche from './pages/Recherche';
-import Forum from './pages/Forum';
-import Question from './pages/Question';
-import PoserQuestion from './pages/PoserQuestion';
-import Classement from './pages/Classement';
-import Messages from './pages/Messages';
-import Notifications from './pages/Notifications';
+import { lazy, Suspense } from "react";
+import { Route, Routes } from "react-router-dom";
+import Layout from "./components/Layout";
+import ProtectedRoute from "./components/ProtectedRoute";
+import PageChargement from "./components/PageChargement";
+import BarriereErreur from "./components/BarriereErreur";
+import Accueil from "./pages/Accueil";
+import Connexion from "./pages/Connexion";
+import Inscription from "./pages/Inscription";
+import AuthCallback from "./pages/AuthCallback";
+
+// Chargement à la demande : seules l'accueil, la connexion et l'inscription sont dans le premier fichier ; les autres pages
+// ne sont téléchargées qu'au premier passage (premier affichage plus rapide, utile avec une connexion lente).
+const Projets = lazy(() => import("./pages/Projets"));
+const Mentorat = lazy(() => import("./pages/Mentorat"));
+const Bienvenue = lazy(() => import("./pages/Bienvenue"));
+const Projet = lazy(() => import("./pages/Projet"));
+const ProjetForm = lazy(() => import("./pages/ProjetForm"));
+const Profil = lazy(() => import("./pages/Profil"));
+const ProfilEdit = lazy(() => import("./pages/ProfilEdit"));
+const Recherche = lazy(() => import("./pages/Recherche"));
+const Forum = lazy(() => import("./pages/Forum"));
+const Question = lazy(() => import("./pages/Question"));
+const PoserQuestion = lazy(() => import("./pages/PoserQuestion"));
+const Classement = lazy(() => import("./pages/Classement"));
+const Messages = lazy(() => import("./pages/Messages"));
+const Notifications = lazy(() => import("./pages/Notifications"));
+
+const page = (element) => (
+  <BarriereErreur>
+    <Suspense fallback={<PageChargement />}>{element}</Suspense>
+  </BarriereErreur>
+);
 
 export default function App() {
   return (
@@ -28,24 +40,54 @@ export default function App() {
         <Route path="connexion" element={<Connexion />} />
         <Route path="inscription" element={<Inscription />} />
         <Route path="auth/callback" element={<AuthCallback />} />
-        <Route path="developpeurs" element={<Recherche />} />
-        <Route path="developpeurs/:id" element={<Profil />} />
-        <Route path="profil" element={<ProtectedRoute><Profil /></ProtectedRoute>} />
-        <Route path="profil/modifier" element={<ProtectedRoute><ProfilEdit /></ProtectedRoute>} />
-        <Route path="forum" element={<Forum />} />
-        <Route path="forum/poser" element={<ProtectedRoute><PoserQuestion /></ProtectedRoute>} />
-        <Route path="forum/questions/:id" element={<Question />} />
-        <Route path="projets" element={<Projets />} />
-        <Route path="projets/nouveau" element={<ProtectedRoute><ProjetForm /></ProtectedRoute>} />
-        <Route path="projets/:id" element={<Projet />} />
-        <Route path="projets/:id/modifier" element={<ProtectedRoute><ProjetForm /></ProtectedRoute>} />
-        <Route path="bienvenue" element={<ProtectedRoute><Bienvenue /></ProtectedRoute>} />
-        <Route path="mentorat" element={<Mentorat />} />
-        <Route path="classement" element={<Classement />} />
-        <Route path="messages" element={<ProtectedRoute><Messages /></ProtectedRoute>} />
-        <Route path="messages/:canal" element={<ProtectedRoute><Messages /></ProtectedRoute>} />
-        <Route path="notifications" element={<ProtectedRoute><Notifications /></ProtectedRoute>} />
-        <Route path="*" element={<p className="py-10 text-center text-slate-500">404</p>} />
+        <Route path="developpeurs" element={page(<Recherche />)} />
+        <Route path="developpeurs/:id" element={page(<Profil />)} />
+        <Route
+          path="profil"
+          element={<ProtectedRoute>{page(<Profil />)}</ProtectedRoute>}
+        />
+        <Route
+          path="profil/modifier"
+          element={<ProtectedRoute>{page(<ProfilEdit />)}</ProtectedRoute>}
+        />
+        <Route path="forum" element={page(<Forum />)} />
+        <Route
+          path="forum/poser"
+          element={<ProtectedRoute>{page(<PoserQuestion />)}</ProtectedRoute>}
+        />
+        <Route path="forum/questions/:id" element={page(<Question />)} />
+        <Route path="projets" element={page(<Projets />)} />
+        <Route
+          path="projets/nouveau"
+          element={<ProtectedRoute>{page(<ProjetForm />)}</ProtectedRoute>}
+        />
+        <Route path="projets/:id" element={page(<Projet />)} />
+        <Route
+          path="projets/:id/modifier"
+          element={<ProtectedRoute>{page(<ProjetForm />)}</ProtectedRoute>}
+        />
+        <Route
+          path="bienvenue"
+          element={<ProtectedRoute>{page(<Bienvenue />)}</ProtectedRoute>}
+        />
+        <Route path="mentorat" element={page(<Mentorat />)} />
+        <Route path="classement" element={page(<Classement />)} />
+        <Route
+          path="messages"
+          element={<ProtectedRoute>{page(<Messages />)}</ProtectedRoute>}
+        />
+        <Route
+          path="messages/:canal"
+          element={<ProtectedRoute>{page(<Messages />)}</ProtectedRoute>}
+        />
+        <Route
+          path="notifications"
+          element={<ProtectedRoute>{page(<Notifications />)}</ProtectedRoute>}
+        />
+        <Route
+          path="*"
+          element={<p className="py-10 text-center text-slate-500">404</p>}
+        />
       </Route>
     </Routes>
   );
