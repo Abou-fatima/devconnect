@@ -1,4 +1,11 @@
 require("dotenv").config();
+
+if (process.env.DNS_SERVERS) {
+  require("dns").setServers(
+    process.env.DNS_SERVERS.split(",").map((s) => s.trim()),
+  );
+}
+
 const path = require("path");
 
 const env = {
