@@ -11,13 +11,15 @@ import vocalFr from './vocal.fr.json';
 import vocalEn from './vocal.en.json';
 import onboardingFr from './onboarding.fr.json';
 import onboardingEn from './onboarding.en.json';
+import aideFr from './aide.fr.json';
+import aideEn from './aide.en.json';
 
 let saved = null;
 try { saved = localStorage.getItem('lang'); } catch { /* ignore */ }
 const initial = saved || (navigator.language || 'fr').slice(0, 2);
 
 i18n.use(initReactI18next).init({
-  resources: { fr: { translation: { ...fr, projets: projetsFr, mentorat: mentoratFr, vocal: vocalFr, onboarding: onboardingFr } }, en: { translation: { ...en, projets: projetsEn, mentorat: mentoratEn, vocal: vocalEn, onboarding: onboardingEn } } },
+  resources: { fr: { translation: { ...fr, projets: projetsFr, mentorat: mentoratFr, vocal: vocalFr, onboarding: onboardingFr, aide: aideFr } }, en: { translation: { ...en, projets: projetsEn, mentorat: mentoratEn, vocal: vocalEn, onboarding: onboardingEn, aide: aideEn } } },
   lng: ['fr', 'en'].includes(initial) ? initial : 'fr',
   fallbackLng: 'fr',
   interpolation: { escapeValue: false }

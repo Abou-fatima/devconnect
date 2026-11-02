@@ -1,0 +1,41 @@
+{
+  "bouton": "Help",
+  "titre": "How can we help?",
+  "recherche": "Search a word: reputation, mentor, voice…",
+  "aucun": "Nothing matches. Ask the community, they will answer.",
+  "poser": "Ask the forum",
+  "fermer": "Close help",
+  "ouvrir": "Open help",
+  "astuce_ok": "Got it",
+  "astuce_titre": "Tip",
+  "astuces": {
+    "forum": "Search for your question first: someone may have already answered it. Otherwise, click “Ask a question”.",
+    "poser": "A precise title and the exact error message help others answer quickly. Your draft is kept if you leave the page.",
+    "question": "Upvote useful answers. If one solves your problem, mark it as accepted: its author earns points.",
+    "projets": "Browse projects and click “Join” to offer your help to a team.",
+    "projet_nouveau": "Describe the problem your project solves and the skills you need: the right people will find you more easily.",
+    "projet": "Team members have a task board: to do, in progress, done.",
+    "mentorat": "A mentor supports up to 5 people. You can have 3 pending requests at once: choose wisely.",
+    "messages": "Join the channel of your technology or city. You can also send a voice message, it will be transcribed to text.",
+    "classement": "The leaderboard rewards help given: upvoted and accepted answers.",
+    "developpeurs": "Filter by technology, country or level to find a teammate or a mentor."
+  },
+  "faq": [
+    { "id": "debut", "q": "Where do I start?", "mots": "start new first step profile", "r": "Complete your profile (level, technologies, goal), then browse the forum. Asking a question or answering one is the best way to join the community.", "lien": "/profil/modifier", "lien_texte": "Complete my profile" },
+    { "id": "question", "q": "How do I ask a question?", "mots": "forum post question ask", "r": "Go to the forum, click “Ask a question”, write a precise title, describe your problem with the error message and add up to 5 tags. Similar questions are suggested before you publish.", "lien": "/forum/poser", "lien_texte": "Ask a question" },
+    { "id": "reputation", "q": "How do I earn reputation?", "mots": "points reputation vote badge", "r": "+10 when your answer gets an upvote, +5 for your question, +15 when your answer is accepted. A downvote removes 2 points. Badges arrive at 50, 200 and 500 points.", "lien": "/classement", "lien_texte": "See the leaderboard" },
+    { "id": "accepter", "q": "How do I mark an answer as accepted?", "mots": "accept solved answer", "r": "On your question, click the check mark next to the answer that helped. The question becomes “solved”.", "lien": "/forum", "lien_texte": "Go to the forum" },
+    { "id": "projet", "q": "How do I publish my project?", "mots": "project publish showcase", "r": "In “Projects”, click “New project”, describe it and list the skills you are looking for.", "lien": "/projets/nouveau", "lien_texte": "New project" },
+    { "id": "rejoindre", "q": "How do I join a project team?", "mots": "apply join team collaborate", "r": "Open the project and click “Join” with a short message. The owner accepts or declines, and you get a notification.", "lien": "/projets", "lien_texte": "See projects" },
+    { "id": "taches", "q": "Where are a project's tasks?", "mots": "tasks board kanban project team", "r": "On the project page: the board has three columns, to do, in progress and done. Only the owner and members can edit it.", "lien": "/projets", "lien_texte": "My projects" },
+    { "id": "mentor", "q": "How do I find a mentor?", "mots": "mentoring mentor learn guidance", "r": "In “Mentoring”, pick a mentor, explain why you are reaching out and send the request. You can have 3 pending requests.", "lien": "/mentorat", "lien_texte": "Find a mentor" },
+    { "id": "devenir_mentor", "q": "How do I become a mentor?", "mots": "mentor become offer help", "r": "In “Edit my profile”, add the goal “Offer mentoring”. You can support up to 5 people.", "lien": "/profil/modifier", "lien_texte": "Edit my profile" },
+    { "id": "chat", "q": "How do I chat live?", "mots": "chat messages channel city stack private", "r": "In “Messages”, join a technology or city channel, or write privately to a developer from their profile.", "lien": "/messages", "lien_texte": "Open messages" },
+    { "id": "vocal", "q": "How do I send a voice message?", "mots": "voice audio mic microphone transcription", "r": "Press the microphone in the message area, speak, then send. Allow the microphone in your browser. The transcribed text appears under the audio when the service is on. The microphone requires a secure connection (https).", "lien": "/messages", "lien_texte": "Open messages" },
+    { "id": "langue", "q": "How do I change the language?", "mots": "language french english francais", "r": "Use the FR / EN switch at the top right. Your choice is remembered.", "lien": "", "lien_texte": "" },
+    { "id": "hors_ligne", "q": "Does it work offline?", "mots": "offline pwa install phone", "r": "Pages you already visited stay readable offline. You can install DevConnect on your phone from the browser menu (“Add to home screen”).", "lien": "", "lien_texte": "" },
+    { "id": "notifications", "q": "Where are my notifications?", "mots": "notification bell alert", "r": "Click the bell at the top. You are notified of answers, votes, applications and mentoring requests.", "lien": "/notifications", "lien_texte": "My notifications" },
+    { "id": "mot_de_passe", "q": "I can't sign in", "mots": "login password code otp github", "r": "You can sign in with email and password, with a code sent by email, or with GitHub. Check your email address and wait a few minutes if you tried several times.", "lien": "/connexion", "lien_texte": "Sign in" },
+    { "id": "signaler", "q": "How do I report content?", "mots": "report abuse moderation spam", "r": "Use the “Report” button on the question or answer. Administrators review reports.", "lien": "", "lien_texte": "" }
+  ]
+}
