@@ -28,7 +28,10 @@ export default defineConfig({
         runtimeCaching: [
           {
             // F-42 : lecture hors-ligne des contenus déjà consultés
-            urlPattern: ({ url, request }) => request.method === 'GET' && url.pathname.startsWith('/api/') && !url.pathname.startsWith('/api/auth'),
+            // Jamais en cache : tout ce qui est propre à la personne connectée (sur un téléphone partagé, la suivante ne doit rien retrouver).
+            urlPattern: ({ url, request }) => request.method === 'GET' && url.pathname.startsWith('/api/')
+              && !/^\/api\/(auth|notifications|chat|admin|mentorat\/mes|users\/me)(\/|$)/.test(url.pathname)
+              && !/\/(taches|candidatures)(\/|$)/.test(url.pathname),
             handler: 'NetworkFirst',
             options: { cacheName: 'api-get', networkTimeoutSeconds: 4, expiration: { maxEntries: 100, maxAgeSeconds: 7 * 24 * 3600 } }
           }

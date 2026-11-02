@@ -1,0 +1,73 @@
+# Vérifications automatiques à chaque push et à chaque PR : une PR qui casse les tests ou la compilation est signalée avant le merge.
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  serveur:
+    name: Serveur (syntaxe + tests)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: server
+    env:
+      JWT_SECRET: secret-de-test-uniquement-0123456789
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: server/package-lock.json
+      - run: npm ci
+      - run: npm run check
+      - run: npm test
+
+  client:
+    name: Client (compilation)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: client
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: client/package-lock.json
+      - run: npm ci
+      - run: npm run build
+
+  conformite:
+    name: Licences et vulnérabilités (informatif)
+    runs-on: ubuntu-latest
+    # Règlement CADEV art. 6 : aucune licence GPL / AGPL / LGPL dans le code livré. Ce contrôle prévient ; il ne bloque pas le merge.
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Licences du serveur
+        working-directory: server
+        run: |
+          npm ci
+          npx --yes license-checker-rseidelsohn --production --summary --failOn "GPL-2.0;GPL-3.0;AGPL-3.0;LGPL-2.1;LGPL-3.0;GPL-3.0-or-later;LGPL-3.0-or-later"
+      - name: Licences du client
+        working-directory: client
+        run: |
+          npm ci
+          npx --yes license-checker-rseidelsohn --production --summary --failOn "GPL-2.0;GPL-3.0;AGPL-3.0;LGPL-2.1;LGPL-3.0;GPL-3.0-or-later;LGPL-3.0-or-later"
+      - name: Vulnérabilités connues (niveau élevé)
+        run: |
+          npm audit --omit=dev --audit-level=high --prefix server
+          npm audit --omit=dev --audit-level=high --prefix client
