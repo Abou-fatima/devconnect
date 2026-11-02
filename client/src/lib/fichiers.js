@@ -1,4 +1,4 @@
-// Fichiers envoyés (photos). Le serveur renvoie des adresses relatives (/uploads/images/x.webp) :
+// Fichiers envoyés (photos). Le serveur renvoie des adresses relatives (/uploads/images/x.jpg) :
 // en production sur un autre domaine, on les préfixe par l'adresse de l'API (VITE_API_URL).
 const API = import.meta.env.VITE_API_URL || '';
 
@@ -7,7 +7,7 @@ export const urlFichier = (url) => (typeof url === 'string' && url.startsWith('/
 const TAILLE_MAX = 5 * 1024 * 1024; // limite du serveur
 
 /* Réduit une photo avant l'envoi : un téléphone produit 3 à 8 Mo, ce qui est long et cher sur une connexion lente
-   (et dépasse la limite de 5 Mo). Le serveur la convertit ensuite en WebP. Si la réduction échoue (format que le
+   (et dépasse la limite de 5 Mo). Le serveur en vérifie ensuite le format. Si la réduction échoue (format que le
    navigateur ne sait pas lire), on envoie l'original s'il passe, sinon on renvoie une erreur claire. */
 export async function preparerImage(fichier, cote = 1280, qualite = 0.85) {
   if (!fichier.type.startsWith('image/')) throw new Error('type');

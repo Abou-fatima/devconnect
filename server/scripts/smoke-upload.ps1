@@ -1,5 +1,5 @@
-# Test de bout en bout de l'envoi d'images (conversion WebP) pour Windows PowerShell.
-# Serveur lance (npm run dev) + MongoDB demarre + "npm install" fait dans server (module sharp).
+# Test de bout en bout de l'envoi d'images (controle du format) pour Windows PowerShell.
+# Serveur lance (npm run dev) + MongoDB demarre + dans server.
 # Usage :  powershell -ExecutionPolicy Bypass -File scripts/smoke-upload.ps1
 param([string]$Base = "http://localhost:4000")
 
@@ -67,7 +67,7 @@ function Envoyer($token, $champs, $octets, $nom, $type) {
   return Lire $req
 }
 
-# Image PNG de test, volontairement grande (2400 x 1200) pour verifier la reduction a 1600 px
+# Image PNG de test (2400 x 1200)
 function NouvellePng($largeur, $hauteur) {
   $bmp = New-Object System.Drawing.Bitmap $largeur, $hauteur
   $g = [System.Drawing.Graphics]::FromImage($bmp)
@@ -98,17 +98,16 @@ $gros = New-Object byte[] (6 * 1024 * 1024)
 (New-Object System.Random).NextBytes($gros)
 Check "fichier trop gros (6 Mo)" (Envoyer $token @{ cible_type = "user" } $gros "gros.png" "image/png").status 413
 
-Write-Host "== Photo de profil : conversion en WebP"
+Write-Host "== Photo de profil : enregistrement"
 $r = Envoyer $token @{ cible_type = "user" } $png "moi.png" "image/png"
 Check "envoi accepte" $r.status 201
 $url1 = $r.json.data.url
-Check "adresse /uploads/images/xxx.webp" ($url1 -match '^/uploads/images/[a-z0-9]+-[a-f0-9]{16}\.webp$') $true
-Check "reduite a 1600 px de large" $r.json.data.metadata.largeur 1600
-Check "type enregistre : webp" $r.json.data.mime_type "image/webp"
+Check "adresse /uploads/images/xxx.png (vrai format)" ($url1 -match '^/uploads/images/[a-z0-9]+-[a-f0-9]{16}\.png$') $true
+Check "dimensions lues" $r.json.data.metadata.largeur 2400
+Check "type enregistre : png" $r.json.data.mime_type "image/png"
 $f = Call GET $url1
 Check "fichier servi" $f.status 200
-Check "servi en image/webp" $f.type "image/webp"
-Check "plus leger que le PNG d'origine" ($f.taille -lt $png.Length) $true
+Check "servi en image/png" $f.type "image/png"
 
 Write-Host "== Photo dans le profil"
 Check "profil mis a jour automatiquement" (Call GET "/api/auth/me" $null $token).json.utilisateur.profil.photo $url1
@@ -120,7 +119,7 @@ Write-Host "== Une seule photo a la fois"
 $r2 = Envoyer $token @{ cible_type = "user" } (NouvellePng 400 400) "moi2.png" "image/png"
 Check "2e envoi accepte" $r2.status 201
 Check "nouvelle adresse" ($r2.json.data.url -ne $url1) $true
-Check "image ne s'agrandit pas (400 px)" $r2.json.data.metadata.largeur 400
+Check "dimensions conservees (400 px)" $r2.json.data.metadata.largeur 400
 Check "ancienne photo supprimee" (Call GET $url1).status 404
 Check "nouvelle photo servie" (Call GET $r2.json.data.url).status 200
 Check "profil pointe vers la nouvelle photo" (Call GET "/api/auth/me" $null $token).json.utilisateur.profil.photo $r2.json.data.url
