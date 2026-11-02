@@ -4,13 +4,6 @@ const { Server } = require("socket.io");
 
 const env = require("./config/env");
 
-// Certains réseaux refusent les requêtes DNS SRV utilisées par mongodb+srv:// (Atlas).
-// DNS_SERVERS=8.8.8.8,1.1.1.1 dans .env contourne le problème sans changer le réseau.
-if (process.env.DNS_SERVERS) {
-  require("dns").setServers(
-    process.env.DNS_SERVERS.split(",").map((s) => s.trim()),
-  );
-}
 
 env.assertValid();
 
