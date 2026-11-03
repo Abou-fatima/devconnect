@@ -52,19 +52,25 @@ router.post(
     const data = v.register.parse(req.body);
 
     if (await Utilisateur.exists({ email: data.email }))
-      throw new AppError(409, "Cet email est déjà utilisé");
+      throw new AppError(409, "Cet email est déjà utilisé", [
+        { champ: "email", message: "Cet email est déjà utilisé" },
+      ]);
     if (
       data.telephone &&
       (await Utilisateur.exists({ telephone: data.telephone }))
     )
-      throw new AppError(409, "Ce téléphone est déjà utilisé");
+      throw new AppError(409, "Ce téléphone est déjà utilisé", [
+        { champ: "telephone", message: "Ce téléphone est déjà utilisé" },
+      ]);
     if (
       await Utilisateur.exists({ pseudo: data.pseudo }).collation({
         locale: "en",
         strength: 2,
       })
     )
-      throw new AppError(409, "Ce pseudo est déjà pris");
+      throw new AppError(409, "Ce pseudo est déjà pris", [
+        { champ: "pseudo", message: "Ce pseudo est déjà pris" },
+      ]);
 
     const user = await Utilisateur.create({
       pseudo: data.pseudo,
@@ -150,7 +156,9 @@ router.post(
         strength: 2,
       })
     )
-      throw new AppError(409, "Ce pseudo est déjà pris");
+      throw new AppError(409, "Ce pseudo est déjà pris", [
+        { champ: "pseudo", message: "Ce pseudo est déjà pris" },
+      ]);
 
     user = await Utilisateur.create({
       pseudo: body.pseudo,

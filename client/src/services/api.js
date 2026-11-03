@@ -1,4 +1,5 @@
 import axios from "axios";
+import { texteErreur, traduireMessage, typeErreur } from "../lib/erreurs";
 
 const api = axios.create({
   baseURL: `${import.meta.env.VITE_API_URL || ""}/api`,
@@ -37,15 +38,21 @@ api.interceptors.response.use(
   },
 );
 
-// Message lisible à partir de { erreur, details: [{ champ, message }] }
+// Message lisible : cause technique claire (pas de connexion, serveur en panne…), sinon message du serveur.
 export function messageErreur(err, defaut = "Une erreur est survenue") {
+  const type = typeErreur(err);
+  if (type) return texteErreur(type);
   const d = err?.response?.data;
-  if (!d) return err?.code === "ERR_NETWORK" ? "Serveur injoignable" : defaut;
+  if (!d) return defaut;
   if (Array.isArray(d.details) && d.details.length)
     return d.details
-      .map((x) => (x.champ ? `${x.champ} : ${x.message}` : x.message))
+      .map((x) =>
+        x.champ
+          ? `${x.champ} : ${traduireMessage(x.message)}`
+          : traduireMessage(x.message),
+      )
       .join(" · ");
-  return d.erreur || defaut;
+  return traduireMessage(d.erreur) || defaut;
 }
 
 export default api;

@@ -1,9 +1,11 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { register } from "../services/auth";
 import BoutonGithub from "../components/BoutonGithub";
 import { messageErreur } from "../services/api";
+import { erreursChamps } from "../lib/erreurs";
+import { validerInscription } from "../lib/validation";
 import { useAuth } from "../context/AuthContext";
 import Field from "../components/Field";
 
@@ -20,13 +22,28 @@ export default function Inscription() {
     ville: "",
   });
   const [erreur, setErreur] = useState("");
+  const [erreurs, setErreurs] = useState({});
   const [envoi, setEnvoi] = useState(false);
+  const formRef = useRef(null);
 
-  const change = (k) => (e) => setForm((f) => ({ ...f, [k]: e.target.value }));
+  const change = (k) => (e) => {
+    setForm((f) => ({ ...f, [k]: e.target.value }));
+    setErreurs((x) => (x[k] ? { ...x, [k]: undefined } : x));
+  };
+  const focusPremiere = () =>
+    requestAnimationFrame(() =>
+      formRef.current?.querySelector('[aria-invalid="true"]')?.focus(),
+    );
 
   const submit = async (e) => {
     e.preventDefault();
     setErreur("");
+    const locales = validerInscription(form, t);
+    setErreurs(locales);
+    if (Object.keys(locales).length) {
+      focusPremiere();
+      return;
+    }
     setEnvoi(true);
     // Les champs optionnels vides ne sont pas envoyés (l'API rejette une chaîne vide).
     const body = Object.fromEntries(
@@ -36,7 +53,11 @@ export default function Inscription() {
       setSession(await register(body));
       navigate("/bienvenue", { replace: true }); // parcours de bienvenue : un compte neuf n'a encore ni niveau ni technologies
     } catch (err) {
-      setErreur(messageErreur(err, t("commun.erreur")));
+      const champs = erreursChamps(err);
+      if (Object.keys(champs).some((k) => k in form)) {
+        setErreurs(champs);
+        focusPremiere();
+      } else setErreur(messageErreur(err, t("commun.erreur")));
     } finally {
       setEnvoi(false);
     }
@@ -48,45 +69,49 @@ export default function Inscription() {
         <h1 className="mb-4 text-2xl font-bold">
           {t("auth.titre_inscription")}
         </h1>
-        <form onSubmit={submit} className="card space-y-4">
+        <form
+          ref={formRef}
+          onSubmit={submit}
+          noValidate
+          className="card space-y-4"
+        >
           {erreur && (
             <div className="erreur" role="alert">
               {erreur}
             </div>
           )}
-          <Field label={t("auth.pseudo")}>
+          <Field label={t("auth.pseudo")} erreur={erreurs.pseudo}>
             <input
               className="input"
               value={form.pseudo}
               onChange={change("pseudo")}
-              required
-              minLength={3}
               maxLength={30}
               autoComplete="username"
             />
           </Field>
-          <Field label={t("auth.email")}>
+          <Field label={t("auth.email")} erreur={erreurs.email}>
             <input
               className="input"
               type="email"
               value={form.email}
               onChange={change("email")}
-              required
               autoComplete="email"
             />
           </Field>
-          <Field label={t("auth.mdp")} hint={t("auth.mdp_aide")}>
+          <Field
+            label={t("auth.mdp")}
+            hint={t("auth.mdp_aide")}
+            erreur={erreurs.mot_de_passe}
+          >
             <input
               className="input"
               type="password"
               value={form.mot_de_passe}
               onChange={change("mot_de_passe")}
-              required
-              minLength={8}
               autoComplete="new-password"
             />
           </Field>
-          <Field label={t("auth.telephone")}>
+          <Field label={t("auth.telephone")} erreur={erreurs.telephone}>
             <input
               className="input"
               type="tel"
@@ -96,7 +121,7 @@ export default function Inscription() {
             />
           </Field>
           <div className="grid grid-cols-2 gap-3">
-            <Field label={t("auth.pays")}>
+            <Field label={t("auth.pays")} erreur={erreurs.pays}>
               <input
                 className="input uppercase"
                 value={form.pays}
@@ -105,7 +130,7 @@ export default function Inscription() {
                 placeholder="GN"
               />
             </Field>
-            <Field label={t("auth.ville")}>
+            <Field label={t("auth.ville")} erreur={erreurs.ville}>
               <input
                 className="input"
                 value={form.ville}

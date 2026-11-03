@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import {
   Link,
   useLocation,
@@ -9,6 +9,8 @@ import { useTranslation } from "react-i18next";
 import { login } from "../services/auth";
 import BoutonGithub from "../components/BoutonGithub";
 import { messageErreur } from "../services/api";
+import { erreursChamps } from "../lib/erreurs";
+import { validerConnexion } from "../lib/validation";
 import { useAuth } from "../context/AuthContext";
 import Field from "../components/Field";
 
@@ -22,19 +24,43 @@ export default function Connexion() {
   const [erreur, setErreur] = useState(
     params.get("erreur") === "github" ? t("auth.erreur_github") : "",
   );
+  const [erreurs, setErreurs] = useState({});
   const [envoi, setEnvoi] = useState(false);
+  const formRef = useRef(null);
 
-  const change = (k) => (e) => setForm((f) => ({ ...f, [k]: e.target.value }));
+  const change = (k) => (e) => {
+    setForm((f) => ({ ...f, [k]: e.target.value }));
+    setErreurs((x) => (x[k] ? { ...x, [k]: undefined } : x));
+  };
+  const focusPremiere = () =>
+    requestAnimationFrame(() =>
+      formRef.current?.querySelector('[aria-invalid="true"]')?.focus(),
+    );
 
   const submit = async (e) => {
     e.preventDefault();
     setErreur("");
+    const locales = validerConnexion(form, t);
+    setErreurs(locales);
+    if (Object.keys(locales).length) {
+      focusPremiere();
+      return;
+    }
     setEnvoi(true);
     try {
       setSession(await login(form));
       navigate(location.state?.from || "/profil", { replace: true });
     } catch (err) {
-      setErreur(messageErreur(err, t("commun.erreur")));
+      if (err?.response?.status === 401) {
+        setErreurs({ mot_de_passe: t("erreurs.identifiants") });
+        focusPremiere();
+      } else {
+        const champs = erreursChamps(err);
+        if (Object.keys(champs).some((k) => k in form)) {
+          setErreurs(champs);
+          focusPremiere();
+        } else setErreur(messageErreur(err, t("commun.erreur")));
+      }
     } finally {
       setEnvoi(false);
     }
@@ -44,30 +70,32 @@ export default function Connexion() {
     <div className="mx-auto max-w-md">
       <div className="anim-scale">
         <h1 className="mb-4 text-2xl font-bold">{t("auth.titre_connexion")}</h1>
-        <form onSubmit={submit} className="card space-y-4">
+        <form
+          ref={formRef}
+          onSubmit={submit}
+          noValidate
+          className="card space-y-4"
+        >
           {erreur && (
             <div className="erreur" role="alert">
               {erreur}
             </div>
           )}
-          <Field label={t("auth.identifiant")}>
+          <Field label={t("auth.identifiant")} erreur={erreurs.identifiant}>
             <input
               className="input"
               value={form.identifiant}
               onChange={change("identifiant")}
               autoComplete="username"
-              required
-              minLength={3}
             />
           </Field>
-          <Field label={t("auth.mdp")}>
+          <Field label={t("auth.mdp")} erreur={erreurs.mot_de_passe}>
             <input
               className="input"
               type="password"
               value={form.mot_de_passe}
               onChange={change("mot_de_passe")}
               autoComplete="current-password"
-              required
             />
           </Field>
           <button className="btn w-full" disabled={envoi}>

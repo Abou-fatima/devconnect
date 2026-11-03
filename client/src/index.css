@@ -88,3 +88,6 @@ body { @apply bg-slate-50 text-slate-900 antialiased; }
   *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; animation-delay: 0s !important; transition-duration: 0.01ms !important; transition-delay: 0s !important; scroll-behavior: auto !important; }
   .reveal { opacity: 1; transform: none; }
 }
+
+/* Champ en erreur : bordure rouge, le message s'affiche dessous (composant Field) */
+.champ-erreur .input { border-color: #f87171; box-shadow: 0 0 0 2px rgb(248 113 113 / 0.25); }
