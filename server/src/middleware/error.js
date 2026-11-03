@@ -1,4 +1,5 @@
 const { ZodError } = require("zod");
+require("../utils/zodFr"); // messages de validation en français
 const AppError = require("../utils/AppError");
 const env = require("../config/env");
 
