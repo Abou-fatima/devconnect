@@ -15,6 +15,8 @@ import aideFr from "./aide.fr.json";
 import aideEn from "./aide.en.json";
 import erreursFr from "./erreurs.fr.json";
 import erreursEn from "./erreurs.en.json";
+import adminFr from "./admin.fr.json";
+import adminEn from "./admin.en.json";
 
 let saved = null;
 try {
@@ -35,6 +37,7 @@ i18n.use(initReactI18next).init({
         onboarding: onboardingFr,
         aide: aideFr,
         erreurs: erreursFr,
+        admin: adminFr,
       },
     },
     en: {
@@ -46,6 +49,7 @@ i18n.use(initReactI18next).init({
         onboarding: onboardingEn,
         aide: aideEn,
         erreurs: erreursEn,
+        admin: adminEn,
       },
     },
   },
