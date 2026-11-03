@@ -1,14 +1,21 @@
-import { Link, NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
-import { useAuth } from '../context/AuthContext';
-import useOnline from '../hooks/useOnline';
-import LangSwitch from './LangSwitch';
-import NotificationBell from './NotificationBell';
-import NotificationToast from './NotificationToast';
-import AideBouton from './AideBouton';
-import AstucePage from './AstucePage';
+import {
+  Link,
+  NavLink,
+  Outlet,
+  useLocation,
+  useNavigate,
+} from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import { useAuth } from "../context/AuthContext";
+import useOnline from "../hooks/useOnline";
+import LangSwitch from "./LangSwitch";
+import NotificationBell from "./NotificationBell";
+import NotificationToast from "./NotificationToast";
+import AideBouton from "./AideBouton";
+import AstucePage from "./AstucePage";
 
-const lien = ({ isActive }) => `nav-lien px-3 py-2 rounded-lg text-sm font-medium transition-colors ${isActive ? 'nav-actif bg-white/15 text-white' : 'text-white/80 hover:text-white'}`;
+const lien = ({ isActive }) =>
+  `nav-lien px-3 py-2 rounded-lg text-sm font-medium transition-colors ${isActive ? "nav-actif bg-white/15 text-white" : "text-white/80 hover:text-white"}`;
 
 export default function Layout() {
   const { t } = useTranslation();
@@ -17,16 +24,31 @@ export default function Layout() {
   const navigate = useNavigate();
   const { pathname } = useLocation();
 
-  const sortir = () => { logout(); navigate('/'); };
+  const sortir = () => {
+    logout();
+    navigate("/");
+  };
 
   const items = [
-    { to: '/forum', label: t('nav.forum'), icon: '💬' },
-    { to: '/developpeurs', label: t('nav.devs'), icon: '👥' },
-    { to: '/projets', label: t('projets.nav'), icon: '🚀' },
-    { to: '/mentorat', label: t('mentorat.nav'), icon: '🎓', desktopOnly: true },
-    { to: '/classement', label: t('nav.classement'), icon: '🏆' },
-    ...(user ? [{ to: '/messages', label: t('nav.messages'), icon: '✉️' }] : []),
-    user ? { to: '/profil', label: t('nav.profil'), icon: '👤' } : { to: '/connexion', label: t('nav.connexion'), icon: '🔑' }
+    { to: "/forum", label: t("nav.forum"), icon: "💬" },
+    { to: "/developpeurs", label: t("nav.devs"), icon: "👥" },
+    { to: "/projets", label: t("projets.nav"), icon: "🚀" },
+    {
+      to: "/mentorat",
+      label: t("mentorat.nav"),
+      icon: "🎓",
+      desktopOnly: true,
+    },
+    { to: "/classement", label: t("nav.classement"), icon: "🏆" },
+    ...(user
+      ? [{ to: "/messages", label: t("nav.messages"), icon: "✉️" }]
+      : []),
+    ...(user && ["admin", "moderateur"].includes(user.role)
+      ? [{ to: "/admin", label: t("admin.nav"), icon: "🛡️", desktopOnly: true }]
+      : []),
+    user
+      ? { to: "/profil", label: t("nav.profil"), icon: "👤" }
+      : { to: "/connexion", label: t("nav.connexion"), icon: "🔑" },
   ];
   const itemsBas = items.filter((i) => !i.desktopOnly);
 
@@ -35,30 +57,73 @@ export default function Layout() {
       <div key={`b${pathname}`} className="barre-route" aria-hidden />
       <header className="en-tete sticky top-0 z-20 bg-brand text-white shadow">
         <div className="mx-auto flex max-w-5xl items-center justify-between gap-2 px-4 py-3">
-          <Link to="/" className="text-lg font-bold transition-transform duration-200 hover:scale-105">&lt;/&gt; {t('app.nom')}</Link>
+          <Link
+            to="/"
+            className="text-lg font-bold transition-transform duration-200 hover:scale-105"
+          >
+            &lt;/&gt; {t("app.nom")}
+          </Link>
           <nav className="hidden items-center gap-1 md:flex">
-            {items.map((i) => <NavLink key={i.to} to={i.to} className={lien}>{i.label}</NavLink>)}
-            {user && <button onClick={sortir} className="px-3 py-2 text-sm text-white/80 hover:text-white">{t('nav.deconnexion')}</button>}
-            {!user && <NavLink to="/inscription" className={lien}>{t('nav.inscription')}</NavLink>}
+            {items.map((i) => (
+              <NavLink key={i.to} to={i.to} className={lien}>
+                {i.label}
+              </NavLink>
+            ))}
+            {user && (
+              <button
+                onClick={sortir}
+                className="px-3 py-2 text-sm text-white/80 hover:text-white"
+              >
+                {t("nav.deconnexion")}
+              </button>
+            )}
+            {!user && (
+              <NavLink to="/inscription" className={lien}>
+                {t("nav.inscription")}
+              </NavLink>
+            )}
           </nav>
           <div className="flex items-center gap-1">
             {user && <NotificationBell />}
             <LangSwitch />
           </div>
         </div>
-        {!online && <div className="bg-accent px-4 py-1 text-center text-sm text-slate-900">{t('commun.hors_ligne')}</div>}
+        {!online && (
+          <div className="bg-accent px-4 py-1 text-center text-sm text-slate-900">
+            {t("commun.hors_ligne")}
+          </div>
+        )}
       </header>
 
       <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-6 pb-24 md:pb-6">
         <AstucePage />
-        <div key={pathname.split('/').slice(0, 2).join('/')} className="page-enter"><Outlet /></div>
+        <div
+          key={pathname.split("/").slice(0, 2).join("/")}
+          className="page-enter"
+        >
+          <Outlet />
+        </div>
       </main>
 
       {/* Navigation basse, mobile uniquement (mobile-first) */}
-      <nav style={{ gridTemplateColumns: `repeat(${itemsBas.length}, minmax(0, 1fr))` }} className="fixed inset-x-0 bottom-0 z-20 grid border-t border-slate-200 bg-white md:hidden">
+      <nav
+        style={{
+          gridTemplateColumns: `repeat(${itemsBas.length}, minmax(0, 1fr))`,
+        }}
+        className="fixed inset-x-0 bottom-0 z-20 grid border-t border-slate-200 bg-white md:hidden"
+      >
         {itemsBas.map((i) => (
-          <NavLink key={i.to} to={i.to} className={({ isActive }) => `flex flex-col items-center py-2 text-xs transition-colors ${isActive ? 'nav-bas-actif text-brand font-semibold' : 'text-slate-500'}`}>
-            <span className="text-lg" aria-hidden>{i.icon}</span>{i.label}
+          <NavLink
+            key={i.to}
+            to={i.to}
+            className={({ isActive }) =>
+              `flex flex-col items-center py-2 text-xs transition-colors ${isActive ? "nav-bas-actif text-brand font-semibold" : "text-slate-500"}`
+            }
+          >
+            <span className="text-lg" aria-hidden>
+              {i.icon}
+            </span>
+            {i.label}
           </NavLink>
         ))}
       </nav>

@@ -353,6 +353,20 @@ const paths = {
       },
     },
   },
+  "/api/admin/stats": {
+    get: {
+      tags: ["Admin"],
+      summary: "Statistiques de la plateforme (modérateur ou admin)",
+      security: secured,
+      description:
+        "Comptes, forum, projets, messages, signalements, inscriptions et questions des 14 derniers jours, top pays et top étiquettes.",
+      responses: {
+        200: { description: "Statistiques" },
+        401: err("Non connecté"),
+        403: err("Accès refusé"),
+      },
+    },
+  },
   "/api/admin/echanges/{id}": {
     delete: {
       tags: ["Admin"],

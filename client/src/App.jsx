@@ -25,6 +25,7 @@ const PoserQuestion = lazy(() => import("./pages/PoserQuestion"));
 const Classement = lazy(() => import("./pages/Classement"));
 const Messages = lazy(() => import("./pages/Messages"));
 const Notifications = lazy(() => import("./pages/Notifications"));
+const Admin = lazy(() => import("./pages/Admin"));
 
 const page = (element) => (
   <BarriereErreur>
@@ -79,6 +80,14 @@ export default function App() {
         <Route
           path="messages/:canal"
           element={<ProtectedRoute>{page(<Messages />)}</ProtectedRoute>}
+        />
+        <Route
+          path="admin"
+          element={
+            <ProtectedRoute roles={["admin", "moderateur"]}>
+              {page(<Admin />)}
+            </ProtectedRoute>
+          }
         />
         <Route
           path="notifications"
