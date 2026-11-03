@@ -47,7 +47,7 @@ Objectif : que **chaque membre** puisse expliquer le projet. Le critère « maî
 
 **Comment évitez-vous les abus ?** Limiteurs par route, limite de messages du chat, plafonds (5 accompagnés par mentor, 3 demandes en attente, 100 tâches par projet).
 
-**Comment avez-vous testé ?** Tests de logique (environ 85), scripts de bout en bout, CI sur chaque PR.
+**Comment avez-vous testé ?** Tests de logique (95), scripts de bout en bout, CI sur chaque PR.
 
 **Fonctionne-t-il sur mauvaise connexion ?** PWA, pages chargées à la demande, cache des lectures ; le cache est vidé à la déconnexion.
 

@@ -85,7 +85,7 @@ Canaux `stack:<slug>`, `ville:<nom>`, `prive:<idA>_<idB>`. Connexion refusée sa
 
 ## 5. Qualité et tests
 
-- Tests de logique du serveur (`npm test`, environ 85 tests : forum, collaboration, mentorat, tâches, seed, audio, upload) ; scripts de test de bout en bout PowerShell (`scripts/smoke-*.ps1`).
+- Tests de logique du serveur (`npm test`, 95 tests : forum, collaboration, mentorat, tâches, seed, audio, upload) ; scripts de test de bout en bout PowerShell (`scripts/smoke-*.ps1`).
 - Intégration continue GitHub Actions : installation, tests, build du client à chaque PR.
 - API documentée (Swagger).
 - Branches `feature` → PR → `develop` ; revue avant fusion.
