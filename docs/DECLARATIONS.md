@@ -41,11 +41,27 @@ Aucun composant sous licence GPL, AGPL ou LGPL n'est utilisé en production.
 
 Vite (MIT), @vitejs/plugin-react (MIT), Tailwind CSS 4 et @tailwindcss/vite (MIT), vite-plugin-pwa (MIT). `lightningcss` (MPL-2.0, licence à copyleft faible limité aux fichiers) n'est utilisé que pendant la compilation et n'est pas redistribué avec l'application.
 
-### Points à vérifier avant soumission
+### Contrôle réalisé le 2 novembre 2026
 
-- 3 dépendances transitives du serveur ont un champ licence vide dans leur métadonnée (`busboy`, `streamsearch`, `xmlhttprequest-ssl`) : ouvrir leur dépôt pour confirmer MIT, et le noter ici.
-- Confirmer la licence exacte de `nodemailer` dans le lockfile.
-- Polices, icônes, images : lister ici leur source et licence si utilisées (aucune ressource sous licence incompatible).
+Commande : `npx license-checker-rseidelsohn --production --summary` dans `server/` puis `client/`, avec `--failOn "GPL-2.0;GPL-3.0;AGPL-3.0;LGPL-2.1;LGPL-3.0"`.
+
+| Dossier | Résultat |
+|---|---|
+| Serveur | Aucune licence interdite. MIT, Apache-2.0, ISC, BSD-2-Clause, BSD-3-Clause, MIT-0. La mention « UNKNOWN » désigne notre propre paquet `devconnect-server` (sans champ licence), pas une dépendance. |
+| Client | Aucune licence interdite. 47 paquets MIT. La mention « UNLICENSED » désigne notre propre paquet `devconnect-client`. |
+
+Licences précisées par ce contrôle : `busboy` MIT, `streamsearch` MIT, `nodemailer` MIT-0, `dotenv` BSD-2-Clause, `qs` BSD-3-Clause, `bson`, `mongodb`, `kareem`, `denque`, `cluster-key-slot`, `swagger-ui-dist` et `@scarf/scarf` Apache-2.0. `xmlhttprequest-ssl` n'est pas livré en production (dépendance du client de test `socket.io-client`, en développement).
+
+### Sécurité des dépendances (`npm audit --omit=dev`)
+
+Les failles corrigeables sans changement majeur sont traitées par `npm audit fix` (`body-parser`, `multer`, `qs`, `follow-redirects`). Restent deux paquets dont la correction impose une nouvelle version majeure :
+
+| Paquet | Faille | Décision |
+|---|---|---|
+| `zod` 3 (serveur) | Consommation mémoire sur de très grandes collections | Risque limité : corps JSON plafonné à 1 Mo et longueurs maximales dans les schémas. Passage à zod 4 reporté après le concours pour ne pas risquer une régression. |
+| `react-router-dom` 6 (client) | Redirection ouverte avec une barre oblique inverse dans un lien, et un défaut qui ne concerne que le rendu côté serveur | Gravité modérée ; l'application n'utilise pas le rendu côté serveur. Mise à jour majeure reportée. |
+
+`nodemailer` : mise à jour vers la version corrigée à tester avec les tests existants et l'envoi du code OTP.
 
 ### Services externes (optionnels, activés par variables d'environnement)
 
