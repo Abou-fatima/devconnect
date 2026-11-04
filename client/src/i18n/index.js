@@ -17,6 +17,10 @@ import erreursFr from "./erreurs.fr.json";
 import erreursEn from "./erreurs.en.json";
 import adminFr from "./admin.fr.json";
 import adminEn from "./admin.en.json";
+import salonsFr from "./salons.fr.json";
+import salonsEn from "./salons.en.json";
+import visiteurFr from "./visiteur.fr.json";
+import visiteurEn from "./visiteur.en.json";
 
 let saved = null;
 try {
@@ -38,6 +42,8 @@ i18n.use(initReactI18next).init({
         aide: aideFr,
         erreurs: erreursFr,
         admin: adminFr,
+        salons: salonsFr,
+        visiteur: visiteurFr,
       },
     },
     en: {
@@ -50,6 +56,8 @@ i18n.use(initReactI18next).init({
         aide: aideEn,
         erreurs: erreursEn,
         admin: adminEn,
+        salons: salonsEn,
+        visiteur: visiteurEn,
       },
     },
   },

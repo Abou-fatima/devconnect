@@ -26,6 +26,7 @@ const Classement = lazy(() => import("./pages/Classement"));
 const Messages = lazy(() => import("./pages/Messages"));
 const Notifications = lazy(() => import("./pages/Notifications"));
 const Admin = lazy(() => import("./pages/Admin"));
+const SalonInvitation = lazy(() => import("./pages/SalonInvitation"));
 
 const page = (element) => (
   <BarriereErreur>
@@ -88,6 +89,10 @@ export default function App() {
               {page(<Admin />)}
             </ProtectedRoute>
           }
+        />
+        <Route
+          path="salons/invitation/:code"
+          element={<ProtectedRoute>{page(<SalonInvitation />)}</ProtectedRoute>}
         />
         <Route
           path="notifications"

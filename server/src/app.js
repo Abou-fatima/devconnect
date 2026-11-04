@@ -69,6 +69,7 @@ app.use("/api/mentorat", require("./routes/mentorat"));
 app.use("/api/echanges", require("./routes/echanges"));
 app.use("/api/classement", require("./routes/classement"));
 app.use("/api/admin", require("./routes/admin"));
+app.use("/api/salons", require("./routes/salons"));
 communication.mountRoutes(app);
 
 app.use(notFound);

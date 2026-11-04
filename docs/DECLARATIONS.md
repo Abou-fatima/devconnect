@@ -67,6 +67,10 @@ Les failles corrigeables sans changement majeur sont traitées par `npm audit fi
 
 MongoDB Atlas (base), Redis, Cloudinary (images), API de transcription compatible OpenAI Whisper (par exemple Groq), GitHub OAuth. Ce sont des services, pas du code embarqué.
 
+### Illustrations
+
+Trois illustrations décoratives (`client/src/assets/illustrations/`) accompagnent le parcours de bienvenue. **À compléter avant soumission : source exacte et licence** (par exemple unDraw, dont la licence autorise l'usage commercial sans attribution). Elles sont ajoutées comme images, sans dépendance supplémentaire.
+
 ## 2. Déclaration d'usage de l'IA
 
 **Outil utilisé :** assistant de programmation Claude (Anthropic, modèle Claude Sonnet 5.5, via Claude Code), utilisé par le lead de l'équipe.

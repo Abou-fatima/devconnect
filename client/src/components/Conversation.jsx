@@ -22,6 +22,8 @@ import useEnregistreurVocal, {
   vocalPossible,
 } from "../hooks/useEnregistreurVocal";
 import { envoyerVocal } from "../services/audio";
+import { getSalon, rejoindreSalon } from "../services/salons";
+import SalonInfos from "./SalonInfos";
 
 const COULEURS = [
   "#1d4ed8",
@@ -41,7 +43,7 @@ const memeJour = (a, b) =>
 const heure = (d, lang) =>
   new Date(d).toLocaleTimeString(lang, { hour: "2-digit", minute: "2-digit" });
 
-export default function Conversation({ canal, onRetour, onNom }) {
+export default function Conversation({ canal, onRetour, onNom, onChange }) {
   const { t, i18n } = useTranslation();
   const { user } = useAuth();
   const { socket, connecte } = useRealtime();
@@ -58,6 +60,9 @@ export default function Conversation({ canal, onRetour, onNom }) {
   const [erreurSalon, setErreurSalon] = useState("");
   const [ecrivent, setEcrivent] = useState({});
   const [autre, setAutre] = useState(null); // interlocuteur d'une conversation privée
+  const [salon, setSalon] = useState(null); // salon créé par un utilisateur : nom, nombre de membres, rôle
+  const [infosOuvert, setInfosOuvert] = useState(false);
+  const [rejoint, setRejoint] = useState({ occupe: false, erreur: "" });
 
   const defil = useRef(null);
   const suivreBas = useRef(true);
@@ -86,6 +91,23 @@ export default function Conversation({ canal, onRetour, onNom }) {
       actif = false;
     };
   }, [autreId, canal]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Salon créé par un utilisateur : on récupère son nom (et on sait si on en est membre).
+  const salonId = infos?.type === "salon" ? infos.valeur : null;
+  useEffect(() => {
+    setSalon(null);
+    setInfosOuvert(false);
+    if (!salonId) return undefined;
+    let actif = true;
+    getSalon(salonId)
+      .then((d) => {
+        if (actif) setSalon(d.salon);
+      })
+      .catch(() => {});
+    return () => {
+      actif = false;
+    };
+  }, [salonId]);
 
   // Historique (page 1) à chaque changement de salon.
   const chargerHistorique = useCallback(() => {
@@ -340,15 +362,72 @@ export default function Conversation({ canal, onRetour, onNom }) {
       ? `#${infos.valeur}`
       : infos.type === "ville"
         ? majuscule(infos.valeur)
-        : autre
-          ? `@${autre.pseudo}`
-          : "…";
+        : infos.type === "salon"
+          ? salon?.nom || "…"
+          : autre
+            ? `@${autre.pseudo}`
+            : "…";
   const sousTitre =
     infos.type === "stack"
       ? t("chat.sous_stack")
       : infos.type === "ville"
         ? t("chat.sous_ville")
-        : t("chat.sous_prive");
+        : infos.type === "salon"
+          ? salon
+            ? `${t(`salons.visibilite_${salon.visibilite}`)} · ${t("salons.membres", { count: salon.nb_membres })}`
+            : ""
+          : t("chat.sous_prive");
+
+  // Salon public pas encore rejoint : fiche et bouton « Rejoindre » à la place de la conversation.
+  if (infos.type === "salon" && salon && !salon.membre) {
+    const rejoindre = async () => {
+      setRejoint({ occupe: true, erreur: "" });
+      try {
+        await rejoindreSalon(salon.id);
+        onChange?.();
+      } catch (e) {
+        setRejoint({
+          occupe: false,
+          erreur: messageErreur(e, t("commun.erreur")),
+        });
+      }
+    };
+    return (
+      <div className="m-auto max-w-sm px-6 py-10 text-center">
+        <button
+          type="button"
+          onClick={onRetour}
+          className="mb-4 text-sm text-slate-500 underline md:hidden"
+        >
+          ← {t("chat.retour")}
+        </button>
+        <p className="text-4xl" aria-hidden>
+          💬
+        </p>
+        <h2 className="mt-2 text-xl font-bold">{salon.nom}</h2>
+        {salon.description && (
+          <p className="mt-1 text-sm text-slate-600">{salon.description}</p>
+        )}
+        <p className="mt-1 text-xs text-slate-500">
+          {t("salons.membres", { count: salon.nb_membres })}
+        </p>
+        <p className="mt-3 text-sm text-slate-600">{t("salons.carte_texte")}</p>
+        {rejoint.erreur && (
+          <p className="erreur mt-3" role="alert">
+            {rejoint.erreur}
+          </p>
+        )}
+        <button
+          type="button"
+          className="btn mt-4"
+          disabled={rejoint.occupe}
+          onClick={rejoindre}
+        >
+          {rejoint.occupe ? t("commun.chargement") : t("salons.rejoindre")}
+        </button>
+      </div>
+    );
+  }
   const phrase = (liste, cle) =>
     liste.length === 0
       ? ""
@@ -478,6 +557,26 @@ export default function Conversation({ canal, onRetour, onNom }) {
             )}
           </p>
         </div>
+        {infos.type === "salon" && salon?.membre && (
+          <>
+            <button
+              type="button"
+              onClick={() => setInfosOuvert(true)}
+              className="btn-outline !px-3 !py-1 text-sm"
+            >
+              {t("salons.inviter")}
+            </button>
+            <button
+              type="button"
+              onClick={() => setInfosOuvert(true)}
+              aria-label={t("salons.infos")}
+              title={t("salons.infos")}
+              className="rounded-lg px-2 py-1 text-lg text-slate-600 hover:bg-slate-100"
+            >
+              ⓘ
+            </button>
+          </>
+        )}
         <span
           className={`flex items-center gap-1.5 text-xs ${connecte ? "text-emerald-700" : "text-slate-400"}`}
           role="status"
@@ -489,6 +588,23 @@ export default function Conversation({ canal, onRetour, onNom }) {
           {connecte ? t("chat.en_ligne") : t("chat.connexion")}
         </span>
       </header>
+      {infosOuvert && salon && (
+        <SalonInfos
+          salonId={salon.id}
+          moiId={user?.id}
+          onFerme={() => setInfosOuvert(false)}
+          onChange={() => {
+            onChange?.();
+            getSalon(salon.id)
+              .then((d) => setSalon(d.salon))
+              .catch(() => {});
+          }}
+          onSorti={() => {
+            setInfosOuvert(false);
+            onRetour?.();
+          }}
+        />
+      )}
 
       <div
         ref={defil}

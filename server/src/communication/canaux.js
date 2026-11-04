@@ -4,6 +4,7 @@ const mongoose = require("mongoose");
 //   stack:<slug>        ex. stack:react
 //   ville:<nom>         ex. ville:conakry
 //   prive:<idA>_<idB>   conversation privée entre deux utilisateurs
+//   salon:<id>          salon créé par un utilisateur (accès réservé aux membres : voir services/salons.js verifierAcces)
 const STACK_RE = /^[a-z0-9][a-z0-9.+#-]{0,29}$/;
 const VILLE_RE = /^[\p{L}0-9][\p{L}0-9 '-]{0,59}$/u;
 
@@ -47,7 +48,13 @@ function parseCanal(brut, userId) {
       cible_id: autre,
     };
   }
-  return { erreur: "Type de canal inconnu (stack, ville ou prive)" };
+  if (prefixe === "salon") {
+    const id = valeur.trim().toLowerCase();
+    if (!mongoose.isValidObjectId(id) || id.length !== 24)
+      return { erreur: "Salon invalide" };
+    return { canal: `salon:${id}`, cible_type: "canal", salon_id: id }; // l'appartenance au salon est vérifiée à part (base de données)
+  }
+  return { erreur: "Type de canal inconnu (stack, ville, prive ou salon)" };
 }
 
 module.exports = { parseCanal };

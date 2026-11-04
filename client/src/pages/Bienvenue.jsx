@@ -5,6 +5,10 @@ import { useAuth } from "../context/AuthContext";
 import { getOptions, updateMe } from "../services/users";
 import { messageErreur } from "../services/api";
 import { PAYS_PROPOSES, actionsPour, marquerFait } from "../lib/onboarding";
+import Illustration from "../components/Illustration";
+import imgMessages from "../assets/illustrations/messages.webp";
+import imgProgression from "../assets/illustrations/progression.webp";
+import imgConnexion from "../assets/illustrations/connexion.webp";
 
 const OBJECTIFS_ICONES = {
   apprendre: "📚",
@@ -154,6 +158,7 @@ export default function Bienvenue() {
       <div key={etape} className="anim-scale card">
         {etape === 1 && (
           <>
+            <Illustration src={imgMessages} />
             <h1
               ref={titre}
               tabIndex={-1}
@@ -195,6 +200,7 @@ export default function Bienvenue() {
 
         {etape === 2 && (
           <>
+            <Illustration src={imgProgression} />
             <h1
               ref={titre}
               tabIndex={-1}
@@ -237,6 +243,7 @@ export default function Bienvenue() {
 
         {etape === 3 && (
           <>
+            <Illustration src={imgConnexion} />
             <h1
               ref={titre}
               tabIndex={-1}

@@ -4,6 +4,8 @@ const { verifyToken } = require("../utils/jwt");
 const { parseCanal } = require("./canaux");
 const { notifierMentions } = require("./notifications/notifier");
 const { transcriptionDe } = require("../services/audio");
+const Salon = require("../models/Salon");
+const { verifierAcces } = require("../services/salons");
 
 const MAX_CONTENU = 2000;
 const LIMITE_MSG = { max: 20, fenetreMs: 10_000 }; // 20 messages / 10 s / socket
@@ -52,11 +54,19 @@ module.exports = (io) => {
     };
 
     // join_canal { canal }  ->  ack { ok, canal } | { ok:false, erreur }
-    socket.on("join_canal", (payload, ack) => {
-      const c = parseCanal(payload && payload.canal, userId);
-      if (c.erreur) return reponse(ack, { ok: false, erreur: c.erreur });
-      socket.join(c.canal);
-      reponse(ack, { ok: true, canal: c.canal });
+    socket.on("join_canal", async (payload, ack) => {
+      try {
+        const c = parseCanal(payload && payload.canal, userId);
+        if (c.erreur) return reponse(ack, { ok: false, erreur: c.erreur });
+        const acces = await verifierAcces(c, userId); // salon créé par un utilisateur : réservé aux membres
+        if (acces.erreur)
+          return reponse(ack, { ok: false, erreur: acces.erreur });
+        socket.join(c.canal);
+        reponse(ack, { ok: true, canal: c.canal });
+      } catch (e) {
+        console.error("[socket join_canal]", e.message);
+        reponse(ack, { ok: false, erreur: "Erreur serveur" });
+      }
     });
 
     // leave_canal { canal }
@@ -119,6 +129,11 @@ module.exports = (io) => {
           created_at: doc.created_at,
         };
         io.to(c.canal).emit("message", message);
+        if (c.salon_id)
+          Salon.updateOne(
+            { _id: c.salon_id },
+            { $set: { derniere_activite: new Date() } },
+          ).catch(() => {}); // pour trier « mes salons »
         notifierMentions({
           contenu,
           acteurId: userId,

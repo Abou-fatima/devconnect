@@ -2,6 +2,7 @@
 //   stack:<slug>        ex. stack:react
 //   ville:<nom>         ex. ville:conakry
 //   prive:<idA>_<idB>   conversation privée (ids triés, identique des deux côtés)
+//   salon:<id>          salon créé par un utilisateur (public ou sur invitation)
 const STACK_RE = /^[a-z0-9][a-z0-9.+#-]{0,29}$/;
 const VILLE_RE = /^[\p{L}0-9][\p{L}0-9 '-]{0,59}$/u;
 const ID_RE = /^[a-f0-9]{24}$/i;
@@ -30,7 +31,10 @@ export const canalPrive = (a, b) => {
     : null;
 };
 
-// Décompose un nom de canal : { type: 'stack' | 'ville' | 'prive', valeur, ids? } ou null.
+export const canalSalon = (id) =>
+  ID_RE.test(String(id)) ? `salon:${String(id).toLowerCase()}` : null;
+
+// Décompose un nom de canal : { type: 'stack' | 'ville' | 'prive' | 'salon', valeur, ids? } ou null.
 export function lireCanal(canal) {
   const [prefixe, ...reste] = String(canal || "").split(":");
   const valeur = reste.join(":");
@@ -38,6 +42,8 @@ export function lireCanal(canal) {
     return { type: "stack", valeur };
   if (prefixe === "ville" && VILLE_RE.test(valeur))
     return { type: "ville", valeur };
+  if (prefixe === "salon" && ID_RE.test(valeur))
+    return { type: "salon", valeur: valeur.toLowerCase() };
   if (prefixe === "prive") {
     const ids = valeur.split("_");
     if (ids.length === 2 && ids.every((i) => ID_RE.test(i)))

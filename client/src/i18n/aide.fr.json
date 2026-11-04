@@ -21,21 +21,141 @@
     "developpeurs": "Filtre par technologie, pays ou niveau pour trouver un coéquipier ou un mentor."
   },
   "faq": [
-    { "id": "debut", "q": "Par où commencer ?", "mots": "debut nouveau premier pas profil", "r": "Complète ton profil (niveau, technologies, objectif), puis parcours le forum. Poser une question ou répondre à une autre est le meilleur moyen de rejoindre la communauté.", "lien": "/profil/modifier", "lien_texte": "Compléter mon profil" },
-    { "id": "question", "q": "Comment poser une question ?", "mots": "forum poster question demander", "r": "Va dans le forum, clique sur « Poser une question », écris un titre précis, détaille ton problème avec le message d'erreur, ajoute jusqu'à 5 étiquettes. Des questions proches te sont proposées avant publication.", "lien": "/forum/poser", "lien_texte": "Poser une question" },
-    { "id": "reputation", "q": "Comment gagner de la réputation ?", "mots": "points reputation vote badge", "r": "+10 quand ta réponse reçoit un vote positif, +5 pour ta question, +15 quand ta réponse est acceptée. Un vote négatif retire 2 points. Les badges arrivent à 50, 200 et 500 points.", "lien": "/classement", "lien_texte": "Voir le classement" },
-    { "id": "accepter", "q": "Comment marquer une réponse comme acceptée ?", "mots": "accepter resolu reponse", "r": "Sur ta question, clique sur la coche à côté de la réponse qui t'a aidé. La question passe en « résolue ».", "lien": "/forum", "lien_texte": "Aller au forum" },
-    { "id": "projet", "q": "Comment publier mon projet ?", "mots": "projet publier vitrine showcase", "r": "Dans « Projets », clique sur « Nouveau projet », décris-le et indique les compétences recherchées.", "lien": "/projets/nouveau", "lien_texte": "Nouveau projet" },
-    { "id": "rejoindre", "q": "Comment rejoindre l'équipe d'un projet ?", "mots": "candidature rejoindre equipe collaborer", "r": "Ouvre le projet et clique sur « Rejoindre » avec un court message. Le porteur accepte ou refuse, et tu reçois une notification.", "lien": "/projets", "lien_texte": "Voir les projets" },
-    { "id": "taches", "q": "Où sont les tâches d'un projet ?", "mots": "taches tableau kanban projet equipe", "r": "Sur la page du projet : le tableau a trois colonnes, à faire, en cours et terminé. Seuls le porteur et les membres peuvent le modifier.", "lien": "/projets", "lien_texte": "Mes projets" },
-    { "id": "mentor", "q": "Comment trouver un mentor ?", "mots": "mentorat mentor accompagnement apprendre", "r": "Dans « Mentorat », choisis un mentor, écris pourquoi tu le sollicites et envoie la demande. Tu peux avoir 3 demandes en attente.", "lien": "/mentorat", "lien_texte": "Trouver un mentor" },
-    { "id": "devenir_mentor", "q": "Comment devenir mentor ?", "mots": "mentor devenir offrir aider", "r": "Dans « Modifier mon profil », ajoute l'objectif « Offrir du mentorat ». Tu peux accompagner jusqu'à 5 personnes.", "lien": "/profil/modifier", "lien_texte": "Modifier mon profil" },
-    { "id": "chat", "q": "Comment discuter en direct ?", "mots": "chat messages canal ville stack prive", "r": "Dans « Messages », rejoins le canal d'une technologie ou d'une ville, ou écris en privé à un développeur depuis son profil.", "lien": "/messages", "lien_texte": "Ouvrir les messages" },
-    { "id": "vocal", "q": "Comment envoyer un message vocal ?", "mots": "vocal audio micro microphone transcription", "r": "Appuie sur le micro dans la zone de message, parle, puis envoie. Autorise le micro dans ton navigateur. Le texte transcrit s'affiche sous l'audio quand le service est actif. Le micro exige une connexion sécurisée (https).", "lien": "/messages", "lien_texte": "Ouvrir les messages" },
-    { "id": "langue", "q": "Comment changer de langue ?", "mots": "langue francais anglais english", "r": "Utilise le sélecteur FR / EN en haut à droite. Ton choix est mémorisé.", "lien": "", "lien_texte": "" },
-    { "id": "hors_ligne", "q": "Ça marche sans connexion ?", "mots": "hors ligne offline pwa installer telephone", "r": "Les pages déjà consultées restent lisibles hors ligne. Tu peux installer DevConnect sur ton téléphone depuis le menu du navigateur (« Ajouter à l'écran d'accueil »).", "lien": "", "lien_texte": "" },
-    { "id": "notifications", "q": "Où voir mes notifications ?", "mots": "notification cloche alerte", "r": "Clique sur la cloche en haut. Tu es prévenu des réponses, votes, candidatures et demandes de mentorat.", "lien": "/notifications", "lien_texte": "Mes notifications" },
-    { "id": "mot_de_passe", "q": "Je n'arrive pas à me connecter", "mots": "connexion mot de passe code otp github", "r": "Tu peux te connecter avec ton e-mail et ton mot de passe, avec un code reçu par e-mail ou avec GitHub. Vérifie ton adresse e-mail et patiente quelques minutes si tu as fait plusieurs essais.", "lien": "/connexion", "lien_texte": "Se connecter" },
-    { "id": "signaler", "q": "Comment signaler un contenu ?", "mots": "signaler abus moderation spam", "r": "Utilise le bouton « Signaler » sur la question ou la réponse. Les administrateurs examinent le signalement.", "lien": "", "lien_texte": "" }
+    {
+      "id": "debut",
+      "q": "Par où commencer ?",
+      "mots": "debut nouveau premier pas profil",
+      "r": "Complète ton profil (niveau, technologies, objectif), puis parcours le forum. Poser une question ou répondre à une autre est le meilleur moyen de rejoindre la communauté.",
+      "lien": "/profil/modifier",
+      "lien_texte": "Compléter mon profil"
+    },
+    {
+      "id": "question",
+      "q": "Comment poser une question ?",
+      "mots": "forum poster question demander",
+      "r": "Va dans le forum, clique sur « Poser une question », écris un titre précis, détaille ton problème avec le message d'erreur, ajoute jusqu'à 5 étiquettes. Des questions proches te sont proposées avant publication.",
+      "lien": "/forum/poser",
+      "lien_texte": "Poser une question"
+    },
+    {
+      "id": "reputation",
+      "q": "Comment gagner de la réputation ?",
+      "mots": "points reputation vote badge",
+      "r": "+10 quand ta réponse reçoit un vote positif, +5 pour ta question, +15 quand ta réponse est acceptée. Un vote négatif retire 2 points. Les badges arrivent à 50, 200 et 500 points.",
+      "lien": "/classement",
+      "lien_texte": "Voir le classement"
+    },
+    {
+      "id": "accepter",
+      "q": "Comment marquer une réponse comme acceptée ?",
+      "mots": "accepter resolu reponse",
+      "r": "Sur ta question, clique sur la coche à côté de la réponse qui t'a aidé. La question passe en « résolue ».",
+      "lien": "/forum",
+      "lien_texte": "Aller au forum"
+    },
+    {
+      "id": "projet",
+      "q": "Comment publier mon projet ?",
+      "mots": "projet publier vitrine showcase",
+      "r": "Dans « Projets », clique sur « Nouveau projet », décris-le et indique les compétences recherchées.",
+      "lien": "/projets/nouveau",
+      "lien_texte": "Nouveau projet"
+    },
+    {
+      "id": "rejoindre",
+      "q": "Comment rejoindre l'équipe d'un projet ?",
+      "mots": "candidature rejoindre equipe collaborer",
+      "r": "Ouvre le projet et clique sur « Rejoindre » avec un court message. Le porteur accepte ou refuse, et tu reçois une notification.",
+      "lien": "/projets",
+      "lien_texte": "Voir les projets"
+    },
+    {
+      "id": "taches",
+      "q": "Où sont les tâches d'un projet ?",
+      "mots": "taches tableau kanban projet equipe",
+      "r": "Sur la page du projet : le tableau a trois colonnes, à faire, en cours et terminé. Seuls le porteur et les membres peuvent le modifier.",
+      "lien": "/projets",
+      "lien_texte": "Mes projets"
+    },
+    {
+      "id": "mentor",
+      "q": "Comment trouver un mentor ?",
+      "mots": "mentorat mentor accompagnement apprendre",
+      "r": "Dans « Mentorat », choisis un mentor, écris pourquoi tu le sollicites et envoie la demande. Tu peux avoir 3 demandes en attente.",
+      "lien": "/mentorat",
+      "lien_texte": "Trouver un mentor"
+    },
+    {
+      "id": "devenir_mentor",
+      "q": "Comment devenir mentor ?",
+      "mots": "mentor devenir offrir aider",
+      "r": "Dans « Modifier mon profil », ajoute l'objectif « Offrir du mentorat ». Tu peux accompagner jusqu'à 5 personnes.",
+      "lien": "/profil/modifier",
+      "lien_texte": "Modifier mon profil"
+    },
+    {
+      "id": "chat",
+      "q": "Comment discuter en direct ?",
+      "mots": "chat messages canal ville stack prive",
+      "r": "Dans « Messages », rejoins le canal d'une technologie ou d'une ville, ou écris en privé à un développeur depuis son profil.",
+      "lien": "/messages",
+      "lien_texte": "Ouvrir les messages"
+    },
+    {
+      "id": "salon",
+      "q": "Comment créer un salon et inviter mes amis ?",
+      "mots": "salon creer groupe inviter ami lien discussion",
+      "r": "Dans « Messages », clique sur « Créer un salon », donne-lui un nom et choisis s'il est public ou sur invitation. Ouvre ensuite « Inviter » pour copier le lien ou l'envoyer par WhatsApp : tes amis entrent dans le salon en cliquant dessus.",
+      "lien": "/messages",
+      "lien_texte": "Ouvrir les messages"
+    },
+    {
+      "id": "vocal",
+      "q": "Comment envoyer un message vocal ?",
+      "mots": "vocal audio micro microphone transcription",
+      "r": "Appuie sur le micro dans la zone de message, parle, puis envoie. Autorise le micro dans ton navigateur. Le texte transcrit s'affiche sous l'audio quand le service est actif. Le micro exige une connexion sécurisée (https).",
+      "lien": "/messages",
+      "lien_texte": "Ouvrir les messages"
+    },
+    {
+      "id": "langue",
+      "q": "Comment changer de langue ?",
+      "mots": "langue francais anglais english",
+      "r": "Utilise le sélecteur FR / EN en haut à droite. Ton choix est mémorisé.",
+      "lien": "",
+      "lien_texte": ""
+    },
+    {
+      "id": "hors_ligne",
+      "q": "Ça marche sans connexion ?",
+      "mots": "hors ligne offline pwa installer telephone",
+      "r": "Les pages déjà consultées restent lisibles hors ligne. Tu peux installer DevConnect sur ton téléphone depuis le menu du navigateur (« Ajouter à l'écran d'accueil »).",
+      "lien": "",
+      "lien_texte": ""
+    },
+    {
+      "id": "notifications",
+      "q": "Où voir mes notifications ?",
+      "mots": "notification cloche alerte",
+      "r": "Clique sur la cloche en haut. Tu es prévenu des réponses, votes, candidatures et demandes de mentorat.",
+      "lien": "/notifications",
+      "lien_texte": "Mes notifications"
+    },
+    {
+      "id": "mot_de_passe",
+      "q": "Je n'arrive pas à me connecter",
+      "mots": "connexion mot de passe code otp github",
+      "r": "Tu peux te connecter avec ton e-mail et ton mot de passe, avec un code reçu par e-mail ou avec GitHub. Vérifie ton adresse e-mail et patiente quelques minutes si tu as fait plusieurs essais.",
+      "lien": "/connexion",
+      "lien_texte": "Se connecter"
+    },
+    {
+      "id": "signaler",
+      "q": "Comment signaler un contenu ?",
+      "mots": "signaler abus moderation spam",
+      "r": "Utilise le bouton « Signaler » sur la question ou la réponse. Les administrateurs examinent le signalement.",
+      "lien": "",
+      "lien_texte": ""
+    }
   ]
 }
