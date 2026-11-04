@@ -70,5 +70,7 @@
     "deja": "You are already in this room.",
     "ouvrir": "Open the room",
     "chargement": "Loading the invitation…"
-  }
+  },
+  "non_lus_one": "{{count}} unread message",
+  "non_lus_other": "{{count}} unread messages"
 }

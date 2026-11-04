@@ -70,5 +70,7 @@
     "deja": "Tu es déjà dans ce salon.",
     "ouvrir": "Ouvrir le salon",
     "chargement": "Chargement de l'invitation…"
-  }
+  },
+  "non_lus_one": "{{count}} message non lu",
+  "non_lus_other": "{{count}} messages non lus"
 }
