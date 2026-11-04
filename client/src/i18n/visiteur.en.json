@@ -1,0 +1,21 @@
+{
+  "titre": "Discover DevConnect",
+  "texte": "One place to learn, show what you build and find the people who will build with you.",
+  "blocs": {
+    "echanger": {
+      "titre": "Chat live with developers",
+      "texte": "Rooms by technology or city, private messages, and rooms you create yourself: invite friends with a simple link.",
+      "lien": "See how it works"
+    },
+    "progresser": {
+      "titre": "Grow and get noticed",
+      "texte": "Every good answer earns you reputation. Climb the leaderboard in your country, then across Africa.",
+      "lien": "See the leaderboard"
+    },
+    "construire": {
+      "titre": "Build your team",
+      "texte": "Present your project, list the roles you need and find developers by technology, country or city.",
+      "lien": "See the projects"
+    }
+  }
+}

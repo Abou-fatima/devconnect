@@ -6,6 +6,7 @@ const collabPaths = require("./paths/candidatures");
 const mentoratPaths = require("./paths/mentorat");
 const tachesPaths = require("./paths/taches");
 const audioPaths = require("./paths/audio");
+const salonsPaths = require("./paths/salons");
 
 module.exports = {
   ...openapi,
@@ -32,6 +33,11 @@ module.exports = {
       description: "Trouver un mentor, demander et suivre un accompagnement",
     },
     {
+      name: "Salons",
+      description:
+        "Salons de discussion créés par les utilisateurs (publics ou sur invitation)",
+    },
+    {
       name: "Upload",
       description: "Envoi et stockage des fichiers",
     },
@@ -44,6 +50,7 @@ module.exports = {
     ...mentoratPaths,
     ...tachesPaths,
     ...audioPaths,
+    ...salonsPaths,
   },
   components: {
     ...openapi.components,

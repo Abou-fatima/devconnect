@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "../context/AuthContext";
+import { useRealtime } from "../context/RealtimeContext";
 import {
   canalStack,
   canalVille,
@@ -9,7 +10,10 @@ import {
   lireRecents,
   majuscule,
 } from "../lib/canaux";
+import { listerMesSalons } from "../services/salons";
 import Conversation from "../components/Conversation";
+import SalonCreerModal from "../components/SalonCreerModal";
+import SalonsDecouvrir from "../components/SalonsDecouvrir";
 
 const lien = (canal) => `/messages/${encodeURIComponent(canal)}`;
 
@@ -21,7 +25,9 @@ function Salon({ canal, nom, actif }) {
       ? `#${infos.valeur}`
       : infos.type === "ville"
         ? majuscule(infos.valeur)
-        : `@${nom || "…"}`;
+        : infos.type === "salon"
+          ? nom || "…"
+          : `@${nom || "…"}`;
   return (
     <Link
       to={lien(canal)}
@@ -29,6 +35,7 @@ function Salon({ canal, nom, actif }) {
       className={`flex items-center gap-2 rounded-lg px-3 py-2 text-[15px] transition-colors ${actif ? "bg-brand font-medium text-white" : "text-slate-700 hover:bg-slate-100"}`}
     >
       {infos.type === "ville" && <span aria-hidden>📍</span>}
+      {infos.type === "salon" && <span aria-hidden>👥</span>}
       <span className="truncate">{label}</span>
     </Link>
   );
@@ -44,6 +51,38 @@ export default function Messages() {
   const [type, setType] = useState("stack");
   const [saisie, setSaisie] = useState("");
   const [invalide, setInvalide] = useState(false);
+  const { socket } = useRealtime();
+  const [mesSalons, setMesSalons] = useState([]);
+  const [version, setVersion] = useState(0); // augmente quand un salon change : liste et conversation se rechargent
+  const [creer, setCreer] = useState(false);
+  const [decouvrir, setDecouvrir] = useState(false);
+
+  useEffect(() => {
+    let actif = true;
+    listerMesSalons()
+      .then((l) => {
+        if (actif) setMesSalons(l);
+      })
+      .catch(() => {});
+    return () => {
+      actif = false;
+    };
+  }, [canal, version]);
+
+  // Salon supprimé, ou retiré du salon par son créateur : on met la liste à jour et on quitte la conversation.
+  useEffect(() => {
+    if (!socket) return undefined;
+    const fini = (e) => {
+      setVersion((v) => v + 1);
+      if (e?.canal === canal) navigate("/messages");
+    };
+    socket.on("salon_supprime", fini);
+    socket.on("salon_retire", fini);
+    return () => {
+      socket.off("salon_supprime", fini);
+      socket.off("salon_retire", fini);
+    };
+  }, [socket, canal, navigate]);
 
   // Le salon ouvert rejoint la liste des récents (la conversation l'enregistre déjà ; on relit pour afficher).
   useEffect(() => {
@@ -80,7 +119,9 @@ export default function Messages() {
   };
 
   const prives = recents.filter((r) => r.canal.startsWith("prive:"));
-  const publics = recents.filter((r) => !r.canal.startsWith("prive:"));
+  const publics = recents.filter(
+    (r) => !r.canal.startsWith("prive:") && !r.canal.startsWith("salon:"),
+  );
 
   return (
     <div className="-mx-4 -mt-6 h-[calc(100dvh-9.5rem)] overflow-hidden border-slate-200 bg-white md:mx-0 md:mt-0 md:h-[calc(100dvh-7rem)] md:rounded-xl md:border md:shadow-sm">
@@ -137,6 +178,54 @@ export default function Messages() {
               </p>
             )}
           </form>
+
+          <section className="px-2 pb-2">
+            <div className="flex items-center justify-between px-2 pb-1">
+              <h2 className="text-sm font-semibold text-slate-500">
+                {t("salons.mes")}
+              </h2>
+              <button
+                type="button"
+                onClick={() => setCreer(true)}
+                className="rounded-full bg-brand px-2.5 py-0.5 text-xs font-medium text-white hover:bg-brand-light"
+              >
+                ＋ {t("salons.creer_bouton")}
+              </button>
+            </div>
+            {mesSalons.length > 0 ? (
+              mesSalons.map((x) => (
+                <Salon
+                  key={x.id}
+                  canal={x.canal}
+                  nom={x.nom}
+                  actif={x.canal === canal}
+                />
+              ))
+            ) : (
+              <p className="px-3 text-sm text-slate-400">
+                {t("salons.mes_vide")}
+              </p>
+            )}
+            <button
+              type="button"
+              onClick={() => setDecouvrir(!decouvrir)}
+              aria-expanded={decouvrir}
+              className="mt-1 w-full rounded-lg px-3 py-1.5 text-left text-sm text-brand-light hover:bg-slate-50"
+            >
+              🔍 {t("salons.decouvrir")}
+            </button>
+            {decouvrir && (
+              <div className="px-1 pb-1">
+                <SalonsDecouvrir
+                  compact
+                  onOuvrir={(c) => {
+                    setVersion((v) => v + 1);
+                    navigate(lien(c));
+                  }}
+                />
+              </div>
+            )}
+          </section>
 
           {suggestions.length > 0 && (
             <section className="px-2 pb-2">
@@ -195,21 +284,50 @@ export default function Messages() {
         >
           {canal ? (
             <Conversation
-              key={canal}
+              key={`${canal}-${version}`}
               canal={canal}
               onRetour={() => navigate("/messages")}
               onNom={nomPrive}
+              onChange={() => setVersion((v) => v + 1)}
             />
           ) : (
-            <div className="m-auto max-w-xs px-6 text-center text-slate-500">
-              <p className="text-lg font-semibold text-slate-700">
-                {t("chat.choisir_titre")}
-              </p>
-              <p className="mt-1 text-sm">{t("chat.choisir_texte")}</p>
+            <div className="h-full overflow-y-auto px-6 py-6">
+              <div className="mx-auto max-w-xl">
+                <p className="text-lg font-semibold text-slate-700">
+                  {t("salons.decouvrir_titre")}
+                </p>
+                <p className="mb-3 mt-1 text-sm text-slate-500">
+                  {t("salons.decouvrir_texte")}
+                </p>
+                <button
+                  type="button"
+                  onClick={() => setCreer(true)}
+                  className="btn mb-4"
+                >
+                  ＋ {t("salons.creer_bouton")}
+                </button>
+                <SalonsDecouvrir
+                  key={version}
+                  onOuvrir={(c) => {
+                    setVersion((v) => v + 1);
+                    navigate(lien(c));
+                  }}
+                />
+              </div>
             </div>
           )}
         </section>
       </div>
+      {creer && (
+        <SalonCreerModal
+          onFerme={() => setCreer(false)}
+          onCree={(s) => {
+            setCreer(false);
+            setVersion((v) => v + 1);
+            navigate(lien(s.canal));
+          }}
+        />
+      )}
     </div>
   );
 }

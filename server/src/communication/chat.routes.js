@@ -3,6 +3,7 @@ const Echange = require("../models/Echange");
 const { auth } = require("../middleware/auth");
 const AppError = require("../utils/AppError");
 const { parseCanal } = require("./canaux");
+const { verifierAcces } = require("../services/salons");
 
 const router = express.Router();
 const asyncRoute = (fn) => (req, res, next) =>
@@ -17,6 +18,8 @@ router.get(
     const c = parseCanal(req.params.canal, req.userId);
     if (c.erreur)
       throw new AppError(c.erreur.startsWith("Accès") ? 403 : 400, c.erreur);
+    const acces = await verifierAcces(c, req.userId);
+    if (acces.erreur) throw new AppError(403, acces.erreur);
 
     const page = Math.max(1, parseInt(req.query.page, 10) || 1);
     const limit = Math.min(

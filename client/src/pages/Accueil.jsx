@@ -16,6 +16,7 @@ import Avatar from "../components/Avatar";
 import Pays from "../components/Pays";
 import Reveal from "../components/Reveal";
 import BandeauProfil from "../components/BandeauProfil";
+import AccueilVisiteur from "../components/AccueilVisiteur";
 import ProjetCarte from "../components/ProjetCarte";
 import { idProjet } from "../lib/projets";
 
@@ -183,6 +184,8 @@ export default function Accueil() {
       </section>
 
       {user && <BandeauProfil user={user} />}
+
+      {!user && <AccueilVisiteur />}
 
       {/* Comment ça marche */}
       <Reveal as="section">
