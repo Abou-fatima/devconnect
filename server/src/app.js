@@ -51,6 +51,7 @@ app.use('/api/mentorat', require('./routes/mentorat')); // mentorat : trouver un
 app.use('/api/echanges', require('./routes/echanges'));
 app.use('/api/classement', require('./routes/classement'));
 app.use('/api/admin', require('./routes/admin'));
+app.use('/api/salons', require('./routes/salons'));
 communication.mountRoutes(app);
 
 
