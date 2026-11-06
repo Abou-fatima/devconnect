@@ -6,7 +6,7 @@
   "passer_etape": "Passer",
   "terminer": "Terminer",
   "niveau_requis": "Choisis un niveau pour continuer.",
-  "bienvenue": "Bienvenue, {{pseudo}} 👋",
+  "bienvenue": "Bienvenue, {{pseudo}}",
   "objectifs_titre": "Mes objectifs",
   "objectifs_texte": "Dis-nous ce que tu cherches : on te montrera les bonnes choses en premier. Tu peux en choisir plusieurs.",
   "objectif_aide": {

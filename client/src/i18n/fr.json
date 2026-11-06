@@ -32,7 +32,7 @@
     "cta_inscription": "Rejoindre la communauté",
     "cta_devs": "Trouver des développeurs",
     "badge": "La communauté des développeurs d'Afrique",
-    "bonjour": "Content de te revoir, {{pseudo}} 👋",
+    "bonjour": "Content de te revoir, {{pseudo}}",
     "texte_connecte": "Pose une question, partage ton projet ou trouve des développeurs pour ton équipe.",
     "cta_poser": "Poser une question",
     "cta_forum": "Parcourir le forum",
@@ -152,7 +152,6 @@
     "photo_aide": "Depuis ton téléphone ou ton ordinateur. Elle est réduite automatiquement.",
     "photo_erreur_type": "Ce fichier n'est pas une image. Choisis une photo (JPEG, PNG ou WebP).",
     "photo_erreur_taille": "Cette image est trop lourde (5 Mo maximum) et n'a pas pu être réduite. Essaie une autre photo."
-
   },
   "recherche": {
     "titre": "Trouver des développeurs",
@@ -167,7 +166,6 @@
     "tri_pseudo": "Pseudo",
     "rechercher": "Rechercher",
     "resultats": "{{count}} développeur(s)"
-
   },
   "forum": {
     "titre": "Forum",
@@ -365,7 +363,8 @@
       "candidature": "{{pseudo}} veut rejoindre ton projet",
       "candidature_acceptee": "{{pseudo}} a accepté ta candidature",
       "candidature_refusee": "{{pseudo}} a décliné ta candidature",
-      "mentorat": "{{pseudo}} t'a contacté pour du mentorat"
+      "mentorat": "{{pseudo}} t'a contacté pour du mentorat",
+      "message_prive": "{{pseudo}} t'a envoyé un message"
     }
   }
 }

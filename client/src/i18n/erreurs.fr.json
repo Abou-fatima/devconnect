@@ -20,5 +20,12 @@
     "mdp_chiffre": "Le mot de passe doit contenir au moins un chiffre.",
     "telephone": "Format international requis, par exemple +224620000000.",
     "pays": "Code pays à 2 lettres, par exemple GN."
-  }
+  },
+  "github_se_connecter": "Se connecter avec GitHub",
+  "github_sinscrire": "S'inscrire avec GitHub",
+  "github_aucun_compte_titre": "Aucun compte trouvé",
+  "github_aucun_compte": "Aucun compte DevConnect n'est lié à ce compte GitHub. Crée d'abord ton compte : sur la page d'inscription, clique sur « S'inscrire avec GitHub ».",
+  "github_creer": "Créer mon compte",
+  "github_retour_connexion": "Retour à la connexion",
+  "github_indisponible": "La connexion avec GitHub n'est pas disponible pour le moment. Utilise ton identifiant et ton mot de passe."
 }

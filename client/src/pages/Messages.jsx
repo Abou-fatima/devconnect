@@ -6,14 +6,16 @@ import { useRealtime } from '../context/RealtimeContext';
 import { canalStack, canalVille, lireCanal, lireRecents, majuscule } from '../lib/canaux';
 import { listerMesSalons } from '../services/salons';
 import { useNonLus } from '../hooks/useNonLus';
+import { usePrives } from '../context/PrivesContext';
 import { effacerNonLus } from '../lib/nonlus';
 import Conversation from '../components/Conversation';
 import SalonCreerModal from '../components/SalonCreerModal';
 import SalonsDecouvrir from '../components/SalonsDecouvrir';
+import Icone from '../components/Icone';
 
 const lien = (canal) => `/messages/${encodeURIComponent(canal)}`;
 
-function Salon({ canal, nom, actif, nonLus = 0 }) {
+function Salon({ canal, nom, actif, nonLus = 0, apercu = '' }) {
   const { t } = useTranslation();
   const infos = lireCanal(canal);
   if (!infos) return null;
@@ -24,11 +26,14 @@ function Salon({ canal, nom, actif, nonLus = 0 }) {
       aria-current={actif ? 'page' : undefined}
       className={`flex items-center gap-2 rounded-lg px-3 py-2 text-[15px] transition-colors ${actif ? 'bg-brand font-medium text-white' : 'text-slate-700 hover:bg-slate-100'}`}
     >
-      {infos.type === 'ville' && <span aria-hidden>📍</span>}
-      {infos.type === 'salon' && <span aria-hidden>👥</span>}
-      <span className="truncate">{label}</span>
+      {infos.type === 'ville' && <Icone nom="lieu" />}
+      {infos.type === 'salon' && <Icone nom="groupe" />}
+      <span className="min-w-0 flex-1">
+        <span className="block truncate">{label}</span>
+        {apercu && <span className={`block truncate text-xs ${actif ? 'text-white/80' : nonLus > 0 ? 'font-medium text-slate-700' : 'text-slate-500'}`}>{apercu}</span>}
+      </span>
       {nonLus > 0 && !actif && (
-        <span className="ml-auto shrink-0 rounded-full bg-accent px-2 py-0.5 text-xs font-bold text-slate-900" aria-label={t('salons.non_lus', { count: nonLus })}>{nonLus > 99 ? '99+' : nonLus}</span>
+        <span className="ml-auto shrink-0 rounded-full bg-accent px-2 py-0.5 text-xs font-bold text-slate-900" aria-label={t('prives.non_lus', { count: nonLus })}>{nonLus > 99 ? '99+' : nonLus}</span>
       )}
     </Link>
   );
@@ -49,6 +54,8 @@ export default function Messages() {
   const [version, setVersion] = useState(0); // augmente quand un salon change : liste et conversation se rechargent
   const { map: nonLus } = useNonLus();
   useEffect(() => { if (canal && user?.id) effacerNonLus(user.id, canal); }, [canal, user?.id]); // ouvrir un salon remet son compteur à zéro
+  const { conversations, ouvrir } = usePrives();
+  useEffect(() => (canal && canal.startsWith('prive:') ? ouvrir(canal) : undefined), [canal, ouvrir]); // ouvrir une conversation privée remet son compteur à zéro
   const [creer, setCreer] = useState(false);
   const [decouvrir, setDecouvrir] = useState(false);
 
@@ -87,7 +94,16 @@ export default function Messages() {
     navigate(lien(c));
   };
 
-  const prives = recents.filter((r) => r.canal.startsWith('prive:'));
+  const apercuDe = (c) => {
+    const a = c.dernier.apercu;
+    const texte = a.type === 'image' ? t('prives.image') : a.type === 'audio' ? t('prives.vocal') : a.texte;
+    return (c.dernier.de_moi ? t('prives.vous') : '') + texte;
+  };
+  // Conversations du serveur (avec non lus), puis celles seulement connues de ce navigateur
+  const prives = [
+    ...conversations.map((c) => ({ canal: c.canal, nom: c.autre.pseudo, nonLus: c.non_lus, apercu: apercuDe(c) })),
+    ...recents.filter((r) => r.canal.startsWith('prive:') && !conversations.some((c) => c.canal === r.canal)).map((r) => ({ canal: r.canal, nom: r.nom, nonLus: 0, apercu: '' }))
+  ];
   const publics = recents.filter((r) => !r.canal.startsWith('prive:') && !r.canal.startsWith('salon:'));
 
   return (
@@ -116,12 +132,12 @@ export default function Messages() {
           <section className="px-2 pb-2">
             <div className="flex items-center justify-between px-2 pb-1">
               <h2 className="text-sm font-semibold text-slate-500">{t('salons.mes')}</h2>
-              <button type="button" onClick={() => setCreer(true)} className="rounded-full bg-brand px-2.5 py-0.5 text-xs font-medium text-white hover:bg-brand-light">＋ {t('salons.creer_bouton')}</button>
+              <button type="button" onClick={() => setCreer(true)} className="rounded-full bg-brand px-2.5 py-0.5 text-xs font-medium text-white hover:bg-brand-light"><Icone nom="plus" /> {t('salons.creer_bouton')}</button>
             </div>
             {mesSalons.length > 0
               ? mesSalons.map((x) => <Salon key={x.id} canal={x.canal} nom={x.nom} actif={x.canal === canal} nonLus={nonLus[x.canal] || 0} />)
               : <p className="px-3 text-sm text-slate-400">{t('salons.mes_vide')}</p>}
-            <button type="button" onClick={() => setDecouvrir(!decouvrir)} aria-expanded={decouvrir} className="mt-1 w-full rounded-lg px-3 py-1.5 text-left text-sm text-brand-light hover:bg-slate-50">🔍 {t('salons.decouvrir')}</button>
+            <button type="button" onClick={() => setDecouvrir(!decouvrir)} aria-expanded={decouvrir} className="mt-1 w-full rounded-lg px-3 py-1.5 text-left text-sm text-brand-light hover:bg-slate-50"><Icone nom="recherche" /> {t('salons.decouvrir')}</button>
             {decouvrir && <div className="px-1 pb-1"><SalonsDecouvrir compact onOuvrir={(c) => { setVersion((v) => v + 1); navigate(lien(c)); }} /></div>}
           </section>
 
@@ -142,7 +158,7 @@ export default function Messages() {
           <section className="px-2 pb-4">
             <h2 className="px-2 pb-1 text-sm font-semibold text-slate-500">{t('chat.prives')}</h2>
             {prives.length > 0
-              ? prives.map((r) => <Salon key={r.canal} canal={r.canal} nom={r.nom} actif={r.canal === canal} />)
+              ? prives.map((r) => <Salon key={r.canal} canal={r.canal} nom={r.nom} actif={r.canal === canal} nonLus={r.nonLus} apercu={r.apercu} />)
               : <p className="px-3 text-sm text-slate-400">{t('chat.prives_vide')} <Link to="/developpeurs" className="text-brand-light underline">{t('chat.trouver_devs')}</Link></p>}
           </section>
         </aside>
@@ -155,7 +171,7 @@ export default function Messages() {
                 <div className="mx-auto max-w-xl">
                   <p className="text-lg font-semibold text-slate-700">{t('salons.decouvrir_titre')}</p>
                   <p className="mb-3 mt-1 text-sm text-slate-500">{t('salons.decouvrir_texte')}</p>
-                  <button type="button" onClick={() => setCreer(true)} className="btn mb-4">＋ {t('salons.creer_bouton')}</button>
+                  <button type="button" onClick={() => setCreer(true)} className="btn mb-4"><Icone nom="plus" /> {t('salons.creer_bouton')}</button>
                   <SalonsDecouvrir key={version} onOuvrir={(c) => { setVersion((v) => v + 1); navigate(lien(c)); }} />
                 </div>
               </div>

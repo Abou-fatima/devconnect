@@ -2,8 +2,10 @@ const Utilisateur = require('../models/Utilisateur');
 const Echange = require('../models/Echange');
 const { verifyToken } = require('../utils/jwt');
 const { parseCanal } = require('./canaux');
-const { notifierMentions } = require('./notifications/notifier');
+const { notifierMentions, notifierMessagePrive } = require('./notifications/notifier');
+const { apercuMessage } = require('../services/prives');
 const { transcriptionDe } = require('../services/audio');
+const { imageDe, formeUrlValide } = require('../services/imagesChat');
 const Salon = require('../models/Salon');
 const { verifierAcces } = require('../services/salons');
 
@@ -67,7 +69,7 @@ module.exports = (io) => {
       reponse(ack, { ok: true, canal: c.canal });
     });
 
-    // message { canal, contenu?, audio_url? }  ->  diffusé à tout le canal (expéditeur compris)
+    // message { canal, contenu?, audio_url?, image_url? }  ->  diffusé à tout le canal (expéditeur compris)
     socket.on('message', async (payload, ack) => {
       try {
         const c = parseCanal(payload && payload.canal, userId);
@@ -76,10 +78,14 @@ module.exports = (io) => {
 
         const contenu = typeof payload.contenu === 'string' ? payload.contenu.trim() : '';
         const audio = payload.audio_url;
-        if (!contenu && !audio) return reponse(ack, { ok: false, erreur: 'Message vide' });
+        const imageUrl = payload.image_url;
+        if (!contenu && !audio && !imageUrl) return reponse(ack, { ok: false, erreur: 'Message vide' });
         if (contenu.length > MAX_CONTENU) return reponse(ack, { ok: false, erreur: `Maximum ${MAX_CONTENU} caractères` });
         if (audio && !audioValide(audio)) return reponse(ack, { ok: false, erreur: 'audio_url invalide' });
+        if (imageUrl && !formeUrlValide(imageUrl)) return reponse(ack, { ok: false, erreur: 'image_url invalide' });
         if (tropRapide()) return reponse(ack, { ok: false, erreur: 'Trop de messages, ralentissez' });
+        const image = imageUrl ? await imageDe(imageUrl, userId) : undefined; // doit être une image envoyée par cette personne
+        if (imageUrl && !image) return reponse(ack, { ok: false, erreur: 'image_url invalide' });
 
         const doc = await Echange.create({
           type: 'message',
@@ -88,6 +94,7 @@ module.exports = (io) => {
           ...(c.cible_id ? { cible_id: c.cible_id } : {}),
           contenu: contenu || undefined,
           audio_url: audio || undefined,
+          image_url: image,
           transcription: audio ? await transcriptionDe(audio, userId) : undefined,
           metadata: { canal: c.canal }
         });
@@ -98,6 +105,7 @@ module.exports = (io) => {
           auteur: { id: userId, pseudo },
           contenu: doc.contenu || null,
           audio_url: doc.audio_url || null,
+          image_url: doc.image_url || null,
           transcription: doc.transcription || null,
           created_at: doc.created_at
         };
@@ -110,6 +118,17 @@ module.exports = (io) => {
               if (id !== String(userId)) io.to(`user:${id}`).emit('salon_message', { canal: c.canal, salon_id: String(c.salon_id) });
             }))
             .catch(() => {});
+        }
+        if (c.cible_type === 'user' && c.cible_id) {
+          // Message privé : prévient le destinataire en direct (compteur + liste) et par une notification, sauf s'il a déjà la conversation ouverte.
+          const dest = String(c.cible_id);
+          (async () => {
+            const ouverte = (await io.in(c.canal).fetchSockets()).some((s) => s.data.user && s.data.user.id === dest);
+            io.to(`user:${dest}`).emit('prive_message', {
+              canal: c.canal, message_id: String(doc._id), auteur: { id: userId, pseudo }, apercu: apercuMessage(message), created_at: doc.created_at, ouverte
+            });
+            if (!ouverte) await notifierMessagePrive({ destinataireId: dest, acteurId: userId, pseudo, canal: c.canal, messageId: doc._id });
+          })().catch((e) => console.error('[socket message privé]', e.message));
         }
         notifierMentions({ contenu, acteurId: userId, pseudo, canal: c.canal, messageId: doc._id }); // F-20 : @pseudo
         reponse(ack, { ok: true, message });
