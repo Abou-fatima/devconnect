@@ -36,6 +36,9 @@ Aucun composant sous licence GPL, AGPL ou LGPL n'est utilisé en production.
 | react-i18next, i18next | MIT |
 | axios | MIT |
 | socket.io-client | MIT |
+| @fortawesome/react-fontawesome | MIT |
+| @fortawesome/fontawesome-svg-core | MIT |
+| @fortawesome/free-solid-svg-icons, @fortawesome/free-regular-svg-icons | Icônes : CC BY 4.0 ; code : MIT (Font Awesome Free) |
 
 ### Outils de build (non livrés en production)
 

@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { chercherFaq } from '../lib/aide';
+import Icone from './Icone';
 
 // Bouton flottant « Aide » : FAQ filtrable, avec un lien direct vers la bonne page.
 export default function AideBouton() {
@@ -30,7 +31,7 @@ export default function AideBouton() {
     <>
       <button ref={declencheur} type="button" onClick={() => setOuvert(true)} aria-label={t('aide.ouvrir')}
         className={`fixed bottom-20 right-4 z-30 h-12 items-center gap-2 rounded-full bg-accent px-4 font-semibold text-slate-900 shadow-lg transition hover:scale-105 active:scale-95 lg:bottom-6 ${dansConversation ? 'hidden lg:flex' : 'flex'}`}>
-        <span aria-hidden className="text-lg">?</span><span className="hidden sm:inline">{t('aide.bouton')}</span>
+        <Icone nom="aide" className="text-xl" /><span className="hidden sm:inline">{t('aide.bouton')}</span>
       </button>
 
       {ouvert && (
@@ -39,7 +40,7 @@ export default function AideBouton() {
             className="page-enter flex max-h-[85vh] w-full max-w-lg flex-col rounded-t-2xl bg-white shadow-xl sm:rounded-2xl">
             <div className="flex items-center justify-between border-b border-slate-200 px-4 py-3">
               <h2 className="text-lg font-bold">{t('aide.titre')}</h2>
-              <button type="button" onClick={fermer} aria-label={t('aide.fermer')} className="rounded p-1 text-slate-500 hover:bg-slate-100">✕</button>
+              <button type="button" onClick={fermer} aria-label={t('aide.fermer')} className="rounded p-1 text-slate-500 hover:bg-slate-100"><Icone nom="fermer" /></button>
             </div>
             <div className="px-4 pt-3">
               <input ref={champ} type="search" className="input" value={requete} onChange={(e) => { setRequete(e.target.value); setActif(null); }} placeholder={t('aide.recherche')} aria-label={t('aide.recherche')} />
@@ -58,7 +59,7 @@ export default function AideBouton() {
                       <li key={e.id}>
                         <button type="button" onClick={() => setActif(ouvertE ? null : e.id)} aria-expanded={ouvertE}
                           className="flex w-full items-center justify-between gap-2 py-3 text-left font-medium hover:text-brand-light">
-                          <span>{e.q}</span><span aria-hidden className={`transition-transform ${ouvertE ? 'rotate-90' : ''}`}>›</span>
+                          <span>{e.q}</span><span aria-hidden className={`transition-transform ${ouvertE ? 'rotate-90' : ''}`}><Icone nom="chevron" /></span>
                         </button>
                         {ouvertE && (
                           <div className="pb-3 text-sm text-slate-700">

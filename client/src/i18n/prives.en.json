@@ -1,0 +1,7 @@
+{
+  "image": "Image",
+  "vocal": "Voice message",
+  "vous": "You: ",
+  "non_lus_one": "{{count}} unread message",
+  "non_lus_other": "{{count}} unread messages"
+}

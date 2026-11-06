@@ -1,0 +1,11 @@
+{
+  "bouton": "Send an image",
+  "envoi": "Sending the image…",
+  "alt": "Image sent in the conversation",
+  "agrandir": "Enlarge the image",
+  "fermer": "Close the image",
+  "indisponible": "Image unavailable",
+  "erreur_type": "This file is not an image. Choose a photo or a screenshot.",
+  "erreur_taille": "This image is too large (5 MB maximum).",
+  "erreur_envoi": "The image could not be sent. Try again."
+}

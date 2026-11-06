@@ -1,27 +1,15 @@
 // Notifications (F-20) : réponse, réponse acceptée, mention, vote, candidature, mentorat.
 // Une notification = un document `echanges` : type "notification", auteur_id = qui a agi,
 // cible_type "user" + cible_id = destinataire, contenu = texte, metadata = { kind, lue, sujet }.
-const mongoose = require("mongoose");
-const Echange = require("../../models/Echange");
-const Utilisateur = require("../../models/Utilisateur");
+const mongoose = require('mongoose');
+const Echange = require('../../models/Echange');
+const Utilisateur = require('../../models/Utilisateur');
 
-const KINDS = [
-  "reponse",
-  "reponse_acceptee",
-  "mention",
-  "vote",
-  "candidature",
-  "candidature_acceptee",
-  "candidature_refusee",
-  "mentorat",
-  "tache",
-];
+const KINDS = ['reponse', 'reponse_acceptee', 'mention', 'vote', 'candidature', 'candidature_acceptee', 'candidature_refusee', 'mentorat', 'tache', 'message_prive'];
 const MAX_MENTIONS = 5;
 
 let io = null;
-const setIo = (instance) => {
-  io = instance;
-};
+const setIo = (instance) => { io = instance; };
 
 // Format envoyé au client (Socket.IO « notification » et API REST).
 function serialiser(doc, acteur) {
@@ -33,7 +21,7 @@ function serialiser(doc, acteur) {
     lue: m.lue === true,
     sujet: m.sujet || null,
     acteur: acteur ? { id: String(acteur._id), pseudo: acteur.pseudo } : null,
-    created_at: doc.created_at,
+    created_at: doc.created_at
   };
 }
 
@@ -43,86 +31,76 @@ function serialiser(doc, acteur) {
    - ne fait rien (retourne null) si le destinataire est l'acteur lui-même
    - lève une erreur si kind ou les identifiants sont invalides (erreur de programmation) ;
      un incident de base ou de socket est journalisé sans interrompre l'appelant. */
-async function envoyer({
-  destinataireId,
-  acteurId,
-  kind,
-  message,
-  sujet = null,
-}) {
-  if (!KINDS.includes(kind))
-    throw new Error(`notifier : kind inconnu « ${kind} »`);
-  if (
-    !mongoose.isValidObjectId(destinataireId) ||
-    !mongoose.isValidObjectId(acteurId)
-  )
-    throw new Error("notifier : identifiants invalides");
+async function envoyer({ destinataireId, acteurId, kind, message, sujet = null }) {
+  if (!KINDS.includes(kind)) throw new Error(`notifier : kind inconnu « ${kind} »`);
+  if (!mongoose.isValidObjectId(destinataireId) || !mongoose.isValidObjectId(acteurId)) throw new Error('notifier : identifiants invalides');
   if (String(destinataireId) === String(acteurId)) return null;
   try {
-    const acteur = await Utilisateur.findById(acteurId).select("pseudo");
+    const acteur = await Utilisateur.findById(acteurId).select('pseudo');
     if (!acteur) return null;
     const doc = await Echange.create({
-      type: "notification",
+      type: 'notification',
       auteur_id: acteurId,
-      cible_type: "user",
+      cible_type: 'user',
       cible_id: destinataireId,
       contenu: message,
-      metadata: { kind, lue: false, ...(sujet ? { sujet } : {}) },
+      metadata: { kind, lue: false, ...(sujet ? { sujet } : {}) }
     });
     const payload = serialiser(doc, acteur);
-    if (io) io.to(`user:${destinataireId}`).emit("notification", payload);
+    if (io) io.to(`user:${destinataireId}`).emit('notification', payload);
     return payload;
   } catch (e) {
-    console.error("[notifier]", e.message);
+    console.error('[notifier]', e.message);
     return null;
   }
 }
 
 // « @pseudo » dans un texte (sans les adresses email), sans doublon, au plus 5.
 function extraireMentions(texte) {
-  if (typeof texte !== "string") return [];
-  const noms = [...texte.matchAll(/(?<![\w@])@([A-Za-z0-9_]{3,30})/g)].map(
-    (m) => m[1],
-  );
+  if (typeof texte !== 'string') return [];
+  const noms = [...texte.matchAll(/(?<![\w@])@([A-Za-z0-9_]{3,30})/g)].map((m) => m[1]);
   return [...new Set(noms)].slice(0, MAX_MENTIONS);
 }
 
 // Notifie les développeurs mentionnés dans un message du chat. N'interrompt jamais l'envoi du message.
-async function notifierMentions({
-  contenu,
-  acteurId,
-  pseudo,
-  canal,
-  messageId,
-}) {
+async function notifierMentions({ contenu, acteurId, pseudo, canal, messageId }) {
   try {
     const noms = extraireMentions(contenu);
     if (!noms.length) return;
-    const lieu = canal.startsWith("prive:") ? "une conversation privée" : canal;
-    const users = await Utilisateur.find({ pseudo: { $in: noms } }).select(
-      "_id",
-    );
-    await Promise.all(
-      users.map((u) =>
-        envoyer({
-          destinataireId: u._id,
-          acteurId,
-          kind: "mention",
-          message: `${pseudo} t’a mentionné dans ${lieu}`,
-          sujet: { type: "canal", canal, message_id: String(messageId) },
-        }),
-      ),
-    );
-  } catch (e) {
-    console.error("[notifier] mentions :", e.message);
-  }
+    const lieu = canal.startsWith('prive:') ? 'une conversation privée' : canal.startsWith('salon:') ? 'un salon' : canal;
+    let users = await Utilisateur.find({ pseudo: { $in: noms } }).select('_id');
+    // Dans un salon ou une conversation privée, seuls ses membres sont prévenus (sinon un lien vers un lieu fermé).
+    if (canal.startsWith('prive:')) {
+      const ids = canal.slice(6).split('_');
+      users = users.filter((u) => ids.includes(String(u._id)));
+    } else if (canal.startsWith('salon:')) {
+      const salon = await require('../../models/Salon').findById(canal.slice(6)).select('membres.user_id').lean();
+      const ids = new Set(((salon && salon.membres) || []).map((m) => String(m.user_id)));
+      users = users.filter((u) => ids.has(String(u._id)));
+    }
+    await Promise.all(users.map((u) => envoyer({
+      destinataireId: u._id, acteurId, kind: 'mention',
+      message: `${pseudo} t’a mentionné dans ${lieu}`,
+      sujet: { type: 'canal', canal, message_id: String(messageId) }
+    })));
+  } catch (e) { console.error('[notifier] mentions :', e.message); }
 }
 
-module.exports = {
-  KINDS,
-  setIo,
-  envoyer,
-  serialiser,
-  extraireMentions,
-  notifierMentions,
-};
+/* Message privé reçu : une notification par conversation tant qu'elle n'est pas lue (les suivants alimentent seulement le compteur).
+   N'interrompt jamais l'envoi du message. */
+async function notifierMessagePrive({ destinataireId, acteurId, pseudo, canal, messageId }) {
+  try {
+    const existe = await Echange.exists({
+      type: 'notification', cible_type: 'user', cible_id: destinataireId,
+      'metadata.kind': 'message_prive', 'metadata.sujet.canal': canal, 'metadata.lue': { $ne: true }
+    });
+    if (existe) return null;
+    return await envoyer({
+      destinataireId, acteurId, kind: 'message_prive',
+      message: `${pseudo} t’a envoyé un message`,
+      sujet: { type: 'canal', canal, message_id: String(messageId) }
+    });
+  } catch (e) { console.error('[notifier] message privé :', e.message); return null; }
+}
+
+module.exports = { KINDS, setIo, envoyer, serialiser, extraireMentions, notifierMentions, notifierMessagePrive };

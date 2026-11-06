@@ -20,5 +20,12 @@
     "mdp_chiffre": "The password must contain at least one digit.",
     "telephone": "International format required, for example +224620000000.",
     "pays": "2-letter country code, for example GN."
-  }
+  },
+  "github_se_connecter": "Sign in with GitHub",
+  "github_sinscrire": "Sign up with GitHub",
+  "github_aucun_compte_titre": "No account found",
+  "github_aucun_compte": "No DevConnect account is linked to this GitHub account. Create your account first: on the sign-up page, click “Sign up with GitHub”.",
+  "github_creer": "Create my account",
+  "github_retour_connexion": "Back to sign in",
+  "github_indisponible": "GitHub sign-in is not available right now. Use your username and password."
 }

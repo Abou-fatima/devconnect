@@ -32,7 +32,7 @@
     "cta_inscription": "Join the community",
     "cta_devs": "Find developers",
     "badge": "The community of African developers",
-    "bonjour": "Welcome back, {{pseudo}} 👋",
+    "bonjour": "Welcome back, {{pseudo}}",
     "texte_connecte": "Ask a question, share your project or find developers for your team.",
     "cta_poser": "Ask a question",
     "cta_forum": "Browse the forum",
@@ -166,7 +166,6 @@
     "tri_pseudo": "Username",
     "rechercher": "Search",
     "resultats": "{{count}} developer(s)"
-
   },
   "forum": {
     "titre": "Forum",
@@ -364,7 +363,8 @@
       "candidature": "{{pseudo}} wants to join your project",
       "candidature_acceptee": "{{pseudo}} accepted your application",
       "candidature_refusee": "{{pseudo}} declined your application",
-      "mentorat": "{{pseudo}} reached out about mentoring"
+      "mentorat": "{{pseudo}} reached out about mentoring",
+      "message_prive": "{{pseudo}} sent you a message"
     }
   }
 }
