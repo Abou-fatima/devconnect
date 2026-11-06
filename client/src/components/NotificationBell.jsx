@@ -5,6 +5,7 @@ import { useRealtime } from '../context/RealtimeContext';
 import { lienNotification } from '../lib/notifications';
 import { definirSon, sonActif } from '../lib/son';
 import Icone from './Icone';
+import BoutonPush from './BoutonPush';
 import NotificationItem from './NotificationItem';
 
 // Cloche de l'en-tête : pastille du nombre de non lues + panneau des dernières notifications.
@@ -73,6 +74,7 @@ export default function NotificationBell() {
             )}
             {recentes.map((n) => <NotificationItem key={n.id} n={n} onOuvrir={ouvrir} />)}
           </div>
+          <BoutonPush />
           <Link to="/notifications" onClick={() => setOuvert(false)} className="block border-t border-slate-100 px-4 py-2.5 text-center text-sm font-medium text-brand-light hover:bg-slate-50">
             {t('notif.voir_tout')}
           </Link>

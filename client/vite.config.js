@@ -23,6 +23,7 @@ export default defineConfig({
         ]
       },
       workbox: {
+        importScripts: ['push-sw.js'], // notifications push (public/push-sw.js)
         navigateFallback: '/index.html',
         navigateFallbackDenylist: [/^\/api/, /^\/socket\.io/, /^\/uploads/],
         runtimeCaching: [
@@ -39,6 +40,14 @@ export default defineConfig({
       }
     })
   ],
+  build: {
+    rollupOptions: {
+      output: {
+        // Bibliothèques stables séparées du code de l'application : elles restent en cache entre deux versions du site.
+        manualChunks: { react: ['react', 'react-dom', 'react-router-dom'], i18n: ['i18next', 'react-i18next'], temps_reel: ['socket.io-client', 'axios'] }
+      }
+    }
+  },
   server: {
     port: 5173,
     proxy: {

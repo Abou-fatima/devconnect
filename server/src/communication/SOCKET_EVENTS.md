@@ -50,3 +50,9 @@ Si le destinataire n'a pas la conversation ouverte, une notification `message_pr
 ## REST
 - `GET /api/chat/conversations` : mes conversations privées + `non_lus` + `total_non_lus`.
 - `POST /api/chat/lu { canal }` : marque la conversation lue (compteur à 0, notifications lues).
+
+## Notifications push (REST)
+- `GET /api/push/cle` : `{ actif, cle }` (clé publique VAPID).
+- `POST /api/push/abonnement` : enregistre l'appareil `{ endpoint, keys: { p256dh, auth } }` (connecté).
+- `DELETE /api/push/abonnement` : `{ endpoint }` retire l'appareil.
+Le push est envoyé par `notifier.envoyer` uniquement si la personne n'a aucune connexion Socket.IO ouverte.

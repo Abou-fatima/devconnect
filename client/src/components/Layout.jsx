@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { Link, NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
@@ -9,6 +10,7 @@ import AideBouton from './AideBouton';
 import AstucePage from './AstucePage';
 import PiedDePage from './PiedDePage';
 import { useNonLus, useSuiviNonLus } from '../hooks/useNonLus';
+import { resynchroniserPush } from '../services/push';
 import { usePrives } from '../context/PrivesContext';
 import Icone from './Icone';
 
@@ -21,6 +23,8 @@ export default function Layout() {
   const navigate = useNavigate();
   const { pathname } = useLocation();
   useSuiviNonLus();
+  const userId = user?.id;
+  useEffect(() => { if (userId) resynchroniserPush(); }, [userId]); // alertes push : cet appareil suit le compte connecté
   const { total: nonLusSalons } = useNonLus();
   const { total: nonLusPrives } = usePrives();
   const nonLus = nonLusSalons + nonLusPrives;

@@ -14,6 +14,7 @@ Aucun composant sous licence GPL, AGPL ou LGPL n'est utilisé en production.
 | mongoose | accès MongoDB | MIT |
 | socket.io | temps réel | MIT |
 | @socket.io/redis-adapter | multi-instances (optionnel) | MIT |
+| web-push | notifications push (Web Push, clés VAPID) | MIT |
 | ioredis | client Redis (optionnel) | MIT |
 | jsonwebtoken | jetons JWT | MIT |
 | bcryptjs | hachage de mots de passe | MIT |

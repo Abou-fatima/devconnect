@@ -31,13 +31,15 @@ import privesFr from './prives.fr.json';
 import privesEn from './prives.en.json';
 import sonFr from './son.fr.json';
 import sonEn from './son.en.json';
+import pushFr from './push.fr.json';
+import pushEn from './push.en.json';
 
 let saved = null;
 try { saved = localStorage.getItem('lang'); } catch { /* ignore */ }
 const initial = saved || (navigator.language || 'fr').slice(0, 2);
 
 i18n.use(initReactI18next).init({
-  resources: { fr: { translation: { ...fr, projets: projetsFr, mentorat: mentoratFr, vocal: vocalFr, onboarding: onboardingFr, aide: aideFr, erreurs: erreursFr, admin: adminFr, salons: salonsFr, visiteur: visiteurFr, images: imagesFr, pied: piedFr, introuvable: introuvableFr, prives: privesFr, son: sonFr } }, en: { translation: { ...en, projets: projetsEn, mentorat: mentoratEn, vocal: vocalEn, onboarding: onboardingEn, aide: aideEn, erreurs: erreursEn, admin: adminEn, salons: salonsEn, visiteur: visiteurEn, images: imagesEn, pied: piedEn, introuvable: introuvableEn, prives: privesEn, son: sonEn } } },
+  resources: { fr: { translation: { ...fr, projets: projetsFr, mentorat: mentoratFr, vocal: vocalFr, onboarding: onboardingFr, aide: aideFr, erreurs: erreursFr, admin: adminFr, salons: salonsFr, visiteur: visiteurFr, images: imagesFr, pied: piedFr, introuvable: introuvableFr, prives: privesFr, son: sonFr, push: pushFr } }, en: { translation: { ...en, projets: projetsEn, mentorat: mentoratEn, vocal: vocalEn, onboarding: onboardingEn, aide: aideEn, erreurs: erreursEn, admin: adminEn, salons: salonsEn, visiteur: visiteurEn, images: imagesEn, pied: piedEn, introuvable: introuvableEn, prives: privesEn, son: sonEn, push: pushEn } } },
   lng: ['fr', 'en'].includes(initial) ? initial : 'fr',
   fallbackLng: 'fr',
   interpolation: { escapeValue: false }
