@@ -1,0 +1,11 @@
+{
+  "bouton": "Envoyer une image",
+  "envoi": "Envoi de l'image…",
+  "alt": "Image envoyée dans la conversation",
+  "agrandir": "Agrandir l'image",
+  "fermer": "Fermer l'image",
+  "indisponible": "Image indisponible",
+  "erreur_type": "Ce fichier n'est pas une image. Choisis une photo ou une capture d'écran.",
+  "erreur_taille": "Cette image est trop lourde (5 Mo maximum).",
+  "erreur_envoi": "L'image n'a pas pu être envoyée. Réessaie."
+}
