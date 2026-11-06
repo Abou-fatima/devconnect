@@ -7,6 +7,7 @@
   },
   "scripts": {
     "dev": "node --watch src/index.js",
+    "vapid": "node scripts/vapid.js",
     "start": "node src/index.js",
     "seed": "node scripts/seed-demo.js",
     "seed:clean": "node scripts/seed-demo.js --clean",
@@ -14,7 +15,7 @@
     "check": "node --check src/index.js && node --check src/app.js",
     "test:logic": "node --test tests/logic.test.js tests/forum.test.js tests/projets.test.js tests/notif-forum.test.js tests/collaboration.test.js tests/mentorat.test.js tests/taches.test.js tests/seed.test.js tests/audio.test.js tests/upload.test.js tests/admin.test.js tests/admin.test.js",
     "test:communication": "node --test src/communication/tests/canaux.test.js src/communication/tests/notifier.test.js",
-    "test": "node --test tests/logic.test.js tests/forum.test.js tests/projets.test.js tests/notif-forum.test.js tests/collaboration.test.js tests/mentorat.test.js tests/taches.test.js tests/seed.test.js tests/audio.test.js tests/upload.test.js tests/admin.test.js tests/admin.test.js src/communication/tests/canaux.test.js src/communication/tests/notifier.test.js tests/salons.test.js tests/prives.test.js tests/githubauth.test.js tests/imagechat.test.js"
+    "test": "node --test tests/logic.test.js tests/forum.test.js tests/projets.test.js tests/notif-forum.test.js tests/collaboration.test.js tests/mentorat.test.js tests/taches.test.js tests/seed.test.js tests/audio.test.js tests/upload.test.js tests/admin.test.js tests/admin.test.js src/communication/tests/canaux.test.js src/communication/tests/notifier.test.js tests/salons.test.js tests/prives.test.js tests/githubauth.test.js tests/imagechat.test.js tests/push.test.js "
   },
   "dependencies": {
     "@socket.io/redis-adapter": "^8.3.0",
@@ -32,6 +33,7 @@
     "nodemailer": "^10.3.1",
     "socket.io": "^4.7.5",
     "swagger-ui-express": "^5.0.1",
+    "web-push": "^3.6.7",
     "zod": "^3.23.8"
   },
   "devDependencies": {

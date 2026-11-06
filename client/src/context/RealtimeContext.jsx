@@ -2,6 +2,9 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useRef, use
 import { useAuth } from './AuthContext';
 import { connecter, deconnecter } from '../services/socket';
 import { bip } from '../lib/son';
+import i18n from '../i18n';
+import { lienNotification, texteNotification } from '../lib/notifications';
+import { notifierSysteme } from '../services/push';
 import { listerNotifications, marquerNotificationLue } from '../services/chat';
 
 const RealtimeContext = createContext(null);
@@ -58,6 +61,8 @@ export function RealtimeProvider({ children }) {
       setNonLues((c) => c + 1);
       setToast(n);
       bip(); // un seul bip par notification reçue en direct
+      // Application ouverte mais cachée (autre onglet, autre fenêtre) : notification système en bas de l'écran
+      notifierSysteme({ titre: 'DevConnect', corps: texteNotification(n, i18n.t.bind(i18n)), url: lienNotification(n), tag: n.sujet?.canal || n.id });
     };
     s.on('connect', quandConnecte);
     s.on('disconnect', quandDeconnecte);

@@ -4,6 +4,7 @@
 const mongoose = require('mongoose');
 const Echange = require('../../models/Echange');
 const Utilisateur = require('../../models/Utilisateur');
+const { envoyerPush } = require('../../services/push');
 
 const KINDS = ['reponse', 'reponse_acceptee', 'mention', 'vote', 'candidature', 'candidature_acceptee', 'candidature_refusee', 'mentorat', 'tache', 'message_prive'];
 const MAX_MENTIONS = 5;
@@ -48,6 +49,12 @@ async function envoyer({ destinataireId, acteurId, kind, message, sujet = null }
     });
     const payload = serialiser(doc, acteur);
     if (io) io.to(`user:${destinataireId}`).emit('notification', payload);
+    // Push système seulement si la personne n'est connectée nulle part (sinon elle a déjà le toast et le bip) :
+    // pas d'attente, et jamais d'erreur remontée à l'appelant.
+    (async () => {
+      const enLigne = io ? (await io.in(`user:${destinataireId}`).fetchSockets()).length > 0 : false;
+      if (!enLigne) await envoyerPush(destinataireId, payload);
+    })().catch(() => {});
     return payload;
   } catch (e) {
     console.error('[notifier]', e.message);
