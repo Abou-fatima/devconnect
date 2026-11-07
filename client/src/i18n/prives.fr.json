@@ -1,7 +1,10 @@
 {
   "image": "Image",
   "vocal": "Message vocal",
-  "vous": "Vous : ",
+  "vous": "Toi : ",
+  "vu": "En ligne {{duree}}",
+  "a_linstant": "à l'instant",
+  "hors_ligne": "Hors ligne",
   "non_lus_one": "{{count}} message non lu",
   "non_lus_other": "{{count}} messages non lus"
 }

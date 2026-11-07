@@ -45,7 +45,7 @@ export default function Messages() {
   const { canal: param } = useParams();
   const navigate = useNavigate();
   const canal = param ? decodeURIComponent(param) : null;
-  const [recents, setRecents] = useState(lireRecents);
+  const [recents, setRecents] = useState(() => lireRecents(user?.id));
   const [type, setType] = useState('stack');
   const [saisie, setSaisie] = useState('');
   const [invalide, setInvalide] = useState(false);
@@ -71,7 +71,7 @@ export default function Messages() {
   }, [socket, canal, navigate]);
 
   // Le salon ouvert rejoint la liste des récents (la conversation l'enregistre déjà ; on relit pour afficher).
-  useEffect(() => { setRecents(lireRecents()); }, [canal]);
+  useEffect(() => { setRecents(lireRecents(user?.id)); }, [canal, user?.id]);
 
   const nomPrive = useCallback((c, pseudo) => {
     setRecents((r) => r.map((x) => (x.canal === c ? { ...x, nom: pseudo } : x)));

@@ -8,6 +8,7 @@ const { transcriptionDe } = require('../services/audio');
 const { imageDe, formeUrlValide } = require('../services/imagesChat');
 const Salon = require('../models/Salon');
 const { verifierAcces } = require('../services/salons');
+const presence = require('./presence');
 
 const MAX_CONTENU = 2000;
 const LIMITE_MSG = { max: 20, fenetreMs: 10_000 }; // 20 messages / 10 s / socket
@@ -19,6 +20,7 @@ const audioValide = (u) => typeof u === 'string' && /^\/uploads\/[\w./-]+$/.test
 const reponse = (ack, data) => { if (typeof ack === 'function') ack(data); };
 
 module.exports = (io) => {
+  presence.setIo(io);
   // 1. Authentification : socket.handshake.auth.token (JWT émis par /api/auth)
   io.use(async (socket, next) => {
     try {
@@ -36,6 +38,7 @@ module.exports = (io) => {
   io.on('connection', (socket) => {
     const { id: userId, pseudo } = socket.data.user;
     socket.join(`user:${userId}`); // salle personnelle : reçoit les événements « notification »
+    presence.surConnexion(userId); // prévient les conversations privées ouvertes : « en ligne »
 
     let envoyes = [];
     const tropRapide = () => {
@@ -146,6 +149,7 @@ module.exports = (io) => {
       socket.to(c.canal).emit('typing', { canal: c.canal, user_id: userId, pseudo, actif: payload.actif !== false, mode: payload.mode === 'vocal' ? 'vocal' : 'texte' });
     });
 
-    socket.on('disconnect', () => { /* les salles sont quittées automatiquement */ });
+    // Les salles sont quittées automatiquement ; si c'était la dernière connexion, on enregistre l'heure de départ.
+    socket.on('disconnect', () => { presence.surDeconnexion(userId).catch((e) => console.error('[presence]', e.message)); });
   });
 };

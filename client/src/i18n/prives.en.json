@@ -2,6 +2,9 @@
   "image": "Image",
   "vocal": "Voice message",
   "vous": "You: ",
+  "vu": "Last seen {{duree}}",
+  "a_linstant": "just now",
+  "hors_ligne": "Offline",
   "non_lus_one": "{{count}} unread message",
   "non_lus_other": "{{count}} unread messages"
 }

@@ -60,11 +60,15 @@ export const majuscule = (s) =>
 const CLE = "devconnect:salons";
 const MAX = 8;
 
-export function lireRecents() {
+// userId : on ne montre que les conversations privées de la personne connectée (le navigateur peut avoir servi à un autre compte).
+export function lireRecents(userId) {
   try {
     const liste = JSON.parse(localStorage.getItem(CLE) || "[]");
     return Array.isArray(liste)
-      ? liste.filter((x) => x && lireCanal(x.canal)).slice(0, MAX)
+      ? liste
+          .filter((x) => x && lireCanal(x.canal))
+          .filter((x) => !x.canal.startsWith("prive:") || (userId && x.canal.slice(6).split("_").includes(String(userId))))
+          .slice(0, MAX)
       : [];
   } catch {
     return [];
