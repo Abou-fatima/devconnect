@@ -52,14 +52,15 @@ export default function Inscription() {
         {erreur && <div className="erreur" role="alert">{erreur}</div>}
         <BoutonGithub mode="inscription" />
         <div className="flex items-center gap-3 text-sm text-slate-400"><span className="h-px flex-1 bg-slate-200" />{t('auth.ou')}<span className="h-px flex-1 bg-slate-200" /></div>
-        <Field label={t('auth.pseudo')} erreur={erreurs.pseudo}><input className="input" value={form.pseudo} onChange={change('pseudo')} maxLength={30} autoComplete="username" /></Field>
-        <Field label={t('auth.email')} erreur={erreurs.email}><input className="input" type="email" value={form.email} onChange={change('email')} autoComplete="email" /></Field>
-        <Field label={t('auth.mdp')} hint={t('auth.mdp_aide')} erreur={erreurs.mot_de_passe}><input className="input" type="password" value={form.mot_de_passe} onChange={change('mot_de_passe')} autoComplete="new-password" /></Field>
+        <Field requis label={t('auth.pseudo')} erreur={erreurs.pseudo}><input className="input" value={form.pseudo} onChange={change('pseudo')} maxLength={30} autoComplete="username" /></Field>
+        <Field requis label={t('auth.email')} erreur={erreurs.email}><input className="input" type="email" value={form.email} onChange={change('email')} autoComplete="email" /></Field>
+        <Field requis label={t('auth.mdp')} hint={t('auth.mdp_aide')} erreur={erreurs.mot_de_passe}><input className="input" type="password" value={form.mot_de_passe} onChange={change('mot_de_passe')} autoComplete="new-password" /></Field>
         <Field label={t('auth.telephone')} erreur={erreurs.telephone}><input className="input" type="tel" value={form.telephone} onChange={change('telephone')} placeholder="+224620000000" /></Field>
         <div className="grid grid-cols-2 gap-3">
           <Field label={t('auth.pays')} erreur={erreurs.pays}><input className="input uppercase" value={form.pays} onChange={change('pays')} maxLength={2} placeholder="GN" /></Field>
           <Field label={t('auth.ville')} erreur={erreurs.ville}><input className="input" value={form.ville} onChange={change('ville')} /></Field>
         </div>
+        <p className="text-xs text-slate-500">{t('erreurs.champs_requis')}</p>
         <button className="btn w-full" disabled={envoi}>{t('auth.creer_compte')}</button>
       </form>
       <p className="mt-4 text-center text-sm">{t('auth.deja_compte')} <Link to="/connexion" className="text-brand-light underline">{t('nav.connexion')}</Link></p>

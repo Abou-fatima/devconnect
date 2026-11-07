@@ -7,7 +7,7 @@ const depotSchema = new Schema({
     ref: "Utilisateur",
     required: true,
   },
-  cible_type: { type: String, enum: ["projet", "echange", "user"] },
+  cible_type: { type: String, enum: ["projet", "echange", "user", "chat"] },
   cible_id: Schema.Types.ObjectId,
   type_fichier: {
     type: String,

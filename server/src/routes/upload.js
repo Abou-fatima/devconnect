@@ -3,7 +3,10 @@ const mongoose = require("mongoose");
 const multer = require("multer");
 
 const { auth } = require("../middleware/auth");
-const { uploadLimiter } = require("../middleware/rateLimit");
+const {
+  uploadLimiter,
+  imageChatLimiter,
+} = require("../middleware/rateLimit");
 const AppError = require("../utils/AppError");
 const Projet = require("../models/Projet");
 const Depot = require("../models/Depot");
@@ -117,6 +120,48 @@ router.post(
         data: depot,
         ...(cibleType === "user" && { photo: f.url }),
       });
+  }),
+);
+
+/* POST /api/upload/chat — form-data : file (image). Image à joindre à un message : même contrôle que les autres images
+   (vraie image, métadonnées d'un JPEG retirées). Renvoie `image_url`, à passer ensuite dans l'événement socket « message ». */
+router.post(
+  "/chat",
+  auth,
+  imageChatLimiter,
+  upload.single("file"),
+  asyncRoute(async (req, res) => {
+    if (!req.file) throw new AppError(400, "Veuillez sélectionner une image.");
+    const f = await stockage.enregistrerImage(req.file.buffer);
+    try {
+      await Depot.create({
+        proprietaire_id: req.userId,
+        cible_type: "chat",
+        cible_id: req.userId,
+        type_fichier: "image",
+        url: f.url,
+        nom_original: req.file.originalname,
+        taille_octets: f.taille,
+        mime_type: f.mime,
+        metadata: {
+          stockage: f.stockage,
+          public_id: f.public_id,
+          format: f.format,
+          largeur: f.largeur,
+          hauteur: f.hauteur,
+          taille_origine: req.file.size,
+        },
+      });
+    } catch (e) {
+      await stockage.supprimer({
+        url: f.url,
+        metadata: { public_id: f.public_id },
+      }); // pas de fichier orphelin
+      throw e;
+    }
+    res
+      .status(201)
+      .json({ image_url: f.url, largeur: f.largeur, hauteur: f.hauteur });
   }),
 );
 

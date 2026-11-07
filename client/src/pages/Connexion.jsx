@@ -55,8 +55,9 @@ export default function Connexion() {
         {erreur && <div className="erreur" role="alert">{erreur}</div>}
         <BoutonGithub mode="connexion" />
         <div className="flex items-center gap-3 text-sm text-slate-400"><span className="h-px flex-1 bg-slate-200" />{t('auth.ou')}<span className="h-px flex-1 bg-slate-200" /></div>
-        <Field label={t('auth.identifiant')} erreur={erreurs.identifiant}><input className="input" value={form.identifiant} onChange={change('identifiant')} autoComplete="username" /></Field>
-        <Field label={t('auth.mdp')} erreur={erreurs.mot_de_passe}><input className="input" type="password" value={form.mot_de_passe} onChange={change('mot_de_passe')} autoComplete="current-password" /></Field>
+        <Field requis label={t('auth.identifiant')} erreur={erreurs.identifiant}><input className="input" value={form.identifiant} onChange={change('identifiant')} autoComplete="username" /></Field>
+        <Field requis label={t('auth.mdp')} erreur={erreurs.mot_de_passe}><input className="input" type="password" value={form.mot_de_passe} onChange={change('mot_de_passe')} autoComplete="current-password" /></Field>
+        <p className="text-xs text-slate-500">{t('erreurs.champs_requis')}</p>
         <button className="btn w-full" disabled={envoi}>{t('auth.se_connecter')}</button>
       </form>
       <p className="mt-4 text-center text-sm">{t('auth.pas_de_compte')} <Link to="/inscription" className="text-brand-light underline">{t('nav.inscription')}</Link></p>
