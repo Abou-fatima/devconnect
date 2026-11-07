@@ -6,7 +6,7 @@ const Echange = require('../../models/Echange');
 const Utilisateur = require('../../models/Utilisateur');
 const { envoyerPush } = require('../../services/push');
 
-const KINDS = ['reponse', 'reponse_acceptee', 'mention', 'vote', 'candidature', 'candidature_acceptee', 'candidature_refusee', 'mentorat', 'tache', 'message_prive'];
+const KINDS = ['reponse', 'reponse_acceptee', 'mention', 'vote', 'candidature', 'candidature_acceptee', 'candidature_refusee', 'mentorat', 'tache', 'message_prive', 'reaction'];
 const MAX_MENTIONS = 5;
 
 let io = null;
@@ -110,4 +110,21 @@ async function notifierMessagePrive({ destinataireId, acteurId, pseudo, canal, m
   } catch (e) { console.error('[notifier] message privé :', e.message); return null; }
 }
 
-module.exports = { KINDS, setIo, envoyer, serialiser, extraireMentions, notifierMentions, notifierMessagePrive };
+/* Réaction à un message : « X a réagi 👍 à ton message ». Une seule notification non lue par message
+   (changer d'emoji ou réagir de nouveau n'en crée pas d'autre). N'interrompt jamais la réaction. */
+async function notifierReaction({ destinataireId, acteurId, pseudo, emoji, canal, messageId }) {
+  try {
+    const existe = await Echange.exists({
+      type: 'notification', cible_type: 'user', cible_id: destinataireId,
+      'metadata.kind': 'reaction', 'metadata.sujet.message_id': String(messageId), 'metadata.lue': { $ne: true }
+    });
+    if (existe) return null;
+    return await envoyer({
+      destinataireId, acteurId, kind: 'reaction',
+      message: `${pseudo} a réagi ${emoji} à ton message`,
+      sujet: { type: 'canal', canal, message_id: String(messageId), emoji }
+    });
+  } catch (e) { console.error('[notifier] réaction :', e.message); return null; }
+}
+
+module.exports = { KINDS, setIo, envoyer, serialiser, extraireMentions, notifierMentions, notifierMessagePrive, notifierReaction };

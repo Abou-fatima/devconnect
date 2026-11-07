@@ -30,8 +30,12 @@ const echangeSchema = new Schema({
   titre: String,
   contenu: String,
   audio_url: String,
-  image_url: String, // image jointe à un message de chat (envoyée avant par POST /api/upload/chat)
   transcription: String,
+  // Réactions emoji sur un message du chat : une seule par personne (voir services/reactions.js)
+  reactions: {
+    type: [new Schema({ user_id: { type: Schema.Types.ObjectId, ref: "Utilisateur" }, emoji: String }, { _id: false })],
+    default: undefined,
+  },
   metadata: { type: Schema.Types.Mixed, default: {} }, // tags, categorie, statut, valeur du vote...
   nb_vues: { type: Number, default: 0 },
   nb_votes: { type: Number, default: 0 },

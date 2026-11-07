@@ -1,0 +1,7 @@
+{
+  "ajouter": "React",
+  "choisir": "Choose a reaction",
+  "compte_one": "{{emoji}}: {{count}} person",
+  "compte_other": "{{emoji}}: {{count}} people",
+  "erreur": "Could not save your reaction."
+}

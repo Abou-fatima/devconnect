@@ -3,8 +3,7 @@ import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
 import { useRealtime } from '../context/RealtimeContext';
-import { historique, presenceDe } from '../services/chat';
-import { dureeRelative } from '../lib/presence';
+import { historique } from '../services/chat';
 import { getUser } from '../services/users';
 import { lireCanal, majuscule, ajouterRecent } from '../lib/canaux';
 import { messageErreur } from '../services/api';
@@ -19,11 +18,13 @@ import ImageMessage from './ImageMessage';
 import { getSalon, rejoindreSalon } from '../services/salons';
 import SalonInfos from './SalonInfos';
 import Icone from './Icone';
+import { BarreReactions, PastillesReactions } from './ReactionsBarre';
 
 const COULEURS = ['#1d4ed8', '#047857', '#b45309', '#7e22ce', '#be123c', '#0e7490'];
 const couleurPseudo = (p = '') => COULEURS[[...p].reduce((a, c) => a + c.charCodeAt(0), 0) % COULEURS.length];
 const MAX_CAR = 2000;
 const GROUPE_MS = 5 * 60 * 1000;
+const APPUI_LONG_MS = 450;
 
 const memeJour = (a, b) => new Date(a).toDateString() === new Date(b).toDateString();
 const heure = (d, lang) => new Date(d).toLocaleTimeString(lang, { hour: '2-digit', minute: '2-digit' });
@@ -45,9 +46,10 @@ export default function Conversation({ canal, onRetour, onNom, onChange }) {
   const [erreurSalon, setErreurSalon] = useState('');
   const [ecrivent, setEcrivent] = useState({});
   const [autre, setAutre] = useState(null); // interlocuteur d'une conversation privée
-  const [presence, setPresence] = useState(null); // { en_ligne, vu_le } de l'interlocuteur
   const [salon, setSalon] = useState(null); // salon créé par un utilisateur : nom, nombre de membres, rôle
   const [infosOuvert, setInfosOuvert] = useState(false);
+  const [choixId, setChoixId] = useState(null); // message dont la barre d'emojis est ouverte
+  const appuiLong = useRef(null);
   const [rejoint, setRejoint] = useState({ occupe: false, erreur: '' });
 
   const defil = useRef(null);
@@ -72,23 +74,6 @@ export default function Conversation({ canal, onRetour, onNom, onChange }) {
     }).catch(() => {});
     return () => { actif = false; };
   }, [autreId, canal]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  // Présence de l'interlocuteur : relue à l'ouverture et chaque minute, et mise à jour en direct (événement « presence »).
-  useEffect(() => {
-    setPresence(null);
-    if (!autreId) return undefined;
-    let actif = true;
-    const charger = () => presenceDe(autreId).then((p) => { if (actif) setPresence(p); }).catch(() => {});
-    charger();
-    const minuteur = setInterval(charger, 60000);
-    return () => { actif = false; clearInterval(minuteur); };
-  }, [autreId]);
-  useEffect(() => {
-    if (!socket || !autreId) return undefined;
-    const maj = (e) => { if (e.user_id === autreId) setPresence({ en_ligne: e.en_ligne, vu_le: e.vu_le }); };
-    socket.on('presence', maj);
-    return () => socket.off('presence', maj);
-  }, [socket, autreId]);
 
   // Salon créé par un utilisateur : on récupère son nom (et on sait si on en est membre).
   const salonId = infos?.type === 'salon' ? infos.valeur : null;
@@ -147,10 +132,35 @@ export default function Conversation({ canal, onRetour, onNom, onChange }) {
         return { ...e, [d.user_id]: { pseudo: d.pseudo, at: Date.now(), mode: d.mode === 'vocal' ? 'vocal' : 'texte' } };
       });
     };
+    // Réactions : le serveur renvoie la liste complète du message, on la remplace.
+    const onReaction = (d) => {
+      if (d.canal !== canal) return;
+      setMessages((prev) => prev.map((x) => (x.id === d.message_id ? { ...x, reactions: d.reactions } : x)));
+    };
     socket.on('message', onMessage);
     socket.on('typing', onTyping);
-    return () => { socket.off('message', onMessage); socket.off('typing', onTyping); };
+    socket.on('reaction', onReaction);
+    return () => { socket.off('message', onMessage); socket.off('typing', onTyping); socket.off('reaction', onReaction); };
   }, [socket, canal, user?.id, ajouter]);
+
+  // Réagir (ou retirer / changer) : la même touche deux fois retire ; le résultat revient par l'événement « reaction ».
+  const reagir = useCallback((messageId, emoji) => {
+    setChoixId(null);
+    if (!socket || !connecte) return;
+    socket.timeout(8000).emit('reaction', { message_id: messageId, emoji }, (err, ack) => {
+      if (err || !ack || ack.ok === false) setErreurEnvoi(t('reactions.erreur'));
+    });
+  }, [socket, connecte, t]);
+
+  // La barre d'emojis se ferme en cliquant ailleurs ou avec Échap.
+  useEffect(() => {
+    if (!choixId) return undefined;
+    const fermer = (e) => { if (e.type === 'keydown' ? e.key === 'Escape' : !e.target.closest?.('[data-reactions]')) setChoixId(null); };
+    document.addEventListener('mousedown', fermer);
+    document.addEventListener('touchstart', fermer);
+    document.addEventListener('keydown', fermer);
+    return () => { document.removeEventListener('mousedown', fermer); document.removeEventListener('touchstart', fermer); document.removeEventListener('keydown', fermer); };
+  }, [choixId]);
 
   // Un indicateur d'écriture sans nouvelle depuis 4 s disparaît.
   useEffect(() => {
@@ -326,6 +336,7 @@ export default function Conversation({ canal, onRetour, onNom, onChange }) {
     }
     const debutGroupe = !prec || prec.auteur?.id !== m.auteur?.id || !memeJour(prec.created_at, m.created_at) || new Date(m.created_at) - new Date(prec.created_at) > GROUPE_MS;
     const moi = m.auteur?.id === user?.id;
+    const monEmoji = (m.reactions || []).find((r) => r.users.includes(user?.id))?.emoji;
     lignes.push(
       <div key={m.id} className={`anim-msg flex flex-col ${moi ? 'items-end' : 'items-start'} ${debutGroupe ? 'mt-3' : 'mt-0.5'}`}>
         {debutGroupe && (
@@ -336,7 +347,15 @@ export default function Conversation({ canal, onRetour, onNom, onChange }) {
             <time dateTime={m.created_at} className="text-slate-400">{heure(m.created_at, i18n.language)}</time>
           </div>
         )}
-        <div className={`max-w-[85%] rounded-2xl px-3 py-1.5 text-[15px] leading-snug sm:max-w-[75%] ${moi ? 'rounded-br-md bg-brand text-white' : 'rounded-bl-md border border-slate-200 bg-white text-slate-900'}`}>
+        <div data-reactions className={`group relative flex max-w-[85%] items-center gap-1 sm:max-w-[75%] ${moi ? 'flex-row-reverse' : ''}`}>
+        {choixId === m.id && <BarreReactions aDroite={moi} monEmoji={monEmoji} onChoisir={(e) => reagir(m.id, e)} />}
+        <div
+          onTouchStart={() => { clearTimeout(appuiLong.current); appuiLong.current = setTimeout(() => setChoixId(m.id), APPUI_LONG_MS); }}
+          onTouchEnd={() => clearTimeout(appuiLong.current)}
+          onTouchMove={() => clearTimeout(appuiLong.current)}
+          onTouchCancel={() => clearTimeout(appuiLong.current)}
+          onContextMenu={(e) => { e.preventDefault(); setChoixId(m.id); }}
+          className={`min-w-0 select-text rounded-2xl px-3 py-1.5 text-[15px] leading-snug [-webkit-touch-callout:none] ${moi ? 'rounded-br-md bg-brand text-white' : 'rounded-bl-md border border-slate-200 bg-white text-slate-900'}`}>
           {m.contenu && <RichText texte={m.contenu} moi={user?.pseudo} propre={moi} />}
           {m.image_url && <ImageMessage url={m.image_url} />}
           {m.audio_url && (
@@ -345,6 +364,12 @@ export default function Conversation({ canal, onRetour, onNom, onChange }) {
             </div>
           )}
         </div>
+        <button type="button" onClick={() => setChoixId(choixId === m.id ? null : m.id)} aria-label={t('reactions.ajouter')} title={t('reactions.ajouter')}
+          className="hidden rounded-full p-1 text-sm text-slate-400 opacity-0 transition hover:bg-slate-200 hover:text-slate-700 focus-visible:opacity-100 group-hover:opacity-100 md:block">
+          <Icone nom="reaction" />
+        </button>
+        </div>
+        <PastillesReactions reactions={m.reactions} moiId={user?.id} onBasculer={(e) => reagir(m.id, e)} />
       </div>
     );
   });
@@ -365,24 +390,10 @@ export default function Conversation({ canal, onRetour, onNom, onChange }) {
             <button type="button" onClick={() => setInfosOuvert(true)} aria-label={t('salons.infos')} title={t('salons.infos')} className="rounded-lg px-2 py-1 text-lg text-slate-600 hover:bg-slate-100"><Icone nom="info" /></button>
           </>
         )}
-        {(() => {
-          // Conversation privée : l'état de l'interlocuteur (en ligne, ou « il y a … »). Ailleurs : l'état de ta propre connexion.
-          const prive = infos.type === 'prive';
-          const vert = prive ? connecte && presence?.en_ligne : connecte;
-          let libelle = connecte ? t('chat.en_ligne') : t('chat.connexion');
-          if (prive && connecte) {
-            if (!presence) libelle = '';
-            else if (presence.en_ligne) libelle = t('chat.en_ligne');
-            else if (presence.vu_le) libelle = t('prives.vu', { duree: dureeRelative(presence.vu_le, i18n.language, t('prives.a_linstant')) });
-            else libelle = t('prives.hors_ligne');
-          }
-          return (
-            <span className={`flex items-center gap-1.5 text-xs ${vert ? 'text-emerald-700' : 'text-slate-500'}`} role="status">
-              <span className={`h-2 w-2 rounded-full ${vert ? 'bg-emerald-500' : 'bg-slate-300'}`} aria-hidden />
-              {libelle}
-            </span>
-          );
-        })()}
+        <span className={`flex items-center gap-1.5 text-xs ${connecte ? 'text-emerald-700' : 'text-slate-400'}`} role="status">
+          <span className={`h-2 w-2 rounded-full ${connecte ? 'bg-emerald-500' : 'bg-slate-300'}`} aria-hidden />
+          {connecte ? t('chat.en_ligne') : t('chat.connexion')}
+        </span>
       </header>
       {infosOuvert && salon && (
         <SalonInfos salonId={salon.id} moiId={user?.id} onFerme={() => setInfosOuvert(false)}
