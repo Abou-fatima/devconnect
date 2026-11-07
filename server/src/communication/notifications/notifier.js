@@ -87,7 +87,7 @@ async function notifierMentions({ contenu, acteurId, pseudo, canal, messageId })
     }
     await Promise.all(users.map((u) => envoyer({
       destinataireId: u._id, acteurId, kind: 'mention',
-      message: `${pseudo} t’a mentionné dans ${lieu}`,
+      message: `${pseudo} vous a mentionné dans ${lieu}`,
       sujet: { type: 'canal', canal, message_id: String(messageId) }
     })));
   } catch (e) { console.error('[notifier] mentions :', e.message); }
@@ -104,13 +104,13 @@ async function notifierMessagePrive({ destinataireId, acteurId, pseudo, canal, m
     if (existe) return null;
     return await envoyer({
       destinataireId, acteurId, kind: 'message_prive',
-      message: `${pseudo} t’a envoyé un message`,
+      message: `${pseudo} vous a envoyé un message`,
       sujet: { type: 'canal', canal, message_id: String(messageId) }
     });
   } catch (e) { console.error('[notifier] message privé :', e.message); return null; }
 }
 
-/* Réaction à un message : « X a réagi 👍 à ton message ». Une seule notification non lue par message
+/* Réaction à un message : « X a réagi 👍 à votre message ». Une seule notification non lue par message
    (changer d'emoji ou réagir de nouveau n'en crée pas d'autre). N'interrompt jamais la réaction. */
 async function notifierReaction({ destinataireId, acteurId, pseudo, emoji, canal, messageId }) {
   try {
@@ -121,7 +121,7 @@ async function notifierReaction({ destinataireId, acteurId, pseudo, emoji, canal
     if (existe) return null;
     return await envoyer({
       destinataireId, acteurId, kind: 'reaction',
-      message: `${pseudo} a réagi ${emoji} à ton message`,
+      message: `${pseudo} a réagi ${emoji} à votre message`,
       sujet: { type: 'canal', canal, message_id: String(messageId), emoji }
     });
   } catch (e) { console.error('[notifier] réaction :', e.message); return null; }

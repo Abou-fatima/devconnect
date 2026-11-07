@@ -1,20 +1,20 @@
 {
-  "titre": "Découvre DevConnect",
-  "texte": "Un seul endroit pour apprendre, montrer ce que tu construis et trouver ceux qui bâtiront avec toi.",
+  "titre": "Découvrez DevConnect",
+  "texte": "Un seul endroit pour apprendre, montrer ce que vous construisez et trouver ceux qui bâtiront avec vous.",
   "blocs": {
     "echanger": {
       "titre": "Échange en direct avec les devs",
-      "texte": "Salons par technologie ou par ville, messages privés, et salons que tu crées toi-même : invite tes amis avec un simple lien.",
+      "texte": "Salons par technologie ou par ville, messages privés, et salons que vous créez vous-même : invitez vos amis avec un simple lien.",
       "lien": "Voir comment ça se passe"
     },
     "progresser": {
-      "titre": "Progresse et fais-toi remarquer",
-      "texte": "Chaque bonne réponse te fait gagner en réputation. Monte au classement de ton pays, puis d'Afrique.",
+      "titre": "Progressez et faites-vous remarquer",
+      "texte": "Chaque bonne réponse vous fait gagner en réputation. Montez au classement de votre pays, puis d'Afrique.",
       "lien": "Voir le classement"
     },
     "construire": {
-      "titre": "Construis ton équipe",
-      "texte": "Présente ton projet, indique les rôles recherchés et trouve des développeurs par technologie, pays ou ville.",
+      "titre": "Construisez votre équipe",
+      "texte": "Présentez votre projet, indiquez les rôles recherchés et trouvez des développeurs par technologie, pays ou ville.",
       "lien": "Voir les projets"
     }
   }

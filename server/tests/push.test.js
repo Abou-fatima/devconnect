@@ -1,4 +1,8 @@
 // Notifications push : validation, contenu, envoi et nettoyage des abonnements expirés (sans base ni réseau) : node --test tests/push.test.js
+// Ces tests ne doivent pas dépendre de votre .env : on vide les clés VAPID avant de charger le service
+// (dotenv ne remplace jamais une variable déjà définie, même vide).
+process.env.VAPID_PUBLIC_KEY = '';
+process.env.VAPID_PRIVATE_KEY = '';
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const { abonnementValide, lienPush, construirePush, envoyerPush, pushActif } = require('../src/services/push');
@@ -22,12 +26,12 @@ test('lienPush : conversation, question, projet, défaut', () => {
 });
 
 test('construirePush : jamais le texte du message, seulement qui écrit', () => {
-  const p = construirePush({ id: '1', kind: 'message_prive', message: 'bob t’a envoyé un message', sujet: { type: 'canal', canal: 'prive:a_b' }, acteur: { pseudo: 'bob' } });
+  const p = construirePush({ id: '1', kind: 'message_prive', message: 'bob vous a envoyé un message', sujet: { type: 'canal', canal: 'prive:a_b' }, acteur: { pseudo: 'bob' } });
   assert.equal(p.title, 'DevConnect');
-  assert.equal(p.body, 'bob t’a envoyé un message');
+  assert.equal(p.body, 'bob vous a envoyé un message');
   assert.equal(p.tag, 'prive:a_b');
   const q = construirePush({ id: '2', kind: 'vote', message: null, sujet: null, acteur: { pseudo: 'amy' } });
-  assert.equal(q.body, 'amy a voté pour ta contribution');
+  assert.equal(q.body, 'amy a voté pour votre contribution');
 });
 
 test('envoyerPush : envoie à chaque appareil et supprime les abonnements expirés', async () => {
@@ -43,7 +47,6 @@ test('envoyerPush : envoie à chaque appareil et supprime les abonnements expir�
 });
 
 test('envoyerPush : sans clés VAPID, ne fait rien', async () => {
-  const sansCles = { publicKey: '', privateKey: '' };
-  assert.equal(pushActif(sansCles), false);
-  assert.deepEqual(await envoyerPush('u1', { kind: 'vote' }, { vapid: sansCles }), { envoyes: 0 });
+  assert.equal(pushActif(), false);
+  assert.deepEqual(await envoyerPush('u1', { kind: 'vote' }), { envoyes: 0 });
 });
