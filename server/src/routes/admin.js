@@ -222,7 +222,7 @@ router.put(
   asyncRoute(async (req, res) => {
     const { role } = v.role.parse(req.body);
     if (req.params.id === req.userId)
-      throw new AppError(400, "Vous ne pouvez pas modifier votre propre rôle");
+      throw new AppError(400, "Tu ne peux pas modifier ton propre rôle");
     const user = await Utilisateur.findByIdAndUpdate(
       req.params.id,
       { $set: { role } },

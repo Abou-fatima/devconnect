@@ -23,8 +23,8 @@ async function sendOtp({ canal, destinataire, code }) {
     await getTransporter().sendMail({
       from: env.smtp.from,
       to: destinataire,
-      subject: "Votre code DevConnect",
-      text: `Votre code de vérification DevConnect : ${code}\nIl expire dans ${Math.round(env.otpTtl / 60)} minutes.`,
+      subject: "Ton code DevConnect",
+      text: `Ton code de vérification DevConnect : ${code}\nIl expire dans ${Math.round(env.otpTtl / 60)} minutes.`,
     });
     return true;
   }

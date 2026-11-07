@@ -315,7 +315,7 @@ router.post(
     if (String(cible.auteur_id) === req.userId)
       throw new AppError(
         403,
-        "Vous ne pouvez pas voter pour votre propre contenu",
+        "Tu ne peux pas voter pour ton propre contenu",
       );
 
     const critere = {
@@ -498,7 +498,7 @@ router.post(
     if (String(doc.auteur_id) === req.userId)
       throw new AppError(
         403,
-        "Vous ne pouvez pas signaler votre propre contenu",
+        "Tu ne peux pas signaler ton propre contenu",
       );
     const r = await Echange.updateOne(
       {
@@ -517,7 +517,7 @@ router.post(
       },
     );
     if (!r.modifiedCount)
-      throw new AppError(409, "Vous avez déjà signalé ce contenu");
+      throw new AppError(409, "Tu as déjà signalé ce contenu");
     res.status(201).json({ ok: true });
   }),
 );

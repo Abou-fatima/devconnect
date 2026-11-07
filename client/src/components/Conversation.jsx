@@ -3,7 +3,8 @@ import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
 import { useRealtime } from '../context/RealtimeContext';
-import { historique } from '../services/chat';
+import { historique, presenceDe } from '../services/chat';
+import { dureeRelative } from '../lib/presence';
 import { getUser } from '../services/users';
 import { lireCanal, majuscule, ajouterRecent } from '../lib/canaux';
 import { messageErreur } from '../services/api';
@@ -44,6 +45,7 @@ export default function Conversation({ canal, onRetour, onNom, onChange }) {
   const [erreurSalon, setErreurSalon] = useState('');
   const [ecrivent, setEcrivent] = useState({});
   const [autre, setAutre] = useState(null); // interlocuteur d'une conversation privée
+  const [presence, setPresence] = useState(null); // { en_ligne, vu_le } de l'interlocuteur
   const [salon, setSalon] = useState(null); // salon créé par un utilisateur : nom, nombre de membres, rôle
   const [infosOuvert, setInfosOuvert] = useState(false);
   const [rejoint, setRejoint] = useState({ occupe: false, erreur: '' });
@@ -70,6 +72,23 @@ export default function Conversation({ canal, onRetour, onNom, onChange }) {
     }).catch(() => {});
     return () => { actif = false; };
   }, [autreId, canal]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Présence de l'interlocuteur : relue à l'ouverture et chaque minute, et mise à jour en direct (événement « presence »).
+  useEffect(() => {
+    setPresence(null);
+    if (!autreId) return undefined;
+    let actif = true;
+    const charger = () => presenceDe(autreId).then((p) => { if (actif) setPresence(p); }).catch(() => {});
+    charger();
+    const minuteur = setInterval(charger, 60000);
+    return () => { actif = false; clearInterval(minuteur); };
+  }, [autreId]);
+  useEffect(() => {
+    if (!socket || !autreId) return undefined;
+    const maj = (e) => { if (e.user_id === autreId) setPresence({ en_ligne: e.en_ligne, vu_le: e.vu_le }); };
+    socket.on('presence', maj);
+    return () => socket.off('presence', maj);
+  }, [socket, autreId]);
 
   // Salon créé par un utilisateur : on récupère son nom (et on sait si on en est membre).
   const salonId = infos?.type === 'salon' ? infos.valeur : null;
@@ -346,10 +365,24 @@ export default function Conversation({ canal, onRetour, onNom, onChange }) {
             <button type="button" onClick={() => setInfosOuvert(true)} aria-label={t('salons.infos')} title={t('salons.infos')} className="rounded-lg px-2 py-1 text-lg text-slate-600 hover:bg-slate-100"><Icone nom="info" /></button>
           </>
         )}
-        <span className={`flex items-center gap-1.5 text-xs ${connecte ? 'text-emerald-700' : 'text-slate-400'}`} role="status">
-          <span className={`h-2 w-2 rounded-full ${connecte ? 'bg-emerald-500' : 'bg-slate-300'}`} aria-hidden />
-          {connecte ? t('chat.en_ligne') : t('chat.connexion')}
-        </span>
+        {(() => {
+          // Conversation privée : l'état de l'interlocuteur (en ligne, ou « il y a … »). Ailleurs : l'état de ta propre connexion.
+          const prive = infos.type === 'prive';
+          const vert = prive ? connecte && presence?.en_ligne : connecte;
+          let libelle = connecte ? t('chat.en_ligne') : t('chat.connexion');
+          if (prive && connecte) {
+            if (!presence) libelle = '';
+            else if (presence.en_ligne) libelle = t('chat.en_ligne');
+            else if (presence.vu_le) libelle = t('prives.vu', { duree: dureeRelative(presence.vu_le, i18n.language, t('prives.a_linstant')) });
+            else libelle = t('prives.hors_ligne');
+          }
+          return (
+            <span className={`flex items-center gap-1.5 text-xs ${vert ? 'text-emerald-700' : 'text-slate-500'}`} role="status">
+              <span className={`h-2 w-2 rounded-full ${vert ? 'bg-emerald-500' : 'bg-slate-300'}`} aria-hidden />
+              {libelle}
+            </span>
+          );
+        })()}
       </header>
       {infosOuvert && salon && (
         <SalonInfos salonId={salon.id} moiId={user?.id} onFerme={() => setInfosOuvert(false)}

@@ -5,6 +5,8 @@ const AppError = require('../utils/AppError');
 const { parseCanal } = require('./canaux');
 const { verifierAcces } = require('../services/salons');
 const { listerConversations, marquerLu } = require('../services/prives');
+const mongoose = require('mongoose');
+const presence = require('./presence');
 
 const router = express.Router();
 const asyncRoute = (fn) => (req, res, next) => Promise.resolve(fn(req, res, next)).catch(next);
@@ -55,6 +57,13 @@ router.post('/lu', auth, asyncRoute(async (req, res) => {
   if (c.cible_type !== 'user') throw new AppError(400, 'Seules les conversations privées ont un compteur de messages non lus');
   await marquerLu(req.userId, c.canal);
   res.json({ ok: true, canal: c.canal, non_lus: 0 });
+}));
+
+/* GET /api/chat/presence/:userId — cette personne est-elle en ligne ? Sinon, depuis quand n'est-elle plus là ?
+   Réponse : { en_ligne: bool, vu_le: date ISO | null } */
+router.get('/presence/:userId', auth, asyncRoute(async (req, res) => {
+  if (!mongoose.isValidObjectId(req.params.userId)) throw new AppError(400, 'Identifiant invalide');
+  res.json(await presence.etat(req.params.userId));
 }));
 
 module.exports = router;

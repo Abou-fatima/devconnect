@@ -20,6 +20,7 @@ const utilisateurSchema = new mongoose.Schema({
   reputation: { type: Number, default: 0 },
   pays: String, // code ISO 3166-1 alpha-2
   ville: String,
+  derniere_activite: { type: Date }, // dernière déconnexion (affichée « en ligne il y a … » dans les conversations privées)
   created_at: { type: Date, default: Date.now },
 });
 
