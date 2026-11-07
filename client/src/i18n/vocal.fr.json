@@ -11,10 +11,10 @@
   "reste_other": "{{count}} s restantes",
   "voir_texte": "Voir le texte",
   "masquer": "Masquer le texte",
-  "erreur_refuse": "Micro refusé : autorise-le dans les réglages du navigateur (icône à gauche de l'adresse), puis réessaie.",
+  "erreur_refuse": "Micro refusé : autorisez-le dans les réglages du navigateur (icône à gauche de l'adresse), puis réessayez.",
   "erreur_absent": "Aucun micro détecté sur cet appareil.",
   "erreur_autre": "Impossible de démarrer l'enregistrement.",
-  "erreur_envoi": "Le vocal n'a pas pu être envoyé. Réessaie : il est conservé.",
+  "erreur_envoi": "Le vocal n'a pas pu être envoyé. Réessayez : il est conservé.",
   "ecrit_un": "{{pseudo}} enregistre un vocal…",
   "ecrit_deux": "{{a}} et {{b}} enregistrent un vocal…",
   "ecrit_plusieurs": "Plusieurs personnes enregistrent un vocal…"

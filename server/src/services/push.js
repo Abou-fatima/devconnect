@@ -10,10 +10,10 @@ function vapid() {
 
 const MAX_APPAREILS = 10;
 const TEXTES = {
-  reponse: 'a répondu à ta question', reponse_acceptee: 'a accepté ta réponse', vote: 'a voté pour ta contribution',
-  mention: 't’a mentionné dans le chat', candidature: 'veut rejoindre ton projet', candidature_acceptee: 'a accepté ta candidature',
-  candidature_refusee: 'a décliné ta candidature', mentorat: 't’a contacté pour du mentorat', tache: 'a mis à jour une tâche',
-  message_prive: 't’a envoyé un message', reaction: 'a réagi à ton message'
+  reponse: 'a répondu à votre question', reponse_acceptee: 'a accepté votre réponse', vote: 'a voté pour votre contribution',
+  mention: 'vous a mentionné dans le chat', candidature: 'veut rejoindre votre projet', candidature_acceptee: 'a accepté votre candidature',
+  candidature_refusee: 'a décliné votre candidature', mentorat: 'vous a contacté pour du mentorat', tache: 'a mis à jour une tâche',
+  message_prive: 'vous a envoyé un message', reaction: 'a réagi à votre message'
 };
 
 const pushActif = () => { const v = vapid(); return Boolean(v && v.publicKey && v.privateKey); };
@@ -40,7 +40,7 @@ function lienPush(n) {
 // Contenu de la notification système. On n'y met jamais le texte d'un message privé : seulement qui écrit.
 function construirePush(n) {
   const pseudo = n.acteur && n.acteur.pseudo;
-  const corps = n.message || (pseudo && TEXTES[n.kind] ? `${pseudo} ${TEXTES[n.kind]}` : 'Tu as une nouvelle notification');
+  const corps = n.message || (pseudo && TEXTES[n.kind] ? `${pseudo} ${TEXTES[n.kind]}` : 'Vous avez une nouvelle notification');
   return { title: 'DevConnect', body: corps, url: lienPush(n), tag: (n.sujet && n.sujet.canal) || n.id || n.kind };
 }
 

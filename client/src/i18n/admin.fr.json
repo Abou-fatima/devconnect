@@ -1,13 +1,13 @@
 {
   "nav": "Admin",
   "titre": "Espace administrateur",
-  "sous_titre": "Modère les contenus signalés et suis l'activité de la plateforme.",
-  "role": "Ton rôle : {{role}}",
+  "sous_titre": "Modérez les contenus signalés et suivez l'activité de la plateforme.",
+  "role": "Votre rôle : {{role}}",
   "onglet_signalements": "Signalements",
   "onglet_stats": "Statistiques",
   "signalements": {
     "vide_titre": "Aucun contenu signalé",
-    "vide_texte": "La communauté se comporte bien. Reviens plus tard.",
+    "vide_texte": "La communauté se comporte bien. Revenez plus tard.",
     "nb_one": "{{count}} signalement",
     "nb_other": "{{count}} signalements",
     "motifs": "Motifs indiqués",
