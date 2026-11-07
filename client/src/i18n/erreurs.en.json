@@ -27,5 +27,6 @@
   "github_aucun_compte": "No DevConnect account is linked to this GitHub account. Create your account first: on the sign-up page, click “Sign up with GitHub”.",
   "github_creer": "Create my account",
   "github_retour_connexion": "Back to sign in",
-  "github_indisponible": "GitHub sign-in is not available right now. Use your username and password."
+  "github_indisponible": "GitHub sign-in is not available right now. Use your username and password.",
+  "champs_requis": "Fields marked with * are required."
 }

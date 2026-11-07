@@ -24,6 +24,13 @@ const apiLimiter = make(1, 300, "Trop de requêtes");
 const ecritureLimiter = make(10, 60, "Trop d'actions, ralentissez");
 
 // Envoi d'images (traitement lourd pour le serveur) : 30 par 10 min et par IP
+// Images de conversation : un peu plus souple (on partage souvent plusieurs captures d'écran) : 40 par 10 min
+const imageChatLimiter = make(
+  10,
+  40,
+  "Trop d'images envoyées, patientez quelques minutes",
+);
+
 const uploadLimiter = make(
   10,
   30,
@@ -36,4 +43,5 @@ module.exports = {
   apiLimiter,
   ecritureLimiter,
   uploadLimiter,
+  imageChatLimiter,
 };

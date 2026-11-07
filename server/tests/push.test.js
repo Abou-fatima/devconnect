@@ -43,6 +43,7 @@ test('envoyerPush : envoie à chaque appareil et supprime les abonnements expir�
 });
 
 test('envoyerPush : sans clés VAPID, ne fait rien', async () => {
-  assert.equal(pushActif(), false);
-  assert.deepEqual(await envoyerPush('u1', { kind: 'vote' }), { envoyes: 0 });
+  const sansCles = { publicKey: '', privateKey: '' };
+  assert.equal(pushActif(sansCles), false);
+  assert.deepEqual(await envoyerPush('u1', { kind: 'vote' }, { vapid: sansCles }), { envoyes: 0 });
 });
