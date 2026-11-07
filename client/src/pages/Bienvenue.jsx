@@ -152,7 +152,7 @@ export default function Bienvenue() {
         {etape === 4 && (
           <>
             <div className="text-center">
-              <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-emerald-100 text-3xl text-emerald-600" aria-hidden><Icone nom="succes" /></div>
+              <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-emerald-100 text-3xl" aria-hidden>🎉</div>
               <h1 ref={titre} tabIndex={-1} className="mt-3 text-2xl font-bold outline-none">{t('onboarding.pret_titre')}</h1>
               <p className="mt-1 text-slate-600">{t('onboarding.pret_texte')}</p>
             </div>
