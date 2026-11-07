@@ -13,10 +13,10 @@ const TEXTES = {
   reponse: 'a répondu à ta question', reponse_acceptee: 'a accepté ta réponse', vote: 'a voté pour ta contribution',
   mention: 't’a mentionné dans le chat', candidature: 'veut rejoindre ton projet', candidature_acceptee: 'a accepté ta candidature',
   candidature_refusee: 'a décliné ta candidature', mentorat: 't’a contacté pour du mentorat', tache: 'a mis à jour une tâche',
-  message_prive: 't’a envoyé un message'
+  message_prive: 't’a envoyé un message', reaction: 'a réagi à ton message'
 };
 
-const pushActif = (v = vapid()) => Boolean(v && v.publicKey && v.privateKey);
+const pushActif = () => { const v = vapid(); return Boolean(v && v.publicKey && v.privateKey); };
 
 // Vérifie le format d'un abonnement envoyé par le navigateur (fonction pure).
 function abonnementValide(a) {
@@ -56,7 +56,7 @@ function webpush() {
 // Envoie la notification à tous les appareils de la personne. Les abonnements expirés (404/410) sont supprimés.
 // Ne lève jamais d'erreur : un incident de push ne doit pas casser l'envoi du message.
 async function envoyerPush(userId, notification, deps = {}) {
-  if (!deps.lib && !pushActif(deps.vapid)) return { envoyes: 0 };
+  if (!deps.lib && !pushActif()) return { envoyes: 0 };
   try {
     const Abonnement = deps.Abonnement || require('../models/PushAbonnement');
     const lib = deps.lib || webpush();

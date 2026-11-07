@@ -1,0 +1,7 @@
+{
+  "ajouter": "Réagir",
+  "choisir": "Choisir une réaction",
+  "compte_one": "{{emoji}} : {{count}} personne",
+  "compte_other": "{{emoji}} : {{count}} personnes",
+  "erreur": "Impossible d'enregistrer ta réaction."
+}

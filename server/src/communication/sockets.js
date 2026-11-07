@@ -1,14 +1,15 @@
+const mongoose = require('mongoose');
 const Utilisateur = require('../models/Utilisateur');
 const Echange = require('../models/Echange');
 const { verifyToken } = require('../utils/jwt');
 const { parseCanal } = require('./canaux');
-const { notifierMentions, notifierMessagePrive } = require('./notifications/notifier');
+const { notifierMentions, notifierMessagePrive, notifierReaction } = require('./notifications/notifier');
 const { apercuMessage } = require('../services/prives');
+const { emojiValide, appliquer, grouper } = require('../services/reactions');
 const { transcriptionDe } = require('../services/audio');
 const { imageDe, formeUrlValide } = require('../services/imagesChat');
 const Salon = require('../models/Salon');
 const { verifierAcces } = require('../services/salons');
-const presence = require('./presence');
 
 const MAX_CONTENU = 2000;
 const LIMITE_MSG = { max: 20, fenetreMs: 10_000 }; // 20 messages / 10 s / socket
@@ -20,7 +21,6 @@ const audioValide = (u) => typeof u === 'string' && /^\/uploads\/[\w./-]+$/.test
 const reponse = (ack, data) => { if (typeof ack === 'function') ack(data); };
 
 module.exports = (io) => {
-  presence.setIo(io);
   // 1. Authentification : socket.handshake.auth.token (JWT émis par /api/auth)
   io.use(async (socket, next) => {
     try {
@@ -38,7 +38,6 @@ module.exports = (io) => {
   io.on('connection', (socket) => {
     const { id: userId, pseudo } = socket.data.user;
     socket.join(`user:${userId}`); // salle personnelle : reçoit les événements « notification »
-    presence.surConnexion(userId); // prévient les conversations privées ouvertes : « en ligne »
 
     let envoyes = [];
     const tropRapide = () => {
@@ -141,6 +140,39 @@ module.exports = (io) => {
       }
     });
 
+    // reaction { message_id, emoji }  ->  ajoute, remplace ou retire MA réaction ; le canal entier reçoit 'reaction'
+    socket.on('reaction', async (payload, ack) => {
+      try {
+        const messageId = payload && payload.message_id;
+        if (!mongoose.isValidObjectId(messageId) || !emojiValide(payload.emoji)) return reponse(ack, { ok: false, erreur: 'Réaction invalide' });
+        const doc = await Echange.findOne({ _id: messageId, type: 'message' }).select('auteur_id reactions metadata.canal').lean();
+        const canalDoc = doc && doc.metadata && doc.metadata.canal;
+        if (!canalDoc) return reponse(ack, { ok: false, erreur: 'Message introuvable' });
+        const c = parseCanal(canalDoc, userId);
+        if (c.erreur) return reponse(ack, { ok: false, erreur: c.erreur });
+        const acces = await verifierAcces(c, userId); // même règle que pour lire le canal
+        if (acces.erreur) return reponse(ack, { ok: false, erreur: acces.erreur });
+
+        const { reactions, action } = appliquer(doc.reactions, userId, payload.emoji);
+        await Echange.updateOne({ _id: messageId }, { $set: { reactions } });
+        const groupees = grouper(reactions);
+        io.to(c.canal).emit('reaction', { message_id: String(messageId), canal: c.canal, reactions: groupees });
+
+        // Prévient l'auteur (pas pour soi-même, pas pour un retrait, pas s'il a déjà la conversation ouverte).
+        const auteurId = doc.auteur_id ? String(doc.auteur_id) : null;
+        if (action !== 'retiree' && auteurId && auteurId !== String(userId)) {
+          (async () => {
+            const ouverte = (await io.in(c.canal).fetchSockets()).some((s) => s.data.user && s.data.user.id === auteurId);
+            if (!ouverte) await notifierReaction({ destinataireId: auteurId, acteurId: userId, pseudo, emoji: payload.emoji, canal: c.canal, messageId });
+          })().catch((e) => console.error('[socket reaction]', e.message));
+        }
+        reponse(ack, { ok: true, action, reactions: groupees });
+      } catch (e) {
+        console.error('[socket reaction]', e.message);
+        reponse(ack, { ok: false, erreur: 'Erreur serveur' });
+      }
+    });
+
     // typing { canal, actif }  ->  les autres membres reçoivent 'typing'
     socket.on('typing', (payload) => {
       const c = parseCanal(payload && payload.canal, userId);
@@ -149,7 +181,6 @@ module.exports = (io) => {
       socket.to(c.canal).emit('typing', { canal: c.canal, user_id: userId, pseudo, actif: payload.actif !== false, mode: payload.mode === 'vocal' ? 'vocal' : 'texte' });
     });
 
-    // Les salles sont quittées automatiquement ; si c'était la dernière connexion, on enregistre l'heure de départ.
-    socket.on('disconnect', () => { presence.surDeconnexion(userId).catch((e) => console.error('[presence]', e.message)); });
+    socket.on('disconnect', () => { /* les salles sont quittées automatiquement */ });
   });
 };

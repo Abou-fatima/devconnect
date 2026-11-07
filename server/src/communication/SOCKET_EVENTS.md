@@ -47,6 +47,13 @@ Envoyé à la salle personnelle `user:<id>` du destinataire quand il reçoit un 
 `{ canal, message_id, auteur: { id, pseudo }, apercu: { type: 'texte'|'audio'|'image', texte }, created_at, ouverte }`
 Si le destinataire n'a pas la conversation ouverte, une notification `message_prive` est aussi créée (une seule par conversation tant qu'elle n'est pas lue).
 
+## Réactions emoji (`reaction`)
+- Client → serveur : `reaction` `{ message_id, emoji }` ; `emoji` ∈ 👍 ❤️ 😂 😮 😢 🙏. Ack : `{ ok: true, action: 'ajoutee'|'changee'|'retiree', reactions }` ou `{ ok: false, erreur }`.
+- Une seule réaction par personne et par message : le même emoji la retire, un autre la remplace. Accès contrôlé comme la lecture du canal (conversation privée, salon).
+- Serveur → client : `reaction` `{ message_id, canal, reactions: [{ emoji, users: [id…] }] }` envoyé à tout le canal.
+- L'historique (`GET /api/chat/...`) renvoie `reactions` sur chaque message.
+- Notification `reaction` (« X a réagi 👍 à ton message ») à l'auteur : pas pour soi-même, pas pour un retrait, pas s'il a le canal ouvert, une seule non lue par message.
+
 ## REST
 - `GET /api/chat/conversations` : mes conversations privées + `non_lus` + `total_non_lus`.
 - `POST /api/chat/lu { canal }` : marque la conversation lue (compteur à 0, notifications lues).

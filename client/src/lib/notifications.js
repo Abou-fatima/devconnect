@@ -9,7 +9,8 @@ export const ICONES = {
   candidature_refusee: 'main',
   mentorat: 'mentorat',
   tache: 'liste',
-  message_prive: 'courrier'
+  message_prive: 'courrier',
+  reaction: 'reaction'
 };
 
 export function texteNotification(n, t) {
@@ -20,6 +21,7 @@ export function texteNotification(n, t) {
     const c = n.sujet?.canal || '';
     options.lieu = c.startsWith('prive:') ? t('notif.lieu_prive') : c.startsWith('stack:') ? `#${c.slice(6)}` : c.startsWith('ville:') ? c.slice(6) : t('notif.lieu_chat');
   }
+  if (n.kind === 'reaction') options.emoji = n.sujet?.emoji || '👍';
   if (n.kind === 'tache') return t('projets.taches.notif', options);
   if (n.kind === 'mentorat' && ['demande', 'acceptee', 'refusee'].includes(n.sujet?.etape)) return t(`mentorat.notif.${n.sujet.etape}`, options);
   return t(`notif.kinds.${n.kind}`, options);

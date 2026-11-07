@@ -364,7 +364,8 @@
       "candidature_acceptee": "{{pseudo}} accepted your application",
       "candidature_refusee": "{{pseudo}} declined your application",
       "mentorat": "{{pseudo}} reached out about mentoring",
-      "message_prive": "{{pseudo}} sent you a message"
+      "message_prive": "{{pseudo}} sent you a message",
+      "reaction": "{{pseudo}} reacted {{emoji}} to your message"
     }
   }
 }
