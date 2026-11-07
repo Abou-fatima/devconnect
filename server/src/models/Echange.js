@@ -30,6 +30,7 @@ const echangeSchema = new Schema({
   titre: String,
   contenu: String,
   audio_url: String,
+  image_url: String, // image jointe à un message de chat (envoyée avant par POST /api/upload/chat)
   transcription: String,
   // Réactions emoji sur un message du chat : une seule par personne (voir services/reactions.js)
   reactions: {
