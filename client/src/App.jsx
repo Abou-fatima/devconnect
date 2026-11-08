@@ -25,6 +25,8 @@ const Question = lazy(() => import('./pages/Question'));
 const PoserQuestion = lazy(() => import('./pages/PoserQuestion'));
 const Classement = lazy(() => import('./pages/Classement'));
 const Carte = lazy(() => import('./pages/Carte'));
+const Defi = lazy(() => import('./pages/Defi'));
+const DefiNouveau = lazy(() => import('./pages/DefiNouveau'));
 const Messages = lazy(() => import('./pages/Messages'));
 const Notifications = lazy(() => import('./pages/Notifications'));
 const Admin = lazy(() => import('./pages/Admin'));
@@ -56,6 +58,9 @@ export default function App() {
         <Route path="mentorat" element={page(<Mentorat />)} />
         <Route path="classement" element={page(<Classement />)} />
         <Route path="carte" element={page(<Carte />)} />
+        <Route path="defi" element={page(<Defi />)} />
+        <Route path="defi/nouveau" element={<ProtectedRoute roles={['admin', 'moderateur']}>{page(<DefiNouveau />)}</ProtectedRoute>} />
+        <Route path="defi/:id" element={page(<Defi />)} />
         <Route path="messages" element={<ProtectedRoute>{page(<Messages />)}</ProtectedRoute>} />
         <Route path="messages/:canal" element={<ProtectedRoute>{page(<Messages />)}</ProtectedRoute>} />
         <Route path="admin" element={<ProtectedRoute roles={['admin', 'moderateur']}>{page(<Admin />)}</ProtectedRoute>} />
