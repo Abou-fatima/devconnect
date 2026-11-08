@@ -75,4 +75,15 @@ function classer(participations) {
   return ok.map((p, i) => ({ ...p, rang: i + 1 }));
 }
 
-module.exports = { NOM_FONCTION, DUREE_MIN_S, CODE_MAX, TESTS_MIN, TESTS_MAX, erreurTests, statut, serialiserDefi, verifierSoumission, classer };
+const PODIUM = 3;
+
+// Les trois premiers du classement, avec le sujet de leur notification (fonction pure).
+function podium(classement, defi) {
+  return (Array.isArray(classement) ? classement : []).slice(0, PODIUM).map((p) => ({
+    user_id: p.user_id && p.user_id._id ? p.user_id._id : p.user_id,
+    rang: p.rang,
+    sujet: { type: 'defi', id: String(defi._id), rang: p.rang, titre: defi.titre },
+  }));
+}
+
+module.exports = { PODIUM, podium, NOM_FONCTION, DUREE_MIN_S, CODE_MAX, TESTS_MIN, TESTS_MAX, erreurTests, statut, serialiserDefi, verifierSoumission, classer };

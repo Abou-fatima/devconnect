@@ -69,5 +69,6 @@
   "err_nom": "Nom de fonction invalide (lettres, chiffres, _ ou $).",
   "err_regles_tests": "Il faut au moins 3 tests, dont un visible et un caché.",
   "err_solution": "Écrivez la solution de référence.",
-  "err_solution_echoue": "La solution de référence ne réussit pas tous les tests : corrigez-la avant de publier."
+  "err_solution_echoue": "La solution de référence ne réussit pas tous les tests : corrigez-la avant de publier.",
+  "vous": "vous"
 }

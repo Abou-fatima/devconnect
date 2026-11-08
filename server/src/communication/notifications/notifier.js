@@ -6,7 +6,7 @@ const Echange = require('../../models/Echange');
 const Utilisateur = require('../../models/Utilisateur');
 const { envoyerPush } = require('../../services/push');
 
-const KINDS = ['reponse', 'reponse_acceptee', 'mention', 'vote', 'candidature', 'candidature_acceptee', 'candidature_refusee', 'mentorat', 'tache', 'message_prive', 'reaction', 'reponse_chat'];
+const KINDS = ['reponse', 'reponse_acceptee', 'mention', 'vote', 'candidature', 'candidature_acceptee', 'candidature_refusee', 'mentorat', 'tache', 'message_prive', 'reaction', 'reponse_chat', 'defi_podium'];
 const MAX_MENTIONS = 5;
 
 let io = null;

@@ -84,3 +84,19 @@ test('câblage : route montée dans app.js, modèles et script', () => {
   assert.match(lire('src/routes/defis.js'), /requireRole\("admin", "moderateur"\)/);
   assert.match(lire('src/routes/defis.js'), /\/:id\/soumettre/);
 });
+
+test('podium : les trois premiers, avec le sujet de la notification', () => {
+  const classes = svc.classer([1, 2, 3, 4].map((n) => ({ _id: n, user_id: `u${n}`, reussi: true, duree_s: 20 + n, essais: 1, valide_at: '2026-11-04T10:00:00Z' })));
+  const p = svc.podium(classes, { _id: 'd1', titre: 'Inverser' });
+  assert.deepStrictEqual(p.map((x) => [x.user_id, x.rang]), [['u1', 1], ['u2', 2], ['u3', 3]]);
+  assert.deepStrictEqual(p[0].sujet, { type: 'defi', id: 'd1', rang: 1, titre: 'Inverser' });
+  assert.deepStrictEqual(svc.podium([], { _id: 'd1' }), []);
+});
+
+test('câblage : clôture notifiée une fois, kind défini, mon rang hors top 10', () => {
+  const r = fs.readFileSync(path.join(__dirname, '../src/routes/defis.js'), 'utf8');
+  assert.match(r, /cloture_notifiee: \{ \$ne: true \}/);
+  assert.match(r, /kind: "defi_podium"/);
+  assert.match(r, /mon_classement/);
+  assert.match(fs.readFileSync(path.join(__dirname, '../src/models/Defi.js'), 'utf8'), /cloture_notifiee/);
+});

@@ -11,7 +11,8 @@ export const ICONES = {
   tache: 'liste',
   message_prive: 'courrier',
   reaction: 'reaction',
-  reponse_chat: 'messages'
+  reponse_chat: 'messages',
+  defi_podium: 'trophee'
 };
 
 export function texteNotification(n, t) {
@@ -22,6 +23,7 @@ export function texteNotification(n, t) {
     const c = n.sujet?.canal || '';
     options.lieu = c.startsWith('prive:') ? t('notif.lieu_prive') : c.startsWith('stack:') ? `#${c.slice(6)}` : c.startsWith('ville:') ? c.slice(6) : t('notif.lieu_chat');
   }
+  if (n.kind === 'defi_podium') { options.rang = n.sujet?.rang; options.titre = n.sujet?.titre; }
   if (n.kind === 'reaction') options.emoji = n.sujet?.emoji || '👍';
   if (n.kind === 'tache') return t('projets.taches.notif', options);
   if (n.kind === 'mentorat' && ['demande', 'acceptee', 'refusee'].includes(n.sujet?.etape)) return t(`mentorat.notif.${n.sujet.etape}`, options);
@@ -34,6 +36,7 @@ export function lienNotification(n) {
   const s = n.sujet;
   if (s?.type === 'canal' && s.canal) return `/messages/${encodeURIComponent(s.canal)}`;
   if (s?.type === 'post' && s.id) return `/forum/questions/${s.id}`;
+  if (s?.type === 'defi' && s.id) return `/defi/${s.id}`;
   if (s?.type === 'projet' && s.id) return `/projets/${s.id}`;
   if (s?.type === 'mentorat') return s.etape === 'demande' ? '/mentorat?onglet=demandes' : '/mentorat?onglet=demandes';
   if (n.acteur?.id) return `/developpeurs/${n.acteur.id}`;

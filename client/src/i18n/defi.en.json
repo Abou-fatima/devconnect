@@ -69,5 +69,6 @@
   "err_nom": "Invalid function name (letters, digits, _ or $).",
   "err_regles_tests": "At least 3 tests are needed, including one visible and one hidden.",
   "err_solution": "Write the reference solution.",
-  "err_solution_echoue": "The reference solution does not pass every test: fix it before publishing."
+  "err_solution_echoue": "The reference solution does not pass every test: fix it before publishing.",
+  "vous": "you"
 }

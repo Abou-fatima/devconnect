@@ -13,7 +13,8 @@ const TEXTES = {
   reponse: 'a répondu à votre question', reponse_acceptee: 'a accepté votre réponse', vote: 'a voté pour votre contribution',
   mention: 'vous a mentionné dans le chat', candidature: 'veut rejoindre votre projet', candidature_acceptee: 'a accepté votre candidature',
   candidature_refusee: 'a décliné votre candidature', mentorat: 'vous a contacté pour du mentorat', tache: 'a mis à jour une tâche',
-  message_prive: 'vous a envoyé un message', reaction: 'a réagi à votre message', reponse_chat: 'a répondu à votre message'
+  message_prive: 'vous a envoyé un message', reaction: 'a réagi à votre message', reponse_chat: 'a répondu à votre message',
+  defi_podium: 'vous félicite : vous êtes sur le podium du défi'
 };
 
 const pushActif = () => { const v = vapid(); return Boolean(v && v.publicKey && v.privateKey); };

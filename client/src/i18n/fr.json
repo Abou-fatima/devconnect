@@ -366,7 +366,8 @@
       "mentorat": "{{pseudo}} vous a contacté pour du mentorat",
       "message_prive": "{{pseudo}} vous a envoyé un message",
       "reaction": "{{pseudo}} a réagi {{emoji}} à votre message",
-      "reponse_chat": "{{pseudo}} a répondu à votre message"
+      "reponse_chat": "{{pseudo}} a répondu à votre message",
+      "defi_podium": "{{pseudo}} vous félicite : place n°{{rang}} au défi « {{titre}} »"
     }
   }
 }
