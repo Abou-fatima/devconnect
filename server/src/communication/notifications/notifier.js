@@ -6,7 +6,7 @@ const Echange = require('../../models/Echange');
 const Utilisateur = require('../../models/Utilisateur');
 const { envoyerPush } = require('../../services/push');
 
-const KINDS = ['reponse', 'reponse_acceptee', 'mention', 'vote', 'candidature', 'candidature_acceptee', 'candidature_refusee', 'mentorat', 'tache', 'message_prive', 'reaction'];
+const KINDS = ['reponse', 'reponse_acceptee', 'mention', 'vote', 'candidature', 'candidature_acceptee', 'candidature_refusee', 'mentorat', 'tache', 'message_prive', 'reaction', 'reponse_chat'];
 const MAX_MENTIONS = 5;
 
 let io = null;
@@ -127,4 +127,21 @@ async function notifierReaction({ destinataireId, acteurId, pseudo, emoji, canal
   } catch (e) { console.error('[notifier] réaction :', e.message); return null; }
 }
 
-module.exports = { KINDS, setIo, envoyer, serialiser, extraireMentions, notifierMentions, notifierMessagePrive, notifierReaction };
+/* Réponse à un message précis : « X a répondu à votre message ». Une seule notification non lue par message cité.
+   N'interrompt jamais l'envoi du message. */
+async function notifierReponse({ destinataireId, acteurId, pseudo, canal, parentId, messageId }) {
+  try {
+    const existe = await Echange.exists({
+      type: 'notification', cible_type: 'user', cible_id: destinataireId,
+      'metadata.kind': 'reponse_chat', 'metadata.sujet.parent_id': String(parentId), 'metadata.lue': { $ne: true }
+    });
+    if (existe) return null;
+    return await envoyer({
+      destinataireId, acteurId, kind: 'reponse_chat',
+      message: `${pseudo} a répondu à votre message`,
+      sujet: { type: 'canal', canal, message_id: String(messageId), parent_id: String(parentId) }
+    });
+  } catch (e) { console.error('[notifier] réponse :', e.message); return null; }
+}
+
+module.exports = { KINDS, setIo, envoyer, serialiser, extraireMentions, notifierMentions, notifierMessagePrive, notifierReaction, notifierReponse };

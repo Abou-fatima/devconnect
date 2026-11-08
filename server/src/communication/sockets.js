@@ -3,9 +3,10 @@ const Utilisateur = require('../models/Utilisateur');
 const Echange = require('../models/Echange');
 const { verifyToken } = require('../utils/jwt');
 const { parseCanal } = require('./canaux');
-const { notifierMentions, notifierMessagePrive, notifierReaction } = require('./notifications/notifier');
+const { notifierMentions, notifierMessagePrive, notifierReaction, notifierReponse } = require('./notifications/notifier');
 const { apercuMessage } = require('../services/prives');
 const { emojiValide, appliquer, grouper } = require('../services/reactions');
+const { citationDe, citationExterne, parentValide } = require('../services/reponses');
 const { transcriptionDe } = require('../services/audio');
 const { imageDe, formeUrlValide } = require('../services/imagesChat');
 const Salon = require('../models/Salon');
@@ -71,7 +72,7 @@ module.exports = (io) => {
       reponse(ack, { ok: true, canal: c.canal });
     });
 
-    // message { canal, contenu?, audio_url?, image_url? }  ->  diffusé à tout le canal (expéditeur compris)
+    // message { canal, contenu?, audio_url?, image_url?, reponse_a?, citation? }  ->  diffusé à tout le canal (expéditeur compris)
     socket.on('message', async (payload, ack) => {
       try {
         const c = parseCanal(payload && payload.canal, userId);
@@ -89,16 +90,27 @@ module.exports = (io) => {
         const image = imageUrl ? await imageDe(imageUrl, userId) : undefined; // doit être une image envoyée par cette personne
         if (imageUrl && !image) return reponse(ack, { ok: false, erreur: 'image_url invalide' });
 
+        // Réponse à un message précis (même canal) ou, en conversation privée, citation d'un message d'un autre canal.
+        let parent = null; let citationExt = null;
+        if (payload.reponse_a !== undefined && payload.reponse_a !== null) {
+          if (!mongoose.isValidObjectId(payload.reponse_a)) return reponse(ack, { ok: false, erreur: 'Message cité introuvable' });
+          parent = await Echange.findOne({ _id: payload.reponse_a }).select('type metadata.canal auteur_id contenu image_url audio_url').populate('auteur_id', 'pseudo').lean();
+          if (!parentValide(parent, c.canal)) return reponse(ack, { ok: false, erreur: 'Message cité introuvable' });
+        } else if (payload.citation && c.cible_type === 'user') {
+          citationExt = citationExterne(payload.citation);
+        }
+
         const doc = await Echange.create({
           type: 'message',
           auteur_id: userId,
+          ...(parent ? { parent_id: parent._id } : {}),
           cible_type: c.cible_type,
           ...(c.cible_id ? { cible_id: c.cible_id } : {}),
           contenu: contenu || undefined,
           audio_url: audio || undefined,
           image_url: image,
           transcription: audio ? await transcriptionDe(audio, userId) : undefined,
-          metadata: { canal: c.canal }
+          metadata: { canal: c.canal, ...(citationExt ? { citation: citationExt } : {}) }
         });
 
         const message = {
@@ -109,9 +121,18 @@ module.exports = (io) => {
           audio_url: doc.audio_url || null,
           image_url: doc.image_url || null,
           transcription: doc.transcription || null,
+          reponse_a: parent ? citationDe(parent) : citationExt ? { id: null, externe: true, auteur: { id: null, pseudo: citationExt.pseudo }, type: citationExt.type, texte: citationExt.texte } : null,
           created_at: doc.created_at
         };
         io.to(c.canal).emit('message', message);
+        // Prévient l'auteur du message cité (pas soi-même ; en privé la notification de message suffit ; pas s'il a déjà le canal ouvert).
+        const auteurCite = parent && parent.auteur_id && parent.auteur_id._id ? String(parent.auteur_id._id) : null;
+        if (auteurCite && auteurCite !== String(userId) && c.cible_type !== 'user') {
+          (async () => {
+            const ouverte = (await io.in(c.canal).fetchSockets()).some((x) => x.data.user && x.data.user.id === auteurCite);
+            if (!ouverte) await notifierReponse({ destinataireId: auteurCite, acteurId: userId, pseudo, canal: c.canal, parentId: parent._id, messageId: doc._id });
+          })().catch((e) => console.error('[socket réponse]', e.message));
+        }
         if (c.salon_id) {
           // Trie « mes salons » et prévient chaque autre membre (salle personnelle) pour son compteur de messages non lus.
           Salon.findOneAndUpdate({ _id: c.salon_id }, { $set: { derniere_activite: new Date() } }).select('membres.user_id').lean()

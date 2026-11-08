@@ -1,11 +1,11 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
 import { useRealtime } from '../context/RealtimeContext';
 import { historique } from '../services/chat';
 import { getUser } from '../services/users';
-import { lireCanal, majuscule, ajouterRecent } from '../lib/canaux';
+import { lireCanal, majuscule, ajouterRecent, canalPrive } from '../lib/canaux';
 import { messageErreur } from '../services/api';
 import RichText from './RichText';
 import LecteurVocal from './LecteurVocal';
@@ -18,13 +18,14 @@ import ImageMessage from './ImageMessage';
 import { getSalon, rejoindreSalon } from '../services/salons';
 import SalonInfos from './SalonInfos';
 import Icone from './Icone';
-import { BarreReactions, PastillesReactions } from './ReactionsBarre';
+import { BarreReactions, PastillesReactions, CitationBloc, apercuCitation } from './ReactionsBarre';
 
 const COULEURS = ['#1d4ed8', '#047857', '#b45309', '#7e22ce', '#be123c', '#0e7490'];
 const couleurPseudo = (p = '') => COULEURS[[...p].reduce((a, c) => a + c.charCodeAt(0), 0) % COULEURS.length];
 const MAX_CAR = 2000;
 const GROUPE_MS = 5 * 60 * 1000;
 const APPUI_LONG_MS = 450;
+const APERCU_CITATION = 80;
 
 const memeJour = (a, b) => new Date(a).toDateString() === new Date(b).toDateString();
 const heure = (d, lang) => new Date(d).toLocaleTimeString(lang, { hour: '2-digit', minute: '2-digit' });
@@ -50,6 +51,12 @@ export default function Conversation({ canal, onRetour, onNom, onChange }) {
   const [infosOuvert, setInfosOuvert] = useState(false);
   const [choixId, setChoixId] = useState(null); // message dont la barre d'emojis est ouverte
   const appuiLong = useRef(null);
+  const navigate = useNavigate();
+  const location = useLocation();
+  // Réponse en cours : { id, externe, pseudo, type, texte }. Peut venir d'un « Répondre en privé » (état de navigation).
+  const [citation, setCitation] = useState(() => location.state?.citation || null);
+  const [surligne, setSurligne] = useState(null); // message d'origine mis en évidence après un clic sur sa citation
+  useEffect(() => { if (location.state?.citation) navigate(location.pathname, { replace: true, state: null }); }, []); // eslint-disable-line react-hooks/exhaustive-deps
   const [rejoint, setRejoint] = useState({ occupe: false, erreur: '' });
 
   const defil = useRef(null);
@@ -143,6 +150,35 @@ export default function Conversation({ canal, onRetour, onNom, onChange }) {
     return () => { socket.off('message', onMessage); socket.off('typing', onTyping); socket.off('reaction', onReaction); };
   }, [socket, canal, user?.id, ajouter]);
 
+  // Ce qui part avec le message : identifiant du message cité (même canal) ou extrait copié (réponse en privé).
+  const chargeReponse = () => (!citation ? {} : citation.externe
+    ? { citation: { pseudo: citation.pseudo, type: citation.type, texte: citation.texte } }
+    : { reponse_a: citation.id });
+
+  const apercuDe = (m) => (m.contenu ? { type: 'texte', texte: m.contenu.length > APERCU_CITATION ? `${m.contenu.slice(0, APERCU_CITATION - 1)}…` : m.contenu } : m.image_url ? { type: 'image', texte: '' } : { type: 'audio', texte: '' });
+
+  const repondreA = (m) => {
+    setChoixId(null);
+    if (!m.auteur) return;
+    setCitation({ id: m.id, externe: false, pseudo: m.auteur.pseudo, ...apercuDe(m) });
+    saisie.current?.focus();
+  };
+
+  const repondreEnPrive = (m) => {
+    setChoixId(null);
+    const lien = m.auteur && canalPrive(user?.id, m.auteur.id);
+    if (!lien) return;
+    navigate(`/messages/${encodeURIComponent(lien)}`, { state: { citation: { id: null, externe: true, pseudo: m.auteur.pseudo, ...apercuDe(m) } } });
+  };
+
+  const allerAuMessage = (id) => {
+    const el = document.getElementById(`msg-${id}`);
+    if (!el) return;
+    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    setSurligne(id);
+    setTimeout(() => setSurligne((s) => (s === id ? null : s)), 1600);
+  };
+
   // Réagir (ou retirer / changer) : la même touche deux fois retire ; le résultat revient par l'événement « reaction ».
   const reagir = useCallback((messageId, emoji) => {
     setChoixId(null);
@@ -213,10 +249,10 @@ export default function Conversation({ canal, onRetour, onNom, onChange }) {
     try {
       const imageUrl = await envoyerImageChat(await preparerImage(fichier));
       const contenu = texte.trim();
-      socket.timeout(8000).emit('message', { canal, image_url: imageUrl, ...(contenu ? { contenu } : {}) }, (err, ack) => {
+      socket.timeout(8000).emit('message', { canal, image_url: imageUrl, ...(contenu ? { contenu } : {}), ...chargeReponse() }, (err, ack) => {
         setEnvoiImage(false);
         if (err || !ack?.ok) { setErreurEnvoi(err ? t('chat.erreur_delai') : ack?.erreur || t('images.erreur_envoi')); return; }
-        suivreBas.current = true; if (contenu) setTexte(''); ajouter(ack.message);
+        suivreBas.current = true; if (contenu) setTexte(''); setCitation(null); ajouter(ack.message);
       });
     } catch (er) {
       setEnvoiImage(false);
@@ -233,10 +269,10 @@ export default function Conversation({ canal, onRetour, onNom, onChange }) {
     setEnvoiVocal(true); setErreurEnvoi('');
     try {
       const { audio_url: audioUrl } = await envoyerVocal(vocal.resultat.blob, i18n.language?.startsWith('en') ? 'en' : 'fr');
-      socket.timeout(8000).emit('message', { canal, audio_url: audioUrl }, (err, ack) => {
+      socket.timeout(8000).emit('message', { canal, audio_url: audioUrl, ...chargeReponse() }, (err, ack) => {
         setEnvoiVocal(false);
         if (err || !ack?.ok) { setErreurEnvoi(err ? t('chat.erreur_delai') : ack?.erreur || t('vocal.erreur_envoi')); return; } // l'enregistrement reste prêt
-        suivreBas.current = true; vocal.terminer(); ajouter(ack.message);
+        suivreBas.current = true; vocal.terminer(); setCitation(null); ajouter(ack.message);
       });
     } catch (e) { setEnvoiVocal(false); setErreurEnvoi(messageErreur(e, t('vocal.erreur_envoi'))); }
   };
@@ -263,7 +299,7 @@ export default function Conversation({ canal, onRetour, onNom, onChange }) {
     setErreurEnvoi('');
     clearTimeout(frappe.current.minuteur);
     signalerFrappe(false);
-    socket.timeout(8000).emit('message', { canal, contenu }, (err, ack) => {
+    socket.timeout(8000).emit('message', { canal, contenu, ...chargeReponse() }, (err, ack) => {
       setEnvoi(false);
       if (err || !ack?.ok) {
         setErreurEnvoi(err ? t('chat.erreur_delai') : ack?.erreur || t('chat.erreur_envoi'));
@@ -271,6 +307,7 @@ export default function Conversation({ canal, onRetour, onNom, onChange }) {
       }
       suivreBas.current = true;
       setTexte('');
+      setCitation(null);
       ajouter(ack.message);
       saisie.current?.focus();
     });
@@ -338,7 +375,7 @@ export default function Conversation({ canal, onRetour, onNom, onChange }) {
     const moi = m.auteur?.id === user?.id;
     const monEmoji = (m.reactions || []).find((r) => r.users.includes(user?.id))?.emoji;
     lignes.push(
-      <div key={m.id} className={`anim-msg flex flex-col ${moi ? 'items-end' : 'items-start'} ${debutGroupe ? 'mt-3' : 'mt-0.5'}`}>
+      <div key={m.id} id={`msg-${m.id}`} className={`anim-msg flex flex-col ${moi ? 'items-end' : 'items-start'} ${debutGroupe ? 'mt-3' : 'mt-0.5'}`}>
         {debutGroupe && (
           <div className="mb-0.5 flex items-baseline gap-2 px-1 text-xs">
             {m.auteur
@@ -348,14 +385,20 @@ export default function Conversation({ canal, onRetour, onNom, onChange }) {
           </div>
         )}
         <div data-reactions className={`group relative flex max-w-[85%] items-center gap-1 sm:max-w-[75%] ${moi ? 'flex-row-reverse' : ''}`}>
-        {choixId === m.id && <BarreReactions aDroite={moi} monEmoji={monEmoji} onChoisir={(e) => reagir(m.id, e)} />}
+        {choixId === m.id && (
+          <BarreReactions aDroite={moi} monEmoji={monEmoji} onChoisir={(e) => reagir(m.id, e)} actions={[
+            ...(m.auteur ? [{ cle: 'repondre', label: t('reactions.repondre'), icone: 'repondre', onClick: () => repondreA(m) }] : []),
+            ...(infos.type !== 'prive' && m.auteur && !moi ? [{ cle: 'prive', label: t('reactions.repondre_prive'), icone: 'courrier', onClick: () => repondreEnPrive(m) }] : [])
+          ]} />
+        )}
         <div
           onTouchStart={() => { clearTimeout(appuiLong.current); appuiLong.current = setTimeout(() => setChoixId(m.id), APPUI_LONG_MS); }}
           onTouchEnd={() => clearTimeout(appuiLong.current)}
           onTouchMove={() => clearTimeout(appuiLong.current)}
           onTouchCancel={() => clearTimeout(appuiLong.current)}
           onContextMenu={(e) => { e.preventDefault(); setChoixId(m.id); }}
-          className={`min-w-0 select-text rounded-2xl px-3 py-1.5 text-[15px] leading-snug [-webkit-touch-callout:none] ${moi ? 'rounded-br-md bg-brand text-white' : 'rounded-bl-md border border-slate-200 bg-white text-slate-900'}`}>
+          className={`min-w-0 select-text rounded-2xl px-3 py-1.5 text-[15px] leading-snug [-webkit-touch-callout:none] ${surligne === m.id ? 'ring-4 ring-amber-300' : ''} ${moi ? 'rounded-br-md bg-brand text-white' : 'rounded-bl-md border border-slate-200 bg-white text-slate-900'}`}>
+          {m.reponse_a && <CitationBloc r={m.reponse_a} propre={moi} onAller={allerAuMessage} />}
           {m.contenu && <RichText texte={m.contenu} moi={user?.pseudo} propre={moi} />}
           {m.image_url && <ImageMessage url={m.image_url} />}
           {m.audio_url && (
@@ -428,6 +471,15 @@ export default function Conversation({ canal, onRetour, onNom, onChange }) {
         {erreurSalon && etat !== 'erreur' && <p className="erreur mb-2">{erreurSalon}</p>}
         {erreurEnvoi && <p className="erreur mb-2" role="alert">{erreurEnvoi}</p>}
         {erreurVocal && <p className="erreur mb-2" role="alert">{erreurVocal}</p>}
+        {citation && (
+          <div className="mb-2 flex items-start gap-2 rounded-lg border-l-4 border-brand bg-slate-100 px-2 py-1.5">
+            <div className="min-w-0 flex-1">
+              <p className="truncate text-xs font-semibold text-brand">{t('reactions.reponse_a', { pseudo: citation.pseudo })}</p>
+              <p className="line-clamp-1 break-words text-[13px] text-slate-600">{apercuCitation(citation, t)}</p>
+            </div>
+            <button type="button" onClick={() => setCitation(null)} aria-label={t('reactions.annuler_reponse')} title={t('reactions.annuler_reponse')} className="rounded-full px-1.5 text-slate-500 hover:bg-slate-200"><Icone nom="fermer" /></button>
+          </div>
+        )}
         {enVocal ? (
           <div className="flex items-center gap-2">
             <BarreVocale etat={vocal.etat} secondes={vocal.secondes} resultat={vocal.resultat} envoi={envoiVocal} dureeMax={DUREE_MAX} onArreter={vocal.arreter} onAnnuler={vocal.annuler} onEnvoyer={envoyerNoteVocale} />

@@ -1,7 +1,14 @@
 {
-  "ajouter": "React",
+  "ajouter": "React or reply",
   "choisir": "Choose a reaction",
   "compte_one": "{{emoji}}: {{count}} person",
   "compte_other": "{{emoji}}: {{count}} people",
-  "erreur": "Could not save your reaction."
+  "erreur": "Could not save your reaction.",
+  "repondre": "Reply",
+  "repondre_prive": "Reply privately",
+  "reponse_a": "Replying to {{pseudo}}",
+  "annuler_reponse": "Cancel reply",
+  "voir_original": "Go to the original message",
+  "type_image": "Image",
+  "type_audio": "Voice message"
 }

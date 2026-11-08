@@ -365,7 +365,8 @@
       "candidature_refusee": "{{pseudo}} a décliné votre candidature",
       "mentorat": "{{pseudo}} vous a contacté pour du mentorat",
       "message_prive": "{{pseudo}} vous a envoyé un message",
-      "reaction": "{{pseudo}} a réagi {{emoji}} à votre message"
+      "reaction": "{{pseudo}} a réagi {{emoji}} à votre message",
+      "reponse_chat": "{{pseudo}} a répondu à votre message"
     }
   }
 }
