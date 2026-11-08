@@ -38,6 +38,7 @@ export default function Layout() {
     { to: '/projets', label: t('projets.nav'), icon: 'projet' },
     { to: '/mentorat', label: t('mentorat.nav'), icon: 'mentorat', desktopOnly: true },
     { to: '/classement', label: t('nav.classement'), icon: 'trophee' },
+    { to: '/carte', label: t('carte.nav'), icon: 'groupe', desktopOnly: true },
     ...(user ? [{ to: '/messages', label: t('nav.messages'), icon: 'courrier' }] : []),
     ...(user && ['admin', 'moderateur'].includes(user.role) ? [{ to: '/admin', label: t('admin.nav'), icon: 'bouclier', desktopOnly: true }] : []),
     user ? { to: '/profil', label: t('nav.profil'), icon: 'utilisateur' } : { to: '/connexion', label: t('nav.connexion'), icon: 'cle' }

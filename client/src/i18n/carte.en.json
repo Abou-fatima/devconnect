@@ -1,0 +1,19 @@
+{
+  "nav": "Map",
+  "titre": "The community across Africa",
+  "sous_titre": "Where do DevConnect developers live? Hover or tap a country to see how many members it has, then browse their profiles.",
+  "membres": "Members",
+  "pays_representes": "Countries",
+  "aria_carte": "Map of Africa: developers per country",
+  "invite": "Tap a country to see its developers",
+  "nb_devs_one": "{{count}} developer",
+  "nb_devs_other": "{{count}} developers",
+  "aucun_dev": "No developers yet",
+  "legende_moins": "Fewer",
+  "legende_plus": "More",
+  "voir_devs": "See developers",
+  "premier": "Be the first from this country to join the community.",
+  "classement": "Most active countries",
+  "aucune_donnee": "No profile lists a country yet.",
+  "erreur": "Could not load the map right now."
+}
