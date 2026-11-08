@@ -10,6 +10,7 @@ const v = require("../validators/defis");
 const svc = require("../services/defis");
 const { auth, optionalAuth } = require("../middleware/auth");
 const { requireRole } = require("../middleware/role");
+const { envoyer } = require("../communication/notifications/notifier");
 const { ecritureLimiter } = require("../middleware/rateLimit");
 
 const router = express.Router();
@@ -37,14 +38,33 @@ async function charger(defi, userId) {
     participants: parts.length,
     reussis: classement.length,
     classement: classement.slice(0, 10).map(serialiserRang),
+    // Mon rang quand je suis hors du top 10 (sinon il est déjà dans la liste)
+    mon_classement: monRang && monRang.rang > 10 ? serialiserRang(monRang) : null,
     ma_participation: moi
       ? { commence: true, reussi: Boolean(moi.reussi), essais: moi.essais, tests_reussis: moi.tests_reussis, duree_s: moi.duree_s || null, rang: monRang ? monRang.rang : null, debut_at: moi.debut_at, code: moi.code || "" }
       : { commence: false },
   };
 }
 
+/* À la fin d'un défi, les trois premiers reçoivent une notification, une seule fois (le drapeau est posé de façon atomique,
+   donc deux visites simultanées ne la dupliquent pas). Pas de tâche planifiée : la vérification se fait à la consultation. */
+async function cloturerEchus() {
+  try {
+    const echus = await Defi.find({ fin: { $lte: new Date() }, cloture_notifiee: { $ne: true } }).select("_id").limit(5).lean();
+    for (const { _id } of echus) {
+      const defi = await Defi.findOneAndUpdate({ _id, cloture_notifiee: { $ne: true } }, { $set: { cloture_notifiee: true } });
+      if (!defi) continue; // une autre requête l'a déjà fait
+      const parts = await Participation.find({ defi_id: _id }).lean();
+      for (const g of svc.podium(svc.classer(parts), defi)) {
+        await envoyer({ destinataireId: g.user_id, acteurId: defi.auteur_id, kind: "defi_podium", message: `Podium du défi « ${defi.titre} » : place n°${g.rang}`, sujet: g.sujet });
+      }
+    }
+  } catch (e) { console.error("[defis] clôture", e.message); }
+}
+
 /* GET /api/defis/courant : le défi en cours (sinon le dernier terminé, sinon le prochain) */
 router.get("/courant", optionalAuth, asyncRoute(async (req, res) => {
+  await cloturerEchus();
   const maintenant = new Date();
   let defi = await Defi.findOne({ debut: { $lte: maintenant }, fin: { $gt: maintenant } }).sort({ debut: -1 });
   if (!defi) defi = await Defi.findOne({ fin: { $lte: maintenant } }).sort({ fin: -1 });
@@ -80,6 +100,7 @@ async function defiParId(id) {
 
 /* GET /api/defis/:id */
 router.get("/:id", optionalAuth, asyncRoute(async (req, res) => {
+  await cloturerEchus();
   res.json(await charger(await defiParId(req.params.id), req.userId));
 }));
 

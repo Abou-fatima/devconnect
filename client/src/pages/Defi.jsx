@@ -138,14 +138,15 @@ export default function Defi() {
             <section className="space-y-3" aria-label={t('defi.espace')}>
               <div className="flex flex-wrap items-center justify-between gap-2 text-sm">
                 <span className="font-mono text-lg font-semibold text-brand" aria-label={t('defi.chrono')}>⏱ {formaterDuree(ecoule)}</span>
-                <span className="text-slate-500">{t('defi.essais', { count: essais })}</span>
+                <span className="ml-3 text-slate-500">{t('defi.essais', { count: essais })}</span>
               </div>
-              <EditeurCode valeur={code} onChange={changerCode} onCollageBloque={() => { collages.current += 1; setErreur(t('defi.collage_refuse')); }} disabled={occupe} />
+              <EditeurCode valeur={code} onChange={changerCode} onCollageBloque={() => { collages.current += 1; setErreur(t('defi.collage_refuse')); }} disabled={occupe} nomFonction={defi.nom_fonction} />
               <div className="flex flex-wrap gap-2">
                 <button type="button" className="btn-outline" onClick={lancer} disabled={occupe}>{occupe ? t('defi.execution') : t('defi.lancer_tests')}</button>
                 <button type="button" className="btn" onClick={soumettre} disabled={occupe || !toutPasse}>{t('defi.soumettre')}</button>
               </div>
               {!toutPasse && <p className="text-xs text-slate-500">{t('defi.soumettre_aide')}</p>}
+              {toutPasse && <p className="rounded-lg bg-emerald-50 px-3 py-2 text-sm font-medium text-emerald-800" role="status">{t('defi.pret_soumettre')}</p>}
               {resultats && <ResultatsTests tests={session.tests} resultats={resultats} />}
             </section>
           )}
@@ -157,11 +158,11 @@ export default function Defi() {
               <p className="text-sm text-slate-500">{t('defi.classement_vide')}</p>
             ) : (
               <ol>
-                {data.classement.map((c) => (
-                  <li key={c.rang} className={`flex items-center gap-3 border-b border-slate-100 py-2 last:border-0 ${c.user && user && c.user.id === user.id ? 'bg-amber-50' : ''}`}>
+                {[...data.classement, ...(data.mon_classement ? [data.mon_classement] : [])].map((c, i) => (
+                  <li key={c.rang} className={`flex items-center gap-3 border-b border-slate-100 py-2 last:border-0 ${c.user && user && c.user.id === user.id ? 'bg-amber-50' : ''} ${data.mon_classement && i === data.classement.length ? 'mt-2 border-t border-dashed' : ''}`}>
                     <span className="w-7 text-center font-bold tabular-nums text-slate-500">{c.rang <= 3 ? ['🥇', '🥈', '🥉'][c.rang - 1] : c.rang}</span>
                     {c.user && <Avatar user={c.user} size={32} />}
-                    <span className="min-w-0 flex-1 truncate font-medium">{c.user ? c.user.pseudo : t('defi.anonyme')}</span>
+                    <span className="min-w-0 flex-1 truncate font-medium">{c.user ? c.user.pseudo : t('defi.anonyme')}{c.user && user && c.user.id === user.id && <span className="ml-1 text-xs font-normal text-slate-500">({t('defi.vous')})</span>}</span>
                     <span className="font-mono text-sm tabular-nums text-brand">{formaterDuree(c.duree_s)}</span>
                     <span className="hidden w-20 text-right text-xs text-slate-500 sm:block">{t('defi.essais', { count: c.essais })}</span>
                   </li>

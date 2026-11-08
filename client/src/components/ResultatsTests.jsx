@@ -22,7 +22,7 @@ export default function ResultatsTests({ tests, resultats }) {
               {x.visible && (
                 <span className="mt-0.5 block font-mono text-xs">
                   {t('defi.entree')} {montrer(x.entree)} → {t('defi.attendu')} {montrer(x.attendu)}
-                  {!r.ok && <> · {r.erreur ? `${t('defi.erreur')} ${r.erreur}` : `${t('defi.obtenu')} ${r.obtenu}`}</>}
+                  <> · {r.erreur ? `${t('defi.erreur')} ${r.erreur}` : `${t('defi.obtenu')} ${r.obtenu}`}</>
                 </span>
               )}
               {!x.visible && !r.ok && r.erreur && /Temps|promesse/.test(r.erreur) && <span className="ml-1 text-xs">({r.erreur})</span>}

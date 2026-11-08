@@ -19,6 +19,7 @@ const defiSchema = new Schema({
   debut: { type: Date, required: true, index: true },
   fin: { type: Date, required: true },
   auteur_id: { type: Schema.Types.ObjectId, ref: "Utilisateur", required: true },
+  cloture_notifiee: { type: Boolean, default: false }, // le podium a été prévenu à la fin du défi
   demo: { type: Boolean, default: false }, // défis créés par `npm run defis` (supprimables avec --clean)
   created_at: { type: Date, default: Date.now },
 });
