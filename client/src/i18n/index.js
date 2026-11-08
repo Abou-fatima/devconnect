@@ -37,13 +37,15 @@ import reactionsFr from './reactions.fr.json';
 import reactionsEn from './reactions.en.json';
 import economieFr from './economie.fr.json';
 import economieEn from './economie.en.json';
+import partageFr from './partage.fr.json';
+import partageEn from './partage.en.json';
 
 let saved = null;
 try { saved = localStorage.getItem('lang'); } catch { /* ignore */ }
 const initial = saved || (navigator.language || 'fr').slice(0, 2);
 
 i18n.use(initReactI18next).init({
-  resources: { fr: { translation: { ...fr, projets: projetsFr, mentorat: mentoratFr, vocal: vocalFr, onboarding: onboardingFr, aide: aideFr, erreurs: erreursFr, admin: adminFr, salons: salonsFr, visiteur: visiteurFr, images: imagesFr, pied: piedFr, introuvable: introuvableFr, prives: privesFr, son: sonFr, push: pushFr, reactions: reactionsFr, economie: economieFr } }, en: { translation: { ...en, projets: projetsEn, mentorat: mentoratEn, vocal: vocalEn, onboarding: onboardingEn, aide: aideEn, erreurs: erreursEn, admin: adminEn, salons: salonsEn, visiteur: visiteurEn, images: imagesEn, pied: piedEn, introuvable: introuvableEn, prives: privesEn, son: sonEn, push: pushEn, reactions: reactionsEn, economie: economieEn } } },
+  resources: { fr: { translation: { ...fr, projets: projetsFr, mentorat: mentoratFr, vocal: vocalFr, onboarding: onboardingFr, aide: aideFr, erreurs: erreursFr, admin: adminFr, salons: salonsFr, visiteur: visiteurFr, images: imagesFr, pied: piedFr, introuvable: introuvableFr, prives: privesFr, son: sonFr, push: pushFr, reactions: reactionsFr, economie: economieFr, partage: partageFr } }, en: { translation: { ...en, projets: projetsEn, mentorat: mentoratEn, vocal: vocalEn, onboarding: onboardingEn, aide: aideEn, erreurs: erreursEn, admin: adminEn, salons: salonsEn, visiteur: visiteurEn, images: imagesEn, pied: piedEn, introuvable: introuvableEn, prives: privesEn, son: sonEn, push: pushEn, reactions: reactionsEn, economie: economieEn, partage: partageEn } } },
   lng: ['fr', 'en'].includes(initial) ? initial : 'fr',
   fallbackLng: 'fr',
   interpolation: { escapeValue: false }

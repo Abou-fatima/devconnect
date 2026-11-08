@@ -52,6 +52,7 @@ app.use('/api/echanges', require('./routes/echanges'));
 app.use('/api/classement', require('./routes/classement'));
 app.use('/api/admin', require('./routes/admin'));
 app.use('/api/salons', require('./routes/salons'));
+app.use('/api/partage', require('./routes/partage')); // aperçus de partage (WhatsApp) : question et projet
 communication.mountRoutes(app);
 
 

@@ -11,6 +11,7 @@ import Auteur from '../components/Auteur';
 import Vote from '../components/Vote';
 import EditeurTexte from '../components/EditeurTexte';
 import Icone from '../components/Icone';
+import BoutonPartage from '../components/BoutonPartage';
 
 /* Boutons discrets sous un contenu : modifier, supprimer (avec confirmation), signaler. */
 function Actions({ item, estAuteur, estModo, onModifier, onSupprime, onErreur }) {
@@ -238,6 +239,7 @@ export default function Question() {
         <span>{t('forum.pose_il_y_a', { quand: ilYA(post.created_at, i18n.language) })}</span>
         <span>{t('forum.nb_vues', { count: post.nb_vues })}</span>
         <button type="button" onClick={suivre} aria-pressed={Boolean(post.suivi)} className="rounded-full border border-slate-300 px-2.5 py-0.5 text-xs hover:bg-slate-100">{post.suivi ? <><Icone nom="cloche" /> {t('forum.suivi')}</> : <><Icone nom="clocheBarree" /> {t('forum.suivre')}</>}</button>
+        <BoutonPartage type="question" id={post.id} titre={post.titre} />
       </div>
 
       {erreur && <div className="erreur mb-3" role="alert">{erreur}</div>}

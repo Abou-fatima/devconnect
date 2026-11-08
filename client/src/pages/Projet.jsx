@@ -14,6 +14,7 @@ import CandidaturesPorteur from '../components/CandidaturesPorteur';
 import EquipeProjet from '../components/EquipeProjet';
 import TableauTaches from '../components/TableauTaches';
 import Icone from '../components/Icone';
+import BoutonPartage from '../components/BoutonPartage';
 
 const Squelette = () => (
   <div aria-busy="true" aria-label="…" className="mx-auto max-w-4xl">
@@ -132,6 +133,7 @@ export default function Projet() {
         </div>
 
         <div className="mt-4 flex flex-wrap items-center gap-2">
+          <BoutonPartage type="projet" id={id} titre={projet.titre} />
           <button type="button" onClick={basculerLike} aria-pressed={aime} disabled={occupe}
             className={`inline-flex items-center gap-2 rounded-lg border px-4 py-2 font-medium transition active:scale-95 ${aime ? 'border-rose-300 bg-rose-50 text-rose-700' : 'border-slate-300 bg-white text-slate-700 hover:bg-slate-100'}`}>
             <span key={String(aime)} className={aime ? 'anim-pop' : ''} aria-hidden>{aime ? <Icone nom="coeur" /> : <Icone nom="coeurVide" />}</span>
