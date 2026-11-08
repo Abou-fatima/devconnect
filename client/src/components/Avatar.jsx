@@ -1,7 +1,9 @@
 import { urlFichier } from "../lib/fichiers";
+import useEconomie from "../hooks/useEconomie";
 
 export default function Avatar({ user, size = 48 }) {
-  const photo = user?.profil?.photo;
+  const economie = useEconomie();
+  const photo = economie ? null : user?.profil?.photo; // économie de données : l'initiale remplace la photo
   const style = { width: size, height: size };
   if (photo)
     return (

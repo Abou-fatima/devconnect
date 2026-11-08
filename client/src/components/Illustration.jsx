@@ -1,5 +1,9 @@
 // Illustration décorative (alt vide : le texte à côté porte déjà le sens). Le mélange « multiply » fond le fond clair de l'image dans la carte.
+import useEconomie from "../hooks/useEconomie";
+
 export default function Illustration({ src, className = "" }) {
+  const economie = useEconomie();
+  if (economie) return null; // décorative : rien n'est perdu
   return (
     <img
       src={src}

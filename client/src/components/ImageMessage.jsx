@@ -2,12 +2,15 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { urlFichier } from '../lib/fichiers';
 import Icone from './Icone';
+import useEconomie from '../hooks/useEconomie';
 
 // Image d'un message : vignette cliquable, qui s'ouvre en grand (Échap ou clic pour fermer).
 export default function ImageMessage({ url }) {
   const { t } = useTranslation();
   const [grand, setGrand] = useState(false);
   const [casse, setCasse] = useState(false);
+  const economie = useEconomie();
+  const [voulue, setVoulue] = useState(false); // économie de données : l'image ne se charge qu'au toucher
   useEffect(() => {
     if (!grand) return undefined;
     const surTouche = (e) => { if (e.key === 'Escape') setGrand(false); };
@@ -15,6 +18,13 @@ export default function ImageMessage({ url }) {
     return () => window.removeEventListener('keydown', surTouche);
   }, [grand]);
 
+  if (economie && !voulue) {
+    return (
+      <button type="button" onClick={() => setVoulue(true)} className="mt-1 flex items-center gap-2 rounded-lg border border-dashed border-current/40 bg-black/5 px-3 py-2 text-sm">
+        <span aria-hidden>🖼️</span>{t('economie.afficher_image')}
+      </button>
+    );
+  }
   if (casse) return <p className="text-sm italic opacity-80">{t('images.indisponible')}</p>;
   return (
     <>
