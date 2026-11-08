@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { colorier } from "../lib/coloration";
 
 /* Texte d'un message : blocs de code (```), code en ligne (`x`), liens http(s) et @mentions.
    Tout est rendu comme des nœuds React (jamais de HTML brut) ; seuls les liens http(s) sont cliquables. */
@@ -8,9 +9,26 @@ const BLOC = /```(?:([\w+#.-]{1,20})\n)?([\s\S]*?)```/g;
 const INLINE =
   /(`[^`\n]+`)|(https?:\/\/[^\s<]+)|((?<![\w@])@[A-Za-z0-9_]{3,30})/g;
 
+// Couleurs de la coloration syntaxique (classes écrites en entier pour que Tailwind les retrouve).
+const COULEURS_CODE = {
+  commentaire: "italic text-slate-400",
+  chaine: "text-emerald-300",
+  nombre: "text-amber-300",
+  mot_cle: "text-sky-300",
+  literal: "text-orange-300",
+  fonction: "text-yellow-200",
+  type: "text-teal-300",
+  propriete: "text-sky-200",
+  attribut: "text-sky-200",
+  balise: "text-rose-300",
+  variable: "text-cyan-300",
+};
+
 function Code({ langue, code }) {
   const { t } = useTranslation();
   const [copie, setCopie] = useState(false);
+  const texte = code.replace(/\n$/, "");
+  const morceaux = useMemo(() => colorier(texte, langue), [texte, langue]);
   const copier = async () => {
     try {
       await navigator.clipboard.writeText(code);
@@ -33,7 +51,17 @@ function Code({ langue, code }) {
         </button>
       </div>
       <pre className="overflow-x-auto px-3 py-2 text-[13px] leading-relaxed">
-        <code className="font-mono">{code.replace(/\n$/, "")}</code>
+        <code className="font-mono">
+          {morceaux.map((m, i) =>
+            m.type ? (
+              <span key={i} className={COULEURS_CODE[m.type]}>
+                {m.texte}
+              </span>
+            ) : (
+              m.texte
+            ),
+          )}
+        </code>
       </pre>
     </div>
   );
