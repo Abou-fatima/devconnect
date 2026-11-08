@@ -91,3 +91,13 @@ body { @apply bg-slate-50 text-slate-900 antialiased; }
 
 /* Champ en erreur : bordure rouge, le message s'affiche dessous (composant Field) */
 .champ-erreur .input { border-color: #f87171; box-shadow: 0 0 0 2px rgb(248 113 113 / 0.25); }
+
+/* Mode économie de données : aucune animation (voir lib/economie.js) */
+html[data-economie='on'] *,
+html[data-economie='on'] *::before,
+html[data-economie='on'] *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+  scroll-behavior: auto !important;
+}
