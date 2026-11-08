@@ -1,0 +1,19 @@
+{
+  "nav": "Carte",
+  "titre": "La communauté en Afrique",
+  "sous_titre": "Où vivent les développeurs de DevConnect ? Survolez ou touchez un pays pour voir combien de membres il compte, puis découvrez leurs profils.",
+  "membres": "Membres",
+  "pays_representes": "Pays représentés",
+  "aria_carte": "Carte d'Afrique : nombre de développeurs par pays",
+  "invite": "Touchez un pays pour voir ses développeurs",
+  "nb_devs_one": "{{count}} développeur",
+  "nb_devs_other": "{{count}} développeurs",
+  "aucun_dev": "Aucun développeur pour l'instant",
+  "legende_moins": "Moins",
+  "legende_plus": "Plus",
+  "voir_devs": "Voir les développeurs",
+  "premier": "Soyez le premier de ce pays à rejoindre la communauté.",
+  "classement": "Les pays les plus actifs",
+  "aucune_donnee": "Aucun profil n'indique encore son pays.",
+  "erreur": "Impossible de charger la carte pour le moment."
+}
