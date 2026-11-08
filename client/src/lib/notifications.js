@@ -10,7 +10,8 @@ export const ICONES = {
   mentorat: 'mentorat',
   tache: 'liste',
   message_prive: 'courrier',
-  reaction: 'reaction'
+  reaction: 'reaction',
+  reponse_chat: 'messages'
 };
 
 export function texteNotification(n, t) {

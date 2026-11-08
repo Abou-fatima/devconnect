@@ -54,6 +54,11 @@ Si le destinataire n'a pas la conversation ouverte, une notification `message_pr
 - L'historique (`GET /api/chat/...`) renvoie `reactions` sur chaque message.
 - Notification `reaction` (« X a réagi 👍 à ton message ») à l'auteur : pas pour soi-même, pas pour un retrait, pas s'il a le canal ouvert, une seule non lue par message.
 
+## Répondre à un message
+- `message` accepte `reponse_a` (id d'un message du même canal) ou, en conversation privée seulement, `citation` `{ pseudo, type: 'texte'|'image'|'audio', texte }` (extrait copié d'un autre canal : « répondre en privé »).
+- Le message diffusé et l'historique portent `reponse_a: { id, externe, auteur: { id, pseudo }, type, texte }` (ou `null`).
+- Notification `reponse_chat` (« X a répondu à votre message ») à l'auteur du message cité : pas pour soi-même, pas en conversation privée, pas s'il a le canal ouvert, une seule non lue par message cité.
+
 ## REST
 - `GET /api/chat/conversations` : mes conversations privées + `non_lus` + `total_non_lus`.
 - `POST /api/chat/lu { canal }` : marque la conversation lue (compteur à 0, notifications lues).

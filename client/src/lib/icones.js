@@ -5,7 +5,7 @@ import {
   faCircleCheck, faCircleInfo, faClipboardList, faComments, faEarthAfrica, faEnvelope, faEye, faGraduationCap, faHand,
   faHandshake, faHeart, faImage, faKey, faLeaf, faLightbulb, faLocationDot, faLock, faMagnifyingGlass, faMedal, faMicrophone,
   faPaperPlane, faPen, faRocket, faSeedling, faShieldHalved, faStar, faThumbsUp, faTrash, faTree, faTrophy, faUser, faUserGroup,
-  faWandMagicSparkles, faXmark, faHouse, faCompass, faHourglassHalf, faStop, faPlus, faCircleQuestion, faChevronRight, faFaceSmile
+  faWandMagicSparkles, faXmark, faHouse, faCompass, faHourglassHalf, faStop, faPlus, faCircleQuestion, faChevronRight, faFaceSmile, faReply
 } from '@fortawesome/free-solid-svg-icons';
 import { faHeart as faHeartVide } from '@fortawesome/free-regular-svg-icons';
 
@@ -17,5 +17,5 @@ export const ICONES = {
   micro: faMicrophone, vues: faEye, modifier: faPen, idee: faLightbulb, bouclier: faShieldHalved, utilisateur: faUser, cle: faKey,
   pouce: faThumbsUp, envoye: faPaperPlane, main: faHand, livres: faBookOpen, magie: faWandMagicSparkles, badge: faMedal,
   medaille: faMedal, ok: faCheck, fermer: faXmark, retour: faArrowLeft, suite: faArrowRight, externe: faArrowUpRightFromSquare,
-  haut: faCaretUp, arobase: faAt, maison: faHouse, boussole: faCompass, sablier: faHourglassHalf, stop: faStop, plus: faPlus, aide: faCircleQuestion, chevron: faChevronRight, reaction: faFaceSmile
+  haut: faCaretUp, arobase: faAt, maison: faHouse, boussole: faCompass, sablier: faHourglassHalf, stop: faStop, plus: faPlus, aide: faCircleQuestion, chevron: faChevronRight, reaction: faFaceSmile, repondre: faReply
 };
