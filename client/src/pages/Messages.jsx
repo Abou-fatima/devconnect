@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
@@ -77,14 +77,6 @@ export default function Messages() {
     setRecents((r) => r.map((x) => (x.canal === c ? { ...x, nom: pseudo } : x)));
   }, []);
 
-  const suggestions = useMemo(() => {
-    const liste = [];
-    (user?.stacks || []).slice(0, 6).forEach((s) => { const c = canalStack(s); if (c) liste.push(c); });
-    const v = canalVille(user?.ville);
-    if (v) liste.push(v);
-    return liste;
-  }, [user]);
-
   const rejoindre = (e) => {
     e.preventDefault();
     const c = type === 'stack' ? canalStack(saisie) : canalVille(saisie);
@@ -141,17 +133,10 @@ export default function Messages() {
             {decouvrir && <div className="px-1 pb-1"><SalonsDecouvrir compact onOuvrir={(c) => { setVersion((v) => v + 1); navigate(lien(c)); }} /></div>}
           </section>
 
-          {suggestions.length > 0 && (
-            <section className="px-2 pb-2">
-              <h2 className="px-2 pb-1 text-sm font-semibold text-slate-500">{t('chat.pour_toi')}</h2>
-              {suggestions.map((c) => <Salon key={c} canal={c} actif={c === canal} />)}
-            </section>
-          )}
-
-          {publics.some((r) => !suggestions.includes(r.canal)) && (
+          {publics.length > 0 && (
             <section className="px-2 pb-2">
               <h2 className="px-2 pb-1 text-sm font-semibold text-slate-500">{t('chat.recents')}</h2>
-              {publics.filter((r) => !suggestions.includes(r.canal)).map((r) => <Salon key={r.canal} canal={r.canal} actif={r.canal === canal} />)}
+              {publics.map((r) => <Salon key={r.canal} canal={r.canal} actif={r.canal === canal} />)}
             </section>
           )}
 
