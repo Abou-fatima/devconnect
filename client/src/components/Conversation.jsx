@@ -76,7 +76,7 @@ export default function Conversation({ canal, onRetour, onNom, onChange }) {
       if (!actif) return;
       const u = d.utilisateur || d;
       setAutre(u);
-      ajouterRecent(canal, u.pseudo);
+      ajouterRecent(canal, u.pseudo, user?.id);
       onNom?.(canal, u.pseudo);
     }).catch(() => {});
     return () => { actif = false; };
@@ -109,7 +109,7 @@ export default function Conversation({ canal, onRetour, onNom, onChange }) {
   useEffect(() => {
     setMessages([]); setTexte(''); setErreurEnvoi(''); setErreurSalon(''); setEcrivent({});
     chargerHistorique();
-    if (infos && infos.type !== 'prive') ajouterRecent(canal);
+    if (infos && infos.type !== 'prive') ajouterRecent(canal, undefined, user?.id);
   }, [canal]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Rejoindre le salon en temps réel (et à chaque reconnexion).

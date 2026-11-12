@@ -14,7 +14,7 @@ const Projet = require("../src/models/Projet");
 const { genererJeu, DOMAINE } = require("./seed/generateur");
 const { lireArguments, estLocale } = require("./seed/options");
 
-const MOT_DE_PASSE = "DevConnect2026";
+const MOT_DE_PASSE = "devconnect2026";
 const oid = (x) => new mongoose.Types.ObjectId(x);
 
 async function supprimerDemo() {

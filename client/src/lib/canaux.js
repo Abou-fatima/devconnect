@@ -55,35 +55,34 @@ export function lireCanal(canal) {
 export const majuscule = (s) =>
   s ? s.charAt(0).toUpperCase() + s.slice(1) : s;
 
-/* Salons récents : simple confort par appareil, stocké dans le navigateur.
+/* Salons récents : simple confort par appareil, stocké dans le navigateur ET propre à chaque compte
+   (clé « devconnect:salons:<id> ») : on ne voit jamais les salons d'un autre compte, ni ceux d'une ancienne base de données.
    Le stockage peut être indisponible (navigation privée) : on ignore alors les erreurs. */
 const CLE = "devconnect:salons";
 const MAX = 8;
+const cle = (userId) => `${CLE}:${userId}`;
 
-// userId : on ne montre que les conversations privées de la personne connectée (le navigateur peut avoir servi à un autre compte).
 export function lireRecents(userId) {
+  if (!userId) return [];
   try {
-    const liste = JSON.parse(localStorage.getItem(CLE) || "[]");
-    return Array.isArray(liste)
-      ? liste
-          .filter((x) => x && lireCanal(x.canal))
-          .filter((x) => !x.canal.startsWith("prive:") || (userId && x.canal.slice(6).split("_").includes(String(userId))))
-          .slice(0, MAX)
-      : [];
+    localStorage.removeItem(CLE); // ancienne clé commune à tous les comptes : supprimée
+    const liste = JSON.parse(localStorage.getItem(cle(userId)) || "[]");
+    return Array.isArray(liste) ? liste.filter((x) => x && lireCanal(x.canal)).slice(0, MAX) : [];
   } catch {
     return [];
   }
 }
 
-export function ajouterRecent(canal, nom) {
-  const existant = lireRecents();
+export function ajouterRecent(canal, nom, userId) {
+  if (!userId) return [];
+  const existant = lireRecents(userId);
   const ancien = existant.find((x) => x.canal === canal);
   const suite = [
     { canal, nom: nom || ancien?.nom },
     ...existant.filter((x) => x.canal !== canal),
   ].slice(0, MAX);
   try {
-    localStorage.setItem(CLE, JSON.stringify(suite));
+    localStorage.setItem(cle(userId), JSON.stringify(suite));
   } catch {
     /* ignore */
   }
