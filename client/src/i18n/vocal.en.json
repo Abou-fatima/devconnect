@@ -1,0 +1,21 @@
+{
+  "note": "Voice note",
+  "micro": "Record a voice note",
+  "annuler": "Cancel voice note",
+  "arreter": "Stop",
+  "ecouter": "Listen before sending",
+  "envoyer": "Send",
+  "envoi": "Sending…",
+  "enregistrement": "Recording…",
+  "reste_one": "{{count}} s left",
+  "reste_other": "{{count}} s left",
+  "voir_texte": "Show text",
+  "masquer": "Hide text",
+  "erreur_refuse": "Microphone blocked: allow it in your browser settings (icon left of the address), then try again.",
+  "erreur_absent": "No microphone found on this device.",
+  "erreur_autre": "Could not start recording.",
+  "erreur_envoi": "The voice note could not be sent. Try again: it is kept.",
+  "ecrit_un": "{{pseudo}} is recording a voice note…",
+  "ecrit_deux": "{{a}} and {{b}} are recording a voice note…",
+  "ecrit_plusieurs": "Several people are recording a voice note…"
+}

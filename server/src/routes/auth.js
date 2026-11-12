@@ -41,9 +41,9 @@ async function uniquePseudo(base) {
 router.post('/register', authLimiter, asyncRoute(async (req, res) => {
   const data = v.register.parse(req.body);
 
-  if (await Utilisateur.exists({ email: data.email })) throw new AppError(409, 'Cet email est déjà utilisé');
-  if (data.telephone && (await Utilisateur.exists({ telephone: data.telephone }))) throw new AppError(409, 'Ce téléphone est déjà utilisé');
-  if (await Utilisateur.exists({ pseudo: data.pseudo }).collation({ locale: 'en', strength: 2 })) throw new AppError(409, 'Ce pseudo est déjà pris');
+  if (await Utilisateur.exists({ email: data.email })) throw new AppError(409, 'Cet email est déjà utilisé', [{ champ: 'email', message: 'Cet email est déjà utilisé' }]);
+  if (data.telephone && (await Utilisateur.exists({ telephone: data.telephone }))) throw new AppError(409, 'Ce téléphone est déjà utilisé', [{ champ: 'telephone', message: 'Ce téléphone est déjà utilisé' }]);
+  if (await Utilisateur.exists({ pseudo: data.pseudo }).collation({ locale: 'en', strength: 2 })) throw new AppError(409, 'Ce pseudo est déjà pris', [{ champ: 'pseudo', message: 'Ce pseudo est déjà pris' }]);
 
   const user = await Utilisateur.create({
     pseudo: data.pseudo,
@@ -96,7 +96,7 @@ router.post('/otp/verify', authLimiter, asyncRoute(async (req, res) => {
   if (user) return reponse(res, 200, user);
 
   if (!body.pseudo) throw new AppError(422, 'Nouveau compte : le champ pseudo est requis', { besoin: ['pseudo'] });
-  if (await Utilisateur.exists({ pseudo: body.pseudo }).collation({ locale: 'en', strength: 2 })) throw new AppError(409, 'Ce pseudo est déjà pris');
+  if (await Utilisateur.exists({ pseudo: body.pseudo }).collation({ locale: 'en', strength: 2 })) throw new AppError(409, 'Ce pseudo est déjà pris', [{ champ: 'pseudo', message: 'Ce pseudo est déjà pris' }]);
 
   user = await Utilisateur.create({ pseudo: body.pseudo, [canal]: destinataire });
   reponse(res, 201, user);
@@ -104,14 +104,19 @@ router.post('/otp/verify', authLimiter, asyncRoute(async (req, res) => {
 
 /* ------------------------------ GitHub OAuth (F-41) ------------------------------ */
 
+const { modeValide, peutCreerCompte } = require('../services/githubAuth');
 const STATE_AUDIENCE = 'github-oauth-state';
 const callbackUrl = () => `${env.apiUrl}/api/auth/github/callback`;
 const front = (hash) => `${env.frontendUrl}/auth/callback#${hash}`;
 
-router.get('/github', (_req, res, next) => {
+router.get('/github', (req, res, next) => {
   try {
-    if (!env.github.clientId) throw new AppError(503, 'GitHub OAuth non configuré (GITHUB_CLIENT_ID manquant)');
-    const state = jwt.sign({ n: crypto.randomBytes(8).toString('hex') }, env.jwtSecret, { expiresIn: '10m', audience: STATE_AUDIENCE });
+    if (!env.github.clientId || !env.github.clientSecret) {
+      console.error('[github oauth] GITHUB_CLIENT_ID ou GITHUB_CLIENT_SECRET manquant dans server/.env (puis redémarrer le serveur)');
+      return res.redirect(front('erreur=github_non_configure')); // message clair dans l'application, pas une page JSON
+    }
+    // « mode » : connexion (le compte doit exister) ou inscription (le compte peut être créé). Il voyage dans le state signé.
+    const state = jwt.sign({ n: crypto.randomBytes(8).toString('hex'), m: modeValide(req.query.mode) }, env.jwtSecret, { expiresIn: '10m', audience: STATE_AUDIENCE });
     const params = new URLSearchParams({
       client_id: env.github.clientId,
       redirect_uri: callbackUrl(),
@@ -126,7 +131,8 @@ router.get('/github/callback', async (req, res) => {
   try {
     const { code, state } = req.query;
     if (!code || !state) throw new Error('Paramètres manquants');
-    try { jwt.verify(String(state), env.jwtSecret, { audience: STATE_AUDIENCE }); } catch { throw new Error('State invalide ou expiré'); }
+    let mode;
+    try { mode = modeValide(jwt.verify(String(state), env.jwtSecret, { audience: STATE_AUDIENCE }).m); } catch { throw new Error('State invalide ou expiré'); }
 
     const tokenRes = await fetch('https://github.com/login/oauth/access_token', {
       method: 'POST',
@@ -155,6 +161,10 @@ router.get('/github/callback', async (req, res) => {
       // Un compte avec le même email vérifié par GitHub : on le relie
       user = await Utilisateur.findOne({ email });
       if (user) { user.github_id = githubId; await user.save(); }
+    }
+
+    if (!user && !peutCreerCompte(mode)) {
+      return res.redirect(front('erreur=aucun_compte')); // « Se connecter » avec GitHub : aucun compte lié, on n'en crée pas
     }
 
     if (!user) {

@@ -1,9 +1,10 @@
 require('dotenv').config();
+const path = require('path');
 
 const env = {
   nodeEnv: process.env.NODE_ENV || 'development',
   port: Number(process.env.PORT) || 4000,
-  mongoUri: process.env.MONGO_URI || 'dialo',
+  mongoUri: process.env.MONGO_URI || 'mongodb://localhost:27017/devconnect',
   redisUrl: process.env.REDIS_URL || '',
   jwtSecret: process.env.JWT_SECRET || '',
   jwtExpiresIn: process.env.JWT_EXPIRES_IN || '7d',
@@ -13,6 +14,21 @@ const env = {
   github: {
     clientId: process.env.GITHUB_CLIENT_ID || '',
     clientSecret: process.env.GITHUB_CLIENT_SECRET || ''
+  },
+  // Fichiers envoyés (images contrôlées). Dossier à sauvegarder en production.
+  uploadsDir: process.env.UPLOADS_DIR ? path.resolve(process.env.UPLOADS_DIR) : path.join(__dirname, '..', '..', 'uploads'),
+  // 'local' (par défaut : sur le serveur) ou 'cloudinary' (service externe, voir CLOUDINARY_* ci-dessous)
+  uploadDriver: (process.env.UPLOAD_DRIVER || 'local').toLowerCase(),
+  cloudinary: {
+    cloudName: process.env.CLOUDINARY_CLOUD_NAME || '',
+    apiKey: process.env.CLOUDINARY_API_KEY || '',
+    apiSecret: process.env.CLOUDINARY_API_SECRET || ''
+  },
+  // Notifications push (facultatif). Générer les clés avec : npm run vapid
+  vapid: {
+    publicKey: process.env.VAPID_PUBLIC_KEY || '',
+    privateKey: process.env.VAPID_PRIVATE_KEY || '',
+    subject: process.env.VAPID_SUBJECT || 'mailto:contact@devconnect.local'
   },
   smtp: {
     host: process.env.SMTP_HOST || '',

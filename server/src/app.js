@@ -6,7 +6,13 @@ const swaggerUi = require('swagger-ui-express');
 const env = require('./config/env');
 const { apiLimiter } = require('./middleware/rateLimit');
 const { notFound, errorHandler } = require('./middleware/error');
+
 const openapi = require('./docs/openapi.dev5');
+
+const communication = require('./communication');
+communication.extendOpenapi(openapi); // documentation Swagger du module communication (avant swagger-ui)
+require('./docs/openapi.forum')(openapi); // documentation Swagger forum, classement, admin
+
 
 const app = express();
 app.set('trust proxy', 1); // derrière nginx / DataCloud : IP réelle pour le rate limit
@@ -22,17 +28,34 @@ app.use(express.json({ limit: '1mb' }));
 
 app.get('/api/health', (_req, res) => res.json({ ok: true }));
 
+// Images envoyées (WebP). Noms uniques : cache long. Autorisées depuis le frontend (autre origine en développement).
+app.use('/uploads', (_req, res, next) => { res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin'); next(); },
+  express.static(env.uploadsDir, { maxAge: '30d', immutable: true, index: false, dotfiles: 'deny' }));
+
 app.use('/api', apiLimiter);
 
 // Dev 1
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/users', require('./routes/users'));
 app.use('/api/meta', require('./routes/meta'));
-// TODO (Dev 2) : app.use('/api/echanges', require('./routes/echanges'));
-// TODO (Dev 3) : app.use('/api/chat', ...);
-// TODO (Dev 3) : app.use('/api/chat', ...); app.use('/api/notifications', ...);
+
+// Dev 5 : projets et images
 app.use('/api/upload', require('./routes/upload'));
+app.use('/api/push', require('./routes/push')); // notifications push (appareils abonnés)
 app.use('/api/projets', require('./routes/projets'));
+app.use('/api', require('./routes/candidatures')); // candidatures et membres des projets
+app.use('/api', require('./routes/taches')); // espace projet : tâches de l'équipe
+app.use('/api/mentorat', require('./routes/mentorat')); // mentorat : trouver un mentor, demandes, accompagnements
+
+// Forum, votes, classement, administration
+app.use('/api/echanges', require('./routes/echanges'));
+app.use('/api/classement', require('./routes/classement'));
+app.use('/api/admin', require('./routes/admin'));
+app.use('/api/salons', require('./routes/salons'));
+app.use('/api/partage', require('./routes/partage')); // aperçus de partage (WhatsApp) : question et projet
+app.use('/api/defis', require('./routes/defis')); // défi de la semaine
+communication.mountRoutes(app);
+
 
 app.use(notFound);
 app.use(errorHandler);

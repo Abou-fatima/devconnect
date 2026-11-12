@@ -1,0 +1,93 @@
+{
+  "progression": "Step {{etape}} of {{total}}",
+  "plus_tard": "Later",
+  "retour": "Back",
+  "suivant": "Next",
+  "passer_etape": "Skip",
+  "terminer": "Finish",
+  "niveau_requis": "Pick a level to continue.",
+  "bienvenue": "Welcome, {{pseudo}}",
+  "objectifs_titre": "My goals",
+  "objectifs_texte": "Tell us what you are looking for: we will show you the right things first. You can pick several.",
+  "objectif_aide": {
+    "apprendre": "Ask questions and improve",
+    "collaborer": "Join a team on a project",
+    "mentorat": "Be guided by an experienced developer",
+    "offrir_mentorat": "Help beginners move forward",
+    "emploi": "Get noticed by recruiters",
+    "projet_perso": "Showcase and grow my project"
+  },
+  "niveau_titre": "What is your level?",
+  "niveau_texte": "Be honest, it helps us help you. You can change it any time.",
+  "niveau_aide": {
+    "debutant": "I am discovering programming or building my first projects",
+    "intermediaire": "I build applications but still have a lot to learn",
+    "avance": "I am comfortable and can help others",
+    "expert": "I have many years of experience"
+  },
+  "stacks_titre": "Your technologies",
+  "stacks_texte": "Pick the ones you use or want to learn. They help suggest questions, projects and mentors.",
+  "autre_techno": "Another technology…",
+  "ajouter": "Add",
+  "pays": "Country",
+  "pays_vide": "Choose (optional)",
+  "ville": "City (optional)",
+  "pret_titre": "You are all set!",
+  "pret_texte": "Here is where to start, based on what you are looking for.",
+  "action": {
+    "poser": {
+      "titre": "Ask your first question",
+      "texte": "The community usually answers fast."
+    },
+    "equipe": {
+      "titre": "Find a project to join",
+      "texte": "Offer your help to a team."
+    },
+    "mentor": {
+      "titre": "Find a mentor",
+      "texte": "An experienced developer guides you."
+    },
+    "offrir": {
+      "titre": "Help beginners",
+      "texte": "Turn on your mentor profile."
+    },
+    "profil": {
+      "titre": "Polish your profile",
+      "texte": "Photo, bio and links: it is your showcase."
+    },
+    "projet": {
+      "titre": "Showcase your project",
+      "texte": "Share it and find teammates."
+    }
+  },
+  "visite": "What you can do here",
+  "visite_forum": {
+    "titre": "Forum",
+    "texte": "questions, answers and reputation."
+  },
+  "visite_projets": {
+    "titre": "Projects",
+    "texte": "showcase, like, join a team."
+  },
+  "visite_mentorat": {
+    "titre": "Mentoring",
+    "texte": "learn or help."
+  },
+  "visite_messages": {
+    "titre": "Messages",
+    "texte": "rooms per technology, voice notes and private chats."
+  },
+  "aller_accueil": "Go to home",
+  "bandeau_titre": "Your profile is {{pct}}% complete",
+  "bandeau_manque": "Missing: {{liste}}.",
+  "bandeau_action": "Complete",
+  "bandeau_fermer": "Hide",
+  "manque": {
+    "objectifs": "your goals",
+    "niveau": "your level",
+    "stacks": "your technologies",
+    "pays": "your country",
+    "bio": "a short bio",
+    "photo": "a photo"
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "hors_ligne": "Pas de connexion Internet. Vérifiez votre Wi-Fi ou vos données mobiles, puis réessayez.",
+  "reseau": "Impossible de joindre DevConnect. Vérifiez votre connexion Internet. Si elle fonctionne, le service est momentanément indisponible : réessayez dans un instant.",
+  "delai": "Le serveur met trop de temps à répondre. Vérifiez votre connexion et réessayez.",
+  "serveur": "DevConnect rencontre un problème de notre côté. Réessayez dans un instant.",
+  "limite": "Trop de tentatives. Patientez quelques minutes avant de réessayer.",
+  "inconnue": "Une erreur est survenue. Réessayez.",
+  "identifiants": "Identifiant ou mot de passe incorrect.",
+  "corrige": "Corrigez les champs signalés en rouge.",
+  "champ": {
+    "requis": "Ce champ est obligatoire.",
+    "pseudo_min": "Le pseudo doit contenir au moins 3 caractères.",
+    "pseudo_max": "Le pseudo ne peut pas dépasser 30 caractères.",
+    "pseudo_format": "Lettres, chiffres, _ . - uniquement (pas d'espace).",
+    "email": "Entrez une adresse e-mail valide, par exemple nom@exemple.com.",
+    "identifiant": "Entrez votre e-mail ou votre numéro (avec +).",
+    "mdp_min": "Le mot de passe doit contenir au moins 8 caractères.",
+    "mdp_max": "Le mot de passe ne peut pas dépasser 72 caractères.",
+    "mdp_lettre": "Le mot de passe doit contenir au moins une lettre.",
+    "mdp_chiffre": "Le mot de passe doit contenir au moins un chiffre.",
+    "telephone": "Format international requis, par exemple +224620000000.",
+    "pays": "Code pays à 2 lettres, par exemple GN."
+  },
+  "github_se_connecter": "Se connecter avec GitHub",
+  "github_sinscrire": "S'inscrire avec GitHub",
+  "github_aucun_compte_titre": "Aucun compte trouvé",
+  "github_aucun_compte": "Aucun compte DevConnect n'est lié à ce compte GitHub. Créez d'abord votre compte : sur la page d'inscription, cliquez sur « S'inscrire avec GitHub ».",
+  "github_creer": "Créer mon compte",
+  "github_retour_connexion": "Retour à la connexion",
+  "github_indisponible": "La connexion avec GitHub n'est pas disponible pour le moment. Utilisez votre identifiant et votre mot de passe.",
+  "champs_requis": "Les champs marqués d'un * sont obligatoires."
+}

@@ -1,0 +1,7 @@
+/* Animations des notes vocales (fichier à part pour ne pas modifier index.css). */
+@keyframes vocal-pulse { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.35); opacity: .55; } }
+@keyframes vocal-onde { 0%, 100% { transform: scaleY(.25); } 50% { transform: scaleY(1); } }
+.vocal-point { animation: vocal-pulse 1.1s ease-in-out infinite; }
+.vocal-ondes { align-items: center; gap: 3px; height: 1.5rem; }
+.vocal-ondes i { display: block; width: 3px; height: 100%; border-radius: 2px; background: #94a3b8; animation: vocal-onde .9s ease-in-out infinite; transform-origin: center; }
+@media (prefers-reduced-motion: reduce) { .vocal-point, .vocal-ondes i { animation: none; } }

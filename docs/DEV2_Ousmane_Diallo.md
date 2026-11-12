@@ -2,6 +2,17 @@
 **Rôle : Backend forum / Q&A, votes, réputation, modération**
 Prérequis communs : voir le [README](../README.md) (sections 1 à 6).
 
+> **État (21/10/2026) : les parties B à F ont été codées par Dev 1** (Alpha) pendant l'indisponibilité de Dev 2.
+> Code : `server/src/routes/echanges.js`, `classement.js`, `admin.js`, `server/src/services/` (réputation, barème), `server/src/validators/echanges.js`.
+> Documentation interactive : http://localhost:4000/api/docs (sections Forum, Classement, Admin).
+> Test de bout en bout : `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/smoke-forum.ps1`.
+> Si tu reviens : lis ces fichiers avant de coder, et pars de `develop` à jour.
+>
+> **Premier administrateur** : le rôle `admin` ne peut pas être demandé par l'API. Une fois, dans `mongosh devconnect` :
+> `db.utilisateurs.updateOne({ email: "ton@email.com" }, { $set: { role: "admin" } })`
+> Ensuite cet administrateur peut nommer des modérateurs avec `PUT /api/admin/users/:id/role`.
+
+
 ## A. Récupérer le projet
 
 ```powershell

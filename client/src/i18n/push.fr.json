@@ -1,0 +1,7 @@
+{
+  "activer": "Recevoir les alertes sur cet appareil",
+  "desactiver": "Couper les alertes sur cet appareil",
+  "aide": "Une notification s'affiche sur l'écran, même quand DevConnect est fermé.",
+  "refuse": "Notifications bloquées par le navigateur : autorisez-les dans les réglages du site.",
+  "erreur": "Impossible d'activer les alertes pour le moment. Réessayez plus tard."
+}

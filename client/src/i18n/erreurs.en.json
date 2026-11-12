@@ -1,0 +1,32 @@
+{
+  "hors_ligne": "No Internet connection. Check your Wi-Fi or mobile data, then try again.",
+  "reseau": "Can't reach DevConnect. Check your Internet connection. If it works, the service is briefly unavailable: try again in a moment.",
+  "delai": "The server is taking too long to answer. Check your connection and try again.",
+  "serveur": "DevConnect is having a problem on our side. Try again in a moment.",
+  "limite": "Too many attempts. Wait a few minutes before trying again.",
+  "inconnue": "Something went wrong. Try again.",
+  "identifiants": "Incorrect username or password.",
+  "corrige": "Fix the fields marked in red.",
+  "champ": {
+    "requis": "This field is required.",
+    "pseudo_min": "The username must be at least 3 characters.",
+    "pseudo_max": "The username cannot exceed 30 characters.",
+    "pseudo_format": "Letters, digits, _ . - only (no spaces).",
+    "email": "Enter a valid email address, for example name@example.com.",
+    "identifiant": "Enter your email or your phone number (with +).",
+    "mdp_min": "The password must be at least 8 characters.",
+    "mdp_max": "The password cannot exceed 72 characters.",
+    "mdp_lettre": "The password must contain at least one letter.",
+    "mdp_chiffre": "The password must contain at least one digit.",
+    "telephone": "International format required, for example +224620000000.",
+    "pays": "2-letter country code, for example GN."
+  },
+  "github_se_connecter": "Sign in with GitHub",
+  "github_sinscrire": "Sign up with GitHub",
+  "github_aucun_compte_titre": "No account found",
+  "github_aucun_compte": "No DevConnect account is linked to this GitHub account. Create your account first: on the sign-up page, click “Sign up with GitHub”.",
+  "github_creer": "Create my account",
+  "github_retour_connexion": "Back to sign in",
+  "github_indisponible": "GitHub sign-in is not available right now. Use your username and password.",
+  "champs_requis": "Fields marked with * are required."
+}
