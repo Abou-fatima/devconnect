@@ -3,7 +3,7 @@
 const c = require("./contenu");
 const { effetVote, BAREME, badgesPour } = require("../../src/services/bareme");
 
-const DOMAINE = "demo.devconnect.local";
+const DOMAINE = "devconnect";
 const JOUR = 86400000;
 const ANGLOPHONES = new Set(["NG", "GH"]);
 
