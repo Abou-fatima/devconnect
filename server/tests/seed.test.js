@@ -43,7 +43,7 @@ test("utilisateurs : pseudos uniques (sans tenir compte de la casse), e-mails de
   const p = jeu.utilisateurs.map((u) => u.pseudo.toLowerCase());
   assert.strictEqual(new Set(p).size, p.length);
   jeu.utilisateurs.forEach((u) => {
-    assert.match(u.email, /@demo\.devconnect\.local$/);
+        assert.match(u.email, /@devconnect$/);
     assert.ok(!("mot_de_passe" in u));
     assert.ok(u.pseudo.length >= 3 && u.pseudo.length <= 30);
   });
