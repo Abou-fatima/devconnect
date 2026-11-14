@@ -1,6 +1,8 @@
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
+const path = require('path');
+const fs = require('fs');
 const swaggerUi = require('swagger-ui-express');
 
 const env = require('./config/env');
@@ -22,7 +24,22 @@ app.set('trust proxy', 1); // derrière nginx / DataCloud : IP réelle pour le r
 app.get('/api/docs.json', (_req, res) => res.json(openapi));
 app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(openapi, { customSiteTitle: 'DevConnect API' }));
 
-app.use(helmet());
+// Politique de sécurité du site servi par ce serveur (un seul service : API + site compilé).
+// 'unsafe-eval' est nécessaire au défi de la semaine : le code du participant s'exécute dans un Web Worker isolé (voir lib/sandboxDefi.js).
+app.use(helmet({
+  contentSecurityPolicy: {
+    useDefaults: true,
+    directives: {
+      'script-src': ["'self'", "'unsafe-eval'"],
+      'worker-src': ["'self'", 'blob:'],
+      'img-src': ["'self'", 'data:', 'blob:', 'https:'],
+      'media-src': ["'self'", 'data:', 'blob:'],
+      'connect-src': ["'self'", 'https:', 'wss:'],
+      'style-src': ["'self'", "'unsafe-inline'", 'https:'],
+      'font-src': ["'self'", 'data:', 'https:'],
+    },
+  },
+}));
 app.use(cors({ origin: env.frontendUrl.split(',').map((s) => s.trim()), credentials: true }));
 app.use(express.json({ limit: '1mb' }));
 
@@ -56,6 +73,14 @@ app.use('/api/partage', require('./routes/partage')); // aperçus de partage (Wh
 app.use('/api/defis', require('./routes/defis')); // défi de la semaine
 communication.mountRoutes(app);
 
+
+// Site compilé (client/dist) : servi par ce même serveur quand il existe (production sur un seul service).
+// Toute adresse qui n'est pas l'API, un fichier envoyé ou Socket.IO renvoie la page d'accueil (navigation côté navigateur).
+const dossierSite = path.join(__dirname, '../../client/dist');
+if (fs.existsSync(path.join(dossierSite, 'index.html'))) {
+  app.use(express.static(dossierSite, { index: false, maxAge: '1h' }));
+  app.get(/^\/(?!api\/|uploads\/|socket\.io\/).*/, (_req, res) => res.sendFile(path.join(dossierSite, 'index.html')));
+}
 
 app.use(notFound);
 app.use(errorHandler);
