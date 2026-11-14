@@ -51,8 +51,8 @@ export default function Layout() {
     <div className="flex min-h-screen flex-col">
       <div key={`b${pathname}`} className="barre-route" aria-hidden />
       <header className="en-tete sticky top-0 z-20 bg-brand text-white shadow">
-        <div className="mx-auto flex max-w-5xl items-center justify-between gap-2 px-4 py-3">
-          <Link to="/" className="shrink-0 whitespace-nowrap text-lg font-bold transition-transform duration-200 hover:scale-105">&lt;/&gt; {t('app.nom')}</Link>
+        <div className="mx-auto flex max-w-5xl items-center justify-between gap-1 px-3 py-3 sm:gap-2 sm:px-4">
+          <Link to="/" className="shrink-0 whitespace-nowrap text-base font-bold transition-transform sm:text-lg duration-200 hover:scale-105">&lt;/&gt; {t('app.nom')}</Link>
           <nav className="hidden items-center gap-0.5 lg:flex">
             {items.map((i) => <NavLink key={i.to} to={i.to} className={lien}>{i.label}{pastille(i.to)}</NavLink>)}
             {user && <button onClick={sortir} className="whitespace-nowrap px-2.5 py-2 text-sm text-white/80 hover:text-white">{t('nav.deconnexion')}</button>}
@@ -65,7 +65,7 @@ export default function Layout() {
             <div className="flex items-center lg:hidden">
               {user
                 ? <button type="button" onClick={sortir} aria-label={t('nav.deconnexion')} title={t('nav.deconnexion')} className="flex items-center gap-1 rounded-lg px-2 py-1.5 text-sm text-white/90 hover:bg-white/10"><Icone nom="retour" className="rotate-180" /><span className="hidden sm:inline">{t('nav.deconnexion')}</span></button>
-                : <><Link to="/connexion" className="rounded-lg px-2 py-1.5 text-sm font-medium text-white/90 hover:bg-white/10">{t('nav.connexion')}</Link><Link to="/inscription" className="ml-1 rounded-lg bg-accent px-2.5 py-1.5 text-sm font-semibold text-slate-900">{t('nav.inscription')}</Link></>}
+                : <><Link to="/connexion" className="hidden rounded-lg px-2 py-1.5 text-sm font-medium text-white/90 hover:bg-white/10 sm:inline">{t('nav.connexion')}</Link><Link to="/inscription" className="rounded-lg bg-accent px-2.5 py-1.5 text-sm font-semibold text-slate-900 sm:ml-1">{t('nav.inscription')}</Link></>}
             </div>
           </div>
         </div>
