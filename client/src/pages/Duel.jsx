@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { creerDuel, envoyerProgres, getDuel, rejoindreDuel } from '../services/duels';
+import { creerDuel, envoyerProgres, getDuel, mesDuels, rejoindreDuel, supprimerDuel } from '../services/duels';
 import { messageErreur } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { executerTests } from '../lib/sandboxDefi';
@@ -31,6 +31,12 @@ function Accueil() {
   const [code, setCode] = useState('');
   const [erreur, setErreur] = useState('');
   const [occupe, setOccupe] = useState(false);
+  const [liste, setListe] = useState(null);
+  useEffect(() => { mesDuels().then(setListe).catch(() => setListe([])); }, []);
+  const supprimer = async (c) => {
+    setErreur('');
+    try { await supprimerDuel(c); setListe((l) => (l || []).filter((x) => x.code !== c)); } catch (e) { setErreur(messageErreur(e, 'Suppression impossible.')); }
+  };
   const creer = async () => {
     setOccupe(true); setErreur('');
     try { const d = await creerDuel(); navigate(`/duel/${d.code}`); } catch (e) { setErreur(messageErreur(e, 'Création impossible.')); setOccupe(false); }
@@ -52,6 +58,26 @@ function Accueil() {
           <button type="submit" className="btn-outline">Rejoindre</button>
         </div>
       </form>
+      <section className="card space-y-2">
+        <h2 className="font-semibold">Mes duels</h2>
+        {liste === null && <p className="text-sm text-slate-500">Chargement…</p>}
+        {liste && liste.length === 0 && <p className="text-sm text-slate-500">Aucun duel pour l’instant.</p>}
+        <ul className="space-y-2">
+          {(liste || []).map((d) => (
+            <li key={d.code} className="flex flex-wrap items-center gap-2 rounded-lg border border-slate-200 p-2 text-sm">
+              <span className="font-mono font-bold text-brand">{d.code}</span>
+              <span className="min-w-0 flex-1 truncate text-slate-600">
+                {d.probleme} · {d.adversaire ? `contre ${d.adversaire}` : 'en attente d’un adversaire'}
+              </span>
+              <span className="rounded bg-slate-100 px-2 py-0.5 text-xs">
+                {d.resultat === 'victoire' ? '🏆 Victoire' : d.resultat === 'defaite' ? 'Défaite' : { attente: 'En attente', compte_a_rebours: 'Départ imminent', en_cours: 'En cours', termine: 'Terminé' }[d.statut]}
+              </span>
+              <Link to={`/duel/${d.code}`} className="btn-outline !px-3 !py-1 text-xs">{d.statut === 'termine' ? 'Voir' : 'Reprendre'}</Link>
+              {d.createur && <button type="button" onClick={() => supprimer(d.code)} className="rounded-lg border border-red-200 px-3 py-1 text-xs font-medium text-red-700 hover:bg-red-50">Supprimer</button>}
+            </li>
+          ))}
+        </ul>
+      </section>
       <p className="text-center text-sm"><Link to="/defi" className="text-brand underline">Retour au défi de la semaine</Link></p>
     </div>
   );

@@ -8,7 +8,7 @@ const DUREE_MIN_S = 5; // une solution complète avant 5 s n'est pas sérieuse
 const PTS_GAGNANT = 15;
 const PTS_PERDANT = 3;
 const MAX_DUELS = 500;
-const TTL_MS = 60 * 60 * 1000;
+const TTL_MS = 24 * 60 * 60 * 1000;
 const ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
 
 const t = (entree, attendu, visible = false) => ({ entree, attendu, visible });
@@ -143,4 +143,21 @@ function progres(duel, userId, { tests_reussis, total }, maintenant = Date.now()
   return { gagne: false };
 }
 
-module.exports = { PROBLEMES, PTS_GAGNANT, PTS_PERDANT, creer, trouver, rejoindre, statut, vue, progres, _duels: duels };
+// Ligne de la liste « Mes duels ».
+function resume(duel, userId, maintenant = Date.now()) {
+  const moiId = String(userId);
+  const adv = duel.joueurs.find((j) => j.id !== moiId);
+  return {
+    code: duel.code,
+    statut: statut(duel, maintenant),
+    probleme: duel.probleme.titre,
+    adversaire: adv ? adv.pseudo : null,
+    resultat: duel.gagnant_id ? (duel.gagnant_id === moiId ? "victoire" : "defaite") : null,
+    createur: duel.joueurs[0] && duel.joueurs[0].id === moiId,
+    cree_at: duel.cree_at,
+  };
+}
+
+const retirer = (code) => duels.delete(String(code).toUpperCase());
+
+module.exports = { resume, retirer, PROBLEMES, PTS_GAGNANT, PTS_PERDANT, creer, trouver, rejoindre, statut, vue, progres, _duels: duels };
