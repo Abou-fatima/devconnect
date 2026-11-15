@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
+import { urlFichier } from '../lib/fichiers';
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
@@ -137,7 +138,7 @@ function Bloc({ item, estQuestion, post, moi, estModo, connecte, commentaires, s
           ) : (
             <div className="text-[15px] leading-relaxed text-slate-800"><RichText texte={item.contenu} moi={moi?.pseudo} /></div>
           )}
-          {item.audio_url && <audio controls preload="none" src={item.audio_url} className="mt-2 h-9 max-w-full" />}
+          {item.audio_url && <audio controls preload="none" src={urlFichier(item.audio_url)} className="mt-2 h-9 max-w-full" />}
           {item.transcription && <p className="mt-1 text-sm italic text-slate-500">{item.transcription}</p>}
           {estQuestion && item.tags?.length > 0 && (
             <div className="mt-3 flex flex-wrap gap-1.5">{item.tags.map((x) => <Link key={x} to={`/forum?tag=${encodeURIComponent(x)}`} className="rounded bg-slate-100 px-2 py-0.5 text-xs text-slate-700 hover:bg-slate-200">{x}</Link>)}</div>

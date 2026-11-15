@@ -29,8 +29,9 @@ module.exports = (io) => {
       if (!token) return next(new Error('Authentification requise'));
       let payload;
       try { payload = verifyToken(token); } catch { return next(new Error('Token invalide ou expiré')); }
-      const user = await Utilisateur.findById(payload.sub).select('pseudo');
+      const user = await Utilisateur.findById(payload.sub).select('pseudo bloque');
       if (!user) return next(new Error('Compte introuvable'));
+      if (user.bloque) return next(new Error('Compte bloqué'));
       socket.data.user = { id: String(user._id), pseudo: user.pseudo };
       next();
     } catch (e) { next(new Error('Erreur d\'authentification')); }

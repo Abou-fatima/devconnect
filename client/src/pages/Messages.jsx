@@ -122,9 +122,9 @@ export default function Messages() {
           </form>
 
           <section className="px-2 pb-2">
-            <div className="flex items-center justify-between px-2 pb-1">
+            <button type="button" onClick={() => setCreer(true)} className="btn mx-2 mb-3 flex w-[calc(100%-1rem)] items-center justify-center gap-2 !py-2.5 text-base"><Icone nom="plus" /> {t('salons.creer_bouton')}</button>
+            <div className="px-2 pb-1">
               <h2 className="text-sm font-semibold text-slate-500">{t('salons.mes')}</h2>
-              <button type="button" onClick={() => setCreer(true)} className="rounded-full bg-brand px-2.5 py-0.5 text-xs font-medium text-white hover:bg-brand-light"><Icone nom="plus" /> {t('salons.creer_bouton')}</button>
             </div>
             {mesSalons.length > 0
               ? mesSalons.map((x) => <Salon key={x.id} canal={x.canal} nom={x.nom} actif={x.canal === canal} nonLus={nonLus[x.canal] || 0} />)

@@ -23,6 +23,7 @@ export default function Layout() {
   const navigate = useNavigate();
   const { pathname } = useLocation();
   useSuiviNonLus();
+  useEffect(() => { document.querySelector('.nav-bas-actif')?.scrollIntoView({ inline: 'center', block: 'nearest' }); }, [pathname]); // la page active reste visible dans la barre du bas
   const userId = user?.id;
   useEffect(() => { if (userId) resynchroniserPush(); }, [userId]); // alertes push : cet appareil suit le compte connecté
   const { total: nonLusSalons } = useNonLus();
@@ -36,23 +37,23 @@ export default function Layout() {
     { to: '/forum', label: t('nav.forum'), icon: 'messages' },
     { to: '/developpeurs', label: t('nav.devs'), icon: 'groupe' },
     { to: '/projets', label: t('projets.nav'), icon: 'projet' },
-    { to: '/mentorat', label: t('mentorat.nav'), icon: 'mentorat', desktopOnly: true },
     { to: '/classement', label: t('nav.classement'), icon: 'trophee' },
-    { to: '/carte', label: t('carte.nav'), icon: 'groupe', desktopOnly: true },
-    { to: '/defi', label: t('defi.nav'), icon: 'trophee', desktopOnly: true },
+    { to: '/defi', label: t('defi.nav'), icon: 'trophee' },
+    { to: '/carte', label: t('carte.nav'), icon: 'groupe' },
+    { to: '/mentorat', label: t('mentorat.nav'), icon: 'mentorat' },
     ...(user ? [{ to: '/messages', label: t('nav.messages'), icon: 'courrier' }] : []),
     ...(user && ['admin', 'moderateur'].includes(user.role) ? [{ to: '/admin', label: t('admin.nav'), icon: 'bouclier', desktopOnly: true }] : []),
     user ? { to: '/profil', label: t('nav.profil'), icon: 'utilisateur' } : { to: '/connexion', label: t('nav.connexion'), icon: 'cle' }
   ];
-  const itemsBas = items.filter((i) => !i.desktopOnly);
+  const itemsBas = items; // mobile : toutes les pages, la barre défile latéralement
   const sansPied = pathname.startsWith('/messages'); // la messagerie occupe tout l'écran : pas de pied de page
 
   return (
     <div className="flex min-h-screen flex-col">
       <div key={`b${pathname}`} className="barre-route" aria-hidden />
       <header className="en-tete sticky top-0 z-20 bg-brand text-white shadow">
-        <div className="mx-auto flex max-w-5xl items-center justify-between gap-2 px-4 py-3">
-          <Link to="/" className="shrink-0 whitespace-nowrap text-lg font-bold transition-transform duration-200 hover:scale-105">&lt;/&gt; {t('app.nom')}</Link>
+        <div className="mx-auto flex max-w-5xl items-center justify-between gap-1 px-3 py-3 sm:gap-2 sm:px-4">
+          <Link to="/" className="shrink-0 whitespace-nowrap text-base font-bold transition-transform sm:text-lg duration-200 hover:scale-105">&lt;/&gt; {t('app.nom')}</Link>
           <nav className="hidden items-center gap-0.5 lg:flex">
             {items.map((i) => <NavLink key={i.to} to={i.to} className={lien}>{i.label}{pastille(i.to)}</NavLink>)}
             {user && <button onClick={sortir} className="whitespace-nowrap px-2.5 py-2 text-sm text-white/80 hover:text-white">{t('nav.deconnexion')}</button>}
@@ -65,7 +66,7 @@ export default function Layout() {
             <div className="flex items-center lg:hidden">
               {user
                 ? <button type="button" onClick={sortir} aria-label={t('nav.deconnexion')} title={t('nav.deconnexion')} className="flex items-center gap-1 rounded-lg px-2 py-1.5 text-sm text-white/90 hover:bg-white/10"><Icone nom="retour" className="rotate-180" /><span className="hidden sm:inline">{t('nav.deconnexion')}</span></button>
-                : <><Link to="/connexion" className="rounded-lg px-2 py-1.5 text-sm font-medium text-white/90 hover:bg-white/10">{t('nav.connexion')}</Link><Link to="/inscription" className="ml-1 rounded-lg bg-accent px-2.5 py-1.5 text-sm font-semibold text-slate-900">{t('nav.inscription')}</Link></>}
+                : <><Link to="/connexion" className="hidden rounded-lg px-2 py-1.5 text-sm font-medium text-white/90 hover:bg-white/10 sm:inline">{t('nav.connexion')}</Link><Link to="/inscription" className="rounded-lg bg-accent px-2.5 py-1.5 text-sm font-semibold text-slate-900 sm:ml-1">{t('nav.inscription')}</Link></>}
             </div>
           </div>
         </div>
@@ -80,9 +81,9 @@ export default function Layout() {
       {!sansPied && <div className="pb-16 bg-brand lg:pb-0"><PiedDePage user={user} /></div>}
 
       {/* Navigation basse, mobile uniquement (mobile-first) */}
-      <nav style={{ gridTemplateColumns: `repeat(${itemsBas.length}, minmax(0, 1fr))` }} className="fixed inset-x-0 bottom-0 z-20 grid border-t border-slate-200 bg-white lg:hidden">
+      <nav className="fixed inset-x-0 bottom-0 z-20 flex overflow-x-auto border-t border-slate-200 bg-white [scrollbar-width:none] lg:hidden">
         {itemsBas.map((i) => (
-          <NavLink key={i.to} to={i.to} className={({ isActive }) => `flex flex-col items-center py-2 text-xs transition-colors ${isActive ? 'nav-bas-actif text-brand font-semibold' : 'text-slate-500'}`}>
+          <NavLink key={i.to} to={i.to} className={({ isActive }) => `flex min-w-[4.6rem] flex-1 shrink-0 flex-col items-center whitespace-nowrap py-2 text-xs transition-colors ${isActive ? 'nav-bas-actif text-brand font-semibold' : 'text-slate-500'}`}>
             <span className="relative text-lg" aria-hidden><Icone nom={i.icon} />{nonLus > 0 && i.to === '/messages' && <span className="absolute -right-3 -top-1 rounded-full bg-accent px-1 text-[10px] font-bold leading-4 text-slate-900">{nonLus > 99 ? '99+' : nonLus}</span>}</span>{i.label}
           </NavLink>
         ))}

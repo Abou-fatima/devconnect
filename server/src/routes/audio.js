@@ -57,8 +57,11 @@ router.post(
       ? req.body.langue
       : undefined;
     const veutTranscrire = String(req.body.transcrire) !== "false";
+    // Whisper d'abord ; à défaut, le texte que le navigateur a transcrit lui-même (texte_local, nettoyé et limité).
     const transcription = veutTranscrire
-      ? await audio.transcrire(req.file.buffer, { ...format, langue })
+      ? (await audio.transcrire(req.file.buffer, { ...format, langue })) ||
+        audio.nettoyerTranscription(req.body.texte_local) ||
+        null
       : null;
 
     const f = await audio.enregistrerAudio(req.file.buffer, format.ext);

@@ -222,6 +222,7 @@ export default function Admin() {
       <h1 className="text-2xl font-bold">{t('admin.titre')}</h1>
       <p className="text-slate-600">{t('admin.sous_titre')}</p>
       <p className="mt-1 text-xs text-slate-500">{t('admin.role', { role: user?.role })}</p>
+      <Link to="/admin/gestion" className="btn mt-3 inline-block">Gérer les utilisateurs, le forum et les projets</Link>
 
       <div role="tablist" className="mt-4 flex gap-1 border-b border-slate-200">
         {onglets.map(([cle, libelle]) => (

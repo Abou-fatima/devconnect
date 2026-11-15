@@ -16,7 +16,7 @@ export const vocalPossible = () =>
 /* Enregistrement d'une note vocale avec le micro.
    etat : 'repos' | 'enregistre' | 'pret' (enregistrement terminé, à écouter avant l'envoi) | 'erreur'
    erreur : 'refuse' (micro interdit) | 'absent' (pas de micro) | 'autre' */
-export default function useEnregistreurVocal({ onDebut, onFin } = {}) {
+export default function useEnregistreurVocal({ onDebut, onFin, langue = "fr" } = {}) {
   const [etat, setEtat] = useState("repos");
   const [secondes, setSecondes] = useState(0);
   const [erreur, setErreur] = useState("");
@@ -27,12 +27,16 @@ export default function useEnregistreurVocal({ onDebut, onFin } = {}) {
     morceaux: [],
     minuteur: null,
     annule: false,
+    reco: null,
+    texte: "",
   });
 
   const nettoyer = useCallback(() => {
     const r = rec.current;
     clearInterval(r.minuteur);
     r.flux?.getTracks().forEach((p) => p.stop()); // éteint le voyant du micro
+    try { r.reco?.stop(); } catch { /* déjà arrêtée */ }
+    r.reco = null;
     r.flux = null;
     r.media = null;
     r.minuteur = null;
@@ -94,6 +98,7 @@ export default function useEnregistreurVocal({ onDebut, onFin } = {}) {
     r.flux = flux;
     r.morceaux = [];
     r.annule = false;
+    r.texte = "";
     media.ondataavailable = (e) => {
       if (e.data?.size) r.morceaux.push(e.data);
     };
@@ -107,10 +112,34 @@ export default function useEnregistreurVocal({ onDebut, onFin } = {}) {
         setEtat("repos");
         return;
       } // trop court : ignoré
-      setResultat({ blob, url: URL.createObjectURL(blob) });
+      // texte : lu au moment de l'envoi, car les derniers mots de la reconnaissance peuvent arriver après l'arrêt
+      setResultat({ blob, url: URL.createObjectURL(blob), texte: () => r.texte.trim() });
       setEtat("pret");
     };
     media.start(250);
+    // Transcription gratuite faite par le navigateur (facultative : sans support, le vocal part simplement sans texte).
+    const Reco = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (Reco) {
+      try {
+        const reco = new Reco();
+        reco.lang = langue === "en" ? "en-US" : "fr-FR";
+        reco.continuous = true;
+        reco.interimResults = false;
+        reco.onresult = (ev) => {
+          for (let i = ev.resultIndex; i < ev.results.length; i += 1) {
+            if (ev.results[i].isFinal) r.texte += `${ev.results[i][0].transcript} `;
+          }
+        };
+        reco.onerror = () => {};
+        reco.onend = () => { // Chrome coupe la reconnaissance après un silence : on la relance tant qu'on enregistre
+          if (r.media && r.media.state === "recording" && !r.annule) {
+            try { reco.start(); } catch { /* déjà relancée */ }
+          }
+        };
+        r.reco = reco;
+        reco.start();
+      } catch { r.reco = null; }
+    }
     setSecondes(0);
     setEtat("enregistre");
     onDebut?.();
@@ -122,7 +151,7 @@ export default function useEnregistreurVocal({ onDebut, onFin } = {}) {
         }),
       1000,
     );
-  }, [arreter, liberer, nettoyer, onDebut, onFin]);
+  }, [arreter, liberer, nettoyer, onDebut, onFin, langue]);
 
   const annuler = useCallback(() => {
     rec.current.annule = true;

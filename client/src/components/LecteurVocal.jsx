@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { urlFichier } from "../lib/fichiers";
 
 // Note vocale : lecteur + transcription Whisper repliable (utile sans casque ou avec une connexion lente).
 export default function LecteurVocal({ url, transcription, propre = false }) {
@@ -10,7 +11,7 @@ export default function LecteurVocal({ url, transcription, propre = false }) {
       <audio
         controls
         preload="none"
-        src={url}
+        src={urlFichier(url)}
         className="h-9 w-full max-w-full"
         aria-label={t("vocal.note")}
       />
