@@ -16,7 +16,7 @@ export const vocalPossible = () =>
 /* Enregistrement d'une note vocale avec le micro.
    etat : 'repos' | 'enregistre' | 'pret' (enregistrement terminé, à écouter avant l'envoi) | 'erreur'
    erreur : 'refuse' (micro interdit) | 'absent' (pas de micro) | 'autre' */
-export default function useEnregistreurVocal({ onDebut, onFin } = {}) {
+export default function useEnregistreurVocal({ onDebut, onFin, langue = "fr" } = {}) {
   const [etat, setEtat] = useState("repos");
   const [secondes, setSecondes] = useState(0);
   const [erreur, setErreur] = useState("");
