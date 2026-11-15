@@ -18,6 +18,9 @@ const utilisateurSchema = new mongoose.Schema({
   objectifs: { type: [String], default: [] },
   badges: { type: [String], default: [] },
   reputation: { type: Number, default: 0 },
+  bloque: { type: Boolean, default: false },
+  bloque_motif: String,
+  bloque_le: Date,
   pays: String, // code ISO 3166-1 alpha-2
   ville: String,
   derniere_activite: { type: Date }, // dernière déconnexion (affichée « en ligne il y a … » dans les conversations privées)

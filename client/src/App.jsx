@@ -30,6 +30,7 @@ const DefiNouveau = lazy(() => import('./pages/DefiNouveau'));
 const Messages = lazy(() => import('./pages/Messages'));
 const Notifications = lazy(() => import('./pages/Notifications'));
 const Admin = lazy(() => import('./pages/Admin'));
+const AdminGestion = lazy(() => import('./pages/AdminGestion'));
 const SalonInvitation = lazy(() => import('./pages/SalonInvitation'));
 const NotFound = lazy(() => import('./pages/NotFound'));
 
@@ -63,6 +64,7 @@ export default function App() {
         <Route path="defi/:id" element={page(<Defi />)} />
         <Route path="messages" element={<ProtectedRoute>{page(<Messages />)}</ProtectedRoute>} />
         <Route path="messages/:canal" element={<ProtectedRoute>{page(<Messages />)}</ProtectedRoute>} />
+        <Route path="admin/gestion" element={<ProtectedRoute roles={['admin', 'moderateur']}>{page(<AdminGestion />)}</ProtectedRoute>} />
         <Route path="admin" element={<ProtectedRoute roles={['admin', 'moderateur']}>{page(<Admin />)}</ProtectedRoute>} />
         <Route path="salons/invitation/:code" element={<ProtectedRoute>{page(<SalonInvitation />)}</ProtectedRoute>} />
         <Route path="notifications" element={<ProtectedRoute>{page(<Notifications />)}</ProtectedRoute>} />

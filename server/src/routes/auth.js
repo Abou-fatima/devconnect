@@ -63,6 +63,7 @@ router.post('/login', authLimiter, asyncRoute(async (req, res) => {
 
   const ok = await bcrypt.compare(mot_de_passe, user && user.mot_de_passe_hash ? user.mot_de_passe_hash : DUMMY_HASH);
   if (!user || !user.mot_de_passe_hash || !ok) throw new AppError(401, 'Identifiants incorrects');
+  if (user.bloque) throw new AppError(403, "Votre compte a été bloqué par l'administration.");
   reponse(res, 200, user);
 }));
 
@@ -93,7 +94,10 @@ router.post('/otp/verify', authLimiter, asyncRoute(async (req, res) => {
   if (!(await otpStore.verify(destinataire, body.code))) throw new AppError(400, 'Code incorrect ou expiré');
 
   let user = await Utilisateur.findOne({ [canal]: destinataire });
-  if (user) return reponse(res, 200, user);
+  if (user) {
+    if (user.bloque) throw new AppError(403, "Votre compte a été bloqué par l'administration.");
+    return reponse(res, 200, user);
+  }
 
   if (!body.pseudo) throw new AppError(422, 'Nouveau compte : le champ pseudo est requis', { besoin: ['pseudo'] });
   if (await Utilisateur.exists({ pseudo: body.pseudo }).collation({ locale: 'en', strength: 2 })) throw new AppError(409, 'Ce pseudo est déjà pris', [{ champ: 'pseudo', message: 'Ce pseudo est déjà pris' }]);
@@ -162,6 +166,8 @@ router.get('/github/callback', async (req, res) => {
       user = await Utilisateur.findOne({ email });
       if (user) { user.github_id = githubId; await user.save(); }
     }
+
+    if (user && user.bloque) return res.redirect(front('erreur=' + encodeURIComponent("Votre compte a été bloqué par l'administration.")));
 
     if (!user && !peutCreerCompte(mode)) {
       return res.redirect(front('erreur=aucun_compte')); // « Se connecter » avec GitHub : aucun compte lié, on n'en crée pas

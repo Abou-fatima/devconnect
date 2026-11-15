@@ -21,6 +21,7 @@ const auth = async (req, _res, next) => {
     }
     const user = await Utilisateur.findById(payload.sub);
     if (!user) throw new AppError(401, "Compte introuvable");
+    if (user.bloque) throw new AppError(401, "Votre compte a été bloqué par l'administration.");
     req.user = user;
     req.userId = String(user._id);
     next();
@@ -36,7 +37,7 @@ const optionalAuth = async (req, _res, next) => {
   try {
     const payload = verifyToken(token);
     const user = await Utilisateur.findById(payload.sub);
-    if (user) {
+    if (user && !user.bloque) {
       req.user = user;
       req.userId = String(user._id);
     }
