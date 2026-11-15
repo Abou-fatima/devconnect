@@ -71,6 +71,7 @@ app.use('/api/admin/gestion', require('./routes/adminGestion'));
 app.use('/api/admin', require('./routes/admin'));
 app.use('/api/salons', require('./routes/salons'));
 app.use('/api/partage', require('./routes/partage')); // aperçus de partage (WhatsApp) : question et projet
+app.use('/api/duels', require('./routes/duels')); // duel de code en direct
 app.use('/api/defis', require('./routes/defis')); // défi de la semaine
 communication.mountRoutes(app);
 

@@ -88,7 +88,10 @@ export default function Defi() {
     <div className="space-y-4">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <h1 className="text-2xl font-bold">{t('defi.titre_page')}</h1>
-        {peutLancerDefi && <Link to="/defi/nouveau" className="btn-outline">{t('defi.lancer')}</Link>}
+        <div className="flex flex-wrap gap-2">
+          <Link to="/duel" className="btn">⚔️ Défier un ami en duel</Link>
+          {peutLancerDefi && <Link to="/defi/nouveau" className="btn-outline">{t('defi.lancer')}</Link>}
+        </div>
       </div>
 
       {erreur && <div className="erreur" role="alert">{erreur}</div>}
