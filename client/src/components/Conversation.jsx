@@ -262,13 +262,13 @@ export default function Conversation({ canal, onRetour, onNom, onChange }) {
 
   const [envoiVocal, setEnvoiVocal] = useState(false);
   const signalerVocal = useCallback((actif) => { if (socket && connecte) socket.emit('typing', { canal, actif, mode: 'vocal' }); }, [socket, connecte, canal]);
-  const vocal = useEnregistreurVocal({ onDebut: () => signalerVocal(true), onFin: () => signalerVocal(false) });
+  const vocal = useEnregistreurVocal({ onDebut: () => signalerVocal(true), onFin: () => signalerVocal(false), langue: i18n.language?.startsWith('en') ? 'en' : 'fr' });
 
   const envoyerNoteVocale = async () => {
     if (!vocal.resultat || envoiVocal || !socket || !connecte) return;
     setEnvoiVocal(true); setErreurEnvoi('');
     try {
-      const { audio_url: audioUrl } = await envoyerVocal(vocal.resultat.blob, i18n.language?.startsWith('en') ? 'en' : 'fr');
+      const { audio_url: audioUrl } = await envoyerVocal(vocal.resultat.blob, i18n.language?.startsWith('en') ? 'en' : 'fr', vocal.resultat.texte?.());
       socket.timeout(8000).emit('message', { canal, audio_url: audioUrl, ...chargeReponse() }, (err, ack) => {
         setEnvoiVocal(false);
         if (err || !ack?.ok) { setErreurEnvoi(err ? t('chat.erreur_delai') : ack?.erreur || t('vocal.erreur_envoi')); return; } // l'enregistrement reste prêt

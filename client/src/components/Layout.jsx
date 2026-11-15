@@ -23,6 +23,7 @@ export default function Layout() {
   const navigate = useNavigate();
   const { pathname } = useLocation();
   useSuiviNonLus();
+  useEffect(() => { document.querySelector('.nav-bas-actif')?.scrollIntoView({ inline: 'center', block: 'nearest' }); }, [pathname]); // la page active reste visible dans la barre du bas
   const userId = user?.id;
   useEffect(() => { if (userId) resynchroniserPush(); }, [userId]); // alertes push : cet appareil suit le compte connecté
   const { total: nonLusSalons } = useNonLus();
@@ -36,15 +37,15 @@ export default function Layout() {
     { to: '/forum', label: t('nav.forum'), icon: 'messages' },
     { to: '/developpeurs', label: t('nav.devs'), icon: 'groupe' },
     { to: '/projets', label: t('projets.nav'), icon: 'projet' },
-    { to: '/mentorat', label: t('mentorat.nav'), icon: 'mentorat', desktopOnly: true },
     { to: '/classement', label: t('nav.classement'), icon: 'trophee' },
-    { to: '/carte', label: t('carte.nav'), icon: 'groupe', desktopOnly: true },
-    { to: '/defi', label: t('defi.nav'), icon: 'trophee', desktopOnly: true },
+    { to: '/defi', label: t('defi.nav'), icon: 'trophee' },
+    { to: '/carte', label: t('carte.nav'), icon: 'groupe' },
+    { to: '/mentorat', label: t('mentorat.nav'), icon: 'mentorat' },
     ...(user ? [{ to: '/messages', label: t('nav.messages'), icon: 'courrier' }] : []),
     ...(user && ['admin', 'moderateur'].includes(user.role) ? [{ to: '/admin', label: t('admin.nav'), icon: 'bouclier', desktopOnly: true }] : []),
     user ? { to: '/profil', label: t('nav.profil'), icon: 'utilisateur' } : { to: '/connexion', label: t('nav.connexion'), icon: 'cle' }
   ];
-  const itemsBas = items.filter((i) => !i.desktopOnly);
+  const itemsBas = items; // mobile : toutes les pages, la barre défile latéralement
   const sansPied = pathname.startsWith('/messages'); // la messagerie occupe tout l'écran : pas de pied de page
 
   return (
@@ -80,9 +81,9 @@ export default function Layout() {
       {!sansPied && <div className="pb-16 bg-brand lg:pb-0"><PiedDePage user={user} /></div>}
 
       {/* Navigation basse, mobile uniquement (mobile-first) */}
-      <nav style={{ gridTemplateColumns: `repeat(${itemsBas.length}, minmax(0, 1fr))` }} className="fixed inset-x-0 bottom-0 z-20 grid border-t border-slate-200 bg-white lg:hidden">
+      <nav className="fixed inset-x-0 bottom-0 z-20 flex overflow-x-auto border-t border-slate-200 bg-white [scrollbar-width:none] lg:hidden">
         {itemsBas.map((i) => (
-          <NavLink key={i.to} to={i.to} className={({ isActive }) => `flex flex-col items-center py-2 text-xs transition-colors ${isActive ? 'nav-bas-actif text-brand font-semibold' : 'text-slate-500'}`}>
+          <NavLink key={i.to} to={i.to} className={({ isActive }) => `flex min-w-[4.6rem] flex-1 shrink-0 flex-col items-center whitespace-nowrap py-2 text-xs transition-colors ${isActive ? 'nav-bas-actif text-brand font-semibold' : 'text-slate-500'}`}>
             <span className="relative text-lg" aria-hidden><Icone nom={i.icon} />{nonLus > 0 && i.to === '/messages' && <span className="absolute -right-3 -top-1 rounded-full bg-accent px-1 text-[10px] font-bold leading-4 text-slate-900">{nonLus > 99 ? '99+' : nonLus}</span>}</span>{i.label}
           </NavLink>
         ))}
